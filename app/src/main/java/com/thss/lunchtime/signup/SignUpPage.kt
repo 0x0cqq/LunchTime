@@ -102,7 +102,7 @@ fun CountdownButton(
 
     Button(
         modifier = modifier,
-        onClick = { onClick(); ticks = 0; isRunning = true },
+        onClick = { onClick(); ticks = 60; isRunning = true },
         shape = shape,
         enabled = !isRunning
     ) {
@@ -116,8 +116,8 @@ fun CountdownButton(
     LaunchedEffect(Unit) {
         while(true) {
             delay(1000.milliseconds)
-            if(isRunning) ticks++
-            if(ticks >= 60) {
+            if(isRunning) ticks--
+            if(ticks == 0) {
                 isRunning = false
             }
         }
@@ -283,7 +283,7 @@ fun SignUpPage(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,
                 keyboardActions = KeyboardActions {
-                    focusManager.moveFocus(FocusDirection.Next)
+                    focusManager.clearFocus()
                 },
                 isError = !uiState.isEmailValidationCodeValid,
                 errorMsg = uiState.emailValidationCodeErrorMsg
@@ -296,7 +296,7 @@ fun SignUpPage(
                 },
                 modifier = Modifier.padding(10.dp),
                 shape = RoundedCornerShape(10.dp),
-                enabled = viewModel.isEnabledRegisterButton
+                enabled = viewModel.isEnabledRegisterButton.value
             ) {
                 Text(
                     "Sign Up"

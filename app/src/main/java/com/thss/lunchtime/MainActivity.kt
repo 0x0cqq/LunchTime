@@ -13,6 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.thss.lunchtime.mainscreen.MainScreen
+import com.thss.lunchtime.mainscreen.MainScreenViewModel
 import com.thss.lunchtime.signup.SignUpPage
 import com.thss.lunchtime.signup.SignUpViewModel
 
@@ -21,7 +23,7 @@ import com.thss.lunchtime.ui.theme.LunchTimeTheme
 @RequiresApi(Build.VERSION_CODES.R)
 class MainActivity : ComponentActivity() {
     val signupViewModel : SignUpViewModel by viewModels()
-
+    val mainScreenViewModel: MainScreenViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 //            window.setDecorFitsSystemWindows(false)
@@ -37,7 +39,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 //                    LoginPage({ _, _ -> }, { _, _ -> })
-                    SignUpPage({},{}, signupViewModel)
+//                    SignUpPage({},{}, signupViewModel)
+                    MainScreen(mainScreenViewModel)
                 }
             }
         }

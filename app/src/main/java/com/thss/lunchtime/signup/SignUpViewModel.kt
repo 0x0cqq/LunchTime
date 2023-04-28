@@ -5,38 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.thss.lunchtime.common.SavableMutableSaveStateFlow
 
-// https://medium.com/mobile-app-development-publication/saving-stateflow-state-in-viewmodel-2ee9ed9b1a83
-class SavableMutableSaveStateFlow<T>(
-    private val savedStateHandle: SavedStateHandle,
-    private val key: String,
-    defaultValue: T
-) {
-    private val _state: MutableStateFlow<T> =
-        MutableStateFlow(
-            savedStateHandle.get<T>(key) ?: defaultValue)
 
-    var value: T
-        get() = _state.value
-        set(value) {
-            _state.value = value
-            savedStateHandle[key] = value
-        }
-
-    fun update(function: (T) -> T) {
-        while (true) {
-            val prevValue = value
-            val nextValue = function(prevValue)
-            if (_state.compareAndSet(prevValue, nextValue)) {
-                return
-            }
-        }
-    }
-
-    fun asStateFlow(): StateFlow<T> = _state
-}
 
 @OptIn(SavedStateHandleSaveableApi::class)
 class SignUpViewModel(
@@ -134,19 +105,18 @@ class SignUpViewModel(
     }
 
     fun inputConfirmPassword(value: String) {
-        val valid = _uiState.value.confirmPassword == _uiState.value.password
+        val valid = value == _uiState.value.password
         updateConfirmPassword(value, valid ,if (valid) "" else "Two passwords have to be the same")
     }
 
 
-    private var _isEnabledRegisterButton = mutableStateOf(false)
-
-    val isEnabledRegisterButton = _isEnabledRegisterButton.value
+    var isEnabledRegisterButton = mutableStateOf(false)
+        private set
 
     init { }
 
     private fun fullValidate() {
-        _isEnabledRegisterButton.value =
+        isEnabledRegisterButton.value =
             _uiState.value.name.isNotEmpty()
                     && _uiState.value.email.isNotEmpty()
                     && _uiState.value.password.isNotEmpty()
