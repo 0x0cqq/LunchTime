@@ -128,7 +128,7 @@ fun CountdownButton(
 @Composable
 fun SignUpPage(
     onRequestEmailCodeClick: (email: String) -> Unit,
-    onSignUpClick: (userData: SignUpUser) -> Unit,
+    onSignUpClick: (userData: SignUpUiState) -> Unit,
     viewModel: SignUpViewModel
 ) {
     // 用户名
