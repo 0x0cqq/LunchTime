@@ -44,19 +44,6 @@ data class PostData(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostReviewCard(msg: PostData)
-{
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .padding(5.dp)
-    ) {
-        PostMainBody(msg = msg)
-        LikeStarComment(msg = msg)
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 fun PostMainBody(msg: PostData)
 {
     Column (modifier = Modifier.padding(bottom = 5.dp)) {
@@ -246,17 +233,6 @@ fun PostPhotoGrid(columnCount: Int, images: List<ImageBitmap>, modifier: Modifie
 @Composable
 fun PostBodyPreview() {
     PostMainBody(
-        msg = PostData(
-            Type = 3,
-            graphResources = arrayOf(R.drawable.wp, R.drawable.wp, R.drawable.wp)
-        )
-    )
-}
-
-@Preview
-@Composable
-fun PostPreviewCardPreview() {
-    PostReviewCard(
         msg = PostData(
             Type = 3,
             graphResources = arrayOf(R.drawable.wp, R.drawable.wp, R.drawable.wp)
