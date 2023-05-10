@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.PostData
-import com.thss.lunchtime.PostPreviewCard
+import com.thss.lunchtime.PostReviewCard
 import com.thss.lunchtime.mainscreen.HomePageTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,8 +57,8 @@ fun Homepage(onClickNewPost: () -> Unit = {}, homepageViewModel: HomepageViewMod
             if (uiState.value.selectedIndex == tabs.indexOf(HomepageTabs.byTime)) {
                 FloatingActionButton(
                     onClick = {
-//                        onClickNewPost()
-                              homepageViewModel.addRandomPost()
+                        onClickNewPost()
+//                              homepageViewModel.addRandomPost()
                     },
                 ) {
                     Icon(Icons.Filled.Add, "Add")
@@ -68,7 +68,7 @@ fun Homepage(onClickNewPost: () -> Unit = {}, homepageViewModel: HomepageViewMod
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             items(uiState.value.postDataList) { postData ->
-                PostPreviewCard(postData)
+                PostReviewCard(postData)
             }
         }
     }
