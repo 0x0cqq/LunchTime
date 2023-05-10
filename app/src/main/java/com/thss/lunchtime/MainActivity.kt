@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -65,6 +66,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Application(modifier: Modifier = Modifier) {
     val signupViewModel : SignUpViewModel = viewModel()
+    val mainScreenViewModel : MainScreenViewModel = viewModel()
     val applicationNavController = rememberNavController()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -81,12 +83,14 @@ fun Application(modifier: Modifier = Modifier) {
                             val message = if( response.status ){
                                 "登录成功"
                             } else {
-                                "登录失败"
+                                "登录失败, " + response.message
                             }
                             Toast.makeText(
                                 context, message,
                                 8.coerceAtLeast(message.length)
                             ).show()
+                            delay(1000)
+                            applicationNavController.navigate("main", NavOptions.Builder().setPopUpTo("login", true).build())
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())
                             Toast.makeText(
@@ -103,8 +107,7 @@ fun Application(modifier: Modifier = Modifier) {
         }
         composable("register") {
             SignUpPage(
-                onRequestEmailCodeClick =
-                { address ->
+                onRequestEmailCodeClick = { address ->
                     scope.launch {
                         try {
                             val response =
@@ -112,7 +115,7 @@ fun Application(modifier: Modifier = Modifier) {
                             val message = if( response.status ){
                                 "验证码已发送"
                             } else {
-                                "验证码发送失败"
+                                "验证码发送失败, " + response.message
                             }
                             Toast.makeText(
                                 context, message,
@@ -139,13 +142,13 @@ fun Application(modifier: Modifier = Modifier) {
                             val message = if( response.status ){
                                 "注册成功！"
                             } else {
-                                "注册失败"
+                                "注册失败," + response.message
                             }
                             Toast.makeText(
                                 context, message,
                                 8.coerceAtLeast(message.length)
                             ).show()
-                            delay(2000)
+                            delay(1000)
                             applicationNavController.navigate("login")
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())
@@ -159,7 +162,9 @@ fun Application(modifier: Modifier = Modifier) {
                 signupViewModel
             )
         }
-
+        composable("main") {
+            MainScreen(mainScreenViewModel)
+        }
     }
 }
 
