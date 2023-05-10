@@ -117,7 +117,7 @@ fun noticePreviewCard(msg: noticeData)
                         .size(60.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .padding(start = 8.dp)
-                        .aspectRatio(1f)
+                        .aspectRatio(1F)
                         .height(IntrinsicSize.Min)
                 )
             }

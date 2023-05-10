@@ -84,6 +84,7 @@ fun PostPreviewCard(msg: PostData)
                         else -> Color.Gray
                     }
 
+                    // Tag
                     Card(
                         shape = RoundedCornerShape(15.dp),
                         colors = CardDefaults.cardColors(containerColor = color),
@@ -96,23 +97,42 @@ fun PostPreviewCard(msg: PostData)
 
                     Spacer(modifier = Modifier.width(4.dp))
 
+                    // title
                     Text(
                         text = msg.title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 22.sp,
-                        modifier = Modifier.align(Alignment.CenterVertically).padding(bottom = 4.dp)
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .padding(bottom = 4.dp)
                     )
                 }
 
+                // content
                 Text(text = msg.content)
             }
 
+            // image show
             val imagesResources : List<ImageBitmap> =
                 msg.graphResources.map {
                     ImageBitmap.imageResource(id = it)
                 }
             PostPhotoGrid(images = imagesResources, columnCount = 3)
 
+            // location Tag
+            Card(
+                shape = RoundedCornerShape(15.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.LightGray),
+                modifier = Modifier.padding(start = 12.dp)
+            ) {
+                Text(
+                    text = msg.Tag,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp),
+                    fontSize = 12.sp
+                )
+            }
+
+            // bottom like, star, comment
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
@@ -189,7 +209,9 @@ fun <T> Grid(
             Spacer(modifier = Modifier.width(8.dp))
         }
 
-        Spacer(modifier = Modifier.fillMaxWidth().height(4.dp))
+        Spacer(modifier = Modifier
+            .fillMaxWidth()
+            .height(4.dp))
     }
 }
 
