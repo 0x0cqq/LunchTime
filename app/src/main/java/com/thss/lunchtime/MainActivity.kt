@@ -24,7 +24,6 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.thss.lunchtime.mainscreen.HomePage
 import com.thss.lunchtime.mainscreen.MainScreen
 import com.thss.lunchtime.mainscreen.MainScreenViewModel
 import com.thss.lunchtime.network.LunchTimeApi
