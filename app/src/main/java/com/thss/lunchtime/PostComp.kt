@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ModeComment
 import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.thss.lunchtime.ui.theme.Purple40
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -40,31 +42,53 @@ data class PostData(
     val Type: Int = -1,
     val Tag: String = "Tag",
     val graphResources : Array<Int> = arrayOf(),
+    val publisherStatus: Int = 2,
 )
 
+data class PostType(
+    val Detailed: Boolean = false
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostMainBody(msg: PostData)
+fun PostMainBody(msg: PostData, type: PostType)
 {
     Column (modifier = Modifier.padding(bottom = 5.dp)) {
-        Row (modifier = Modifier.padding(all = 8.dp)) {
-            Image(
-                painter = painterResource(id = R.drawable.touxaingnvhai),
-                contentDescription = "heading",
-                modifier = Modifier
-                    // Set image size to 40dp
-                    .size(40.dp)
-                    // Clip image to shaped as a circle
-                    .clip(CircleShape)
-            )
-            // Add a horizontal space between the image and the column
-            Spacer(modifier = Modifier.width(8.dp))
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 16.dp)
+        ) {
+            Row (modifier = Modifier.padding(all = 8.dp)) {
+                Image(
+                    painter = painterResource(id = R.drawable.touxaingnvhai),
+                    contentDescription = "heading",
+                    modifier = Modifier
+                        // Set image size to 40dp
+                        .size(40.dp)
+                        // Clip image to shaped as a circle
+                        .clip(CircleShape)
+                )
+                // Add a horizontal space between the image and the column
+                Spacer(modifier = Modifier.width(8.dp))
 
-            Column {
-                Text(text = msg.publisherID)
-                // Add a vertical space between the publisher and date
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = SimpleDateFormat("yyyy-MM-dd HH:mm").format(msg.publishDate))
+                Column {
+                    Text(text = msg.publisherID)
+                    // Add a vertical space between the publisher and date
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = SimpleDateFormat("yyyy-MM-dd HH:mm").format(msg.publishDate))
+                }
+            }
+
+            if (type.Detailed) {
+                val icon = when (msg.publisherStatus) {
+                    1 -> Icons.Rounded.PersonAdd
+                    2 -> Icons.Rounded.HowToReg
+                    3 -> Icons.Rounded.PersonOff
+                    else -> Icons.Rounded.PersonAdd
+                }
+                Icon(icon, contentDescription = null, tint = Purple40)
             }
         }
 
@@ -236,6 +260,7 @@ fun PostBodyPreview() {
         msg = PostData(
             Type = 3,
             graphResources = arrayOf(R.drawable.wp, R.drawable.wp, R.drawable.wp)
-        )
+        ),
+        type = PostType(Detailed = true)
     )
 }
