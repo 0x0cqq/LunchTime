@@ -18,6 +18,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.thss.lunchtime.mainscreen.homepage.Homepage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -126,7 +127,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel) {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(MainScreens.Home.route) {
-                HomePage()
+                Homepage()
             }
             composable(MainScreens.Message.route) {
                 MessagePage()
@@ -138,20 +139,6 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HomePage() {
-    Scaffold(
-        topBar = {
-            HomePageTopBar()
-        },
-        modifier = Modifier.padding(10.dp)
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            Text("Home Page")
-        }
-    }
-}
 
 @Composable
 fun MessagePage() {
