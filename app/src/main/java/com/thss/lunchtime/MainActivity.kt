@@ -27,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.mainscreen.MainScreen
 import com.thss.lunchtime.mainscreen.MainScreenViewModel
 import com.thss.lunchtime.network.LunchTimeApi
+import com.thss.lunchtime.newpost.NewPostPage
 import com.thss.lunchtime.signup.SignUpPage
 import com.thss.lunchtime.signup.SignUpViewModel
 
@@ -71,7 +72,7 @@ fun Application(modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     NavHost(
         navController = applicationNavController,
-        startDestination = "login"
+        startDestination = "main"
     ) {
         composable("login") {
             LoginPage(
@@ -161,8 +162,20 @@ fun Application(modifier: Modifier = Modifier) {
                 signupViewModel
             )
         }
+        composable("newpost") {
+            NewPostPage(
+                onClickBack = {
+                    applicationNavController.popBackStack()
+                }
+            )
+        }
         composable("main") {
-            MainScreen(mainScreenViewModel)
+            MainScreen(
+                onNewPost = {
+                    applicationNavController.navigate("newpost")
+                },
+                mainScreenViewModel
+            )
         }
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -74,7 +75,7 @@ class NoRippleInteractionSource : MutableInteractionSource {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(mainScreenViewModel: MainScreenViewModel) {
+fun MainScreen(onNewPost: () -> Unit, mainScreenViewModel: MainScreenViewModel) {
     val mainScreenNavController = rememberNavController()
     // 脚手架，上面下面的栏和
     val navigationBarItems = listOf(
@@ -127,7 +128,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel) {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(MainScreens.Home.route) {
-                Homepage()
+                Homepage(onClickNewPost = onNewPost)
             }
             composable(MainScreens.Message.route) {
                 MessagePage()
@@ -153,5 +154,5 @@ fun MyPage() {
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen(MainScreenViewModel())
+    MainScreen({}, MainScreenViewModel())
 }
