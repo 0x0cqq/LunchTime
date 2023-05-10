@@ -7,15 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import com.thss.lunchtime.common.SavableMutableSaveStateFlow
 
-
-
 @OptIn(SavedStateHandleSaveableApi::class)
 class SignUpViewModel(
     savedStateHandle: SavedStateHandle,
 ): ViewModel() {
 
     private var _uiState = SavableMutableSaveStateFlow(
-        savedStateHandle, "Key", SignUpUser()
+        savedStateHandle, "Key", SignUpUiState()
     )
     val uiState = _uiState.asStateFlow()
 

@@ -1,7 +1,7 @@
 package com.thss.lunchtime.signup
 
 
-data class SignUpUser(
+data class SignUpUiState(
     var name: String = "",
     var isNameValid: Boolean = false,
     var nameErrorMsg: String = "",

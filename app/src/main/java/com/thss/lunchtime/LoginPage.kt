@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LoginPage(onClickLogin : (username: String, password: String) -> Unit,
-              onClickSignup: (username: String, password: String) -> Unit) {
+              onClickSignup: () -> Unit) {
     BoxWithConstraints(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -71,7 +71,7 @@ fun LoginTitle(modifier: Modifier = Modifier) {
 
 @Composable
 fun LoginPanel(onClickLogin : (username: String, password: String) -> Unit,
-              onClickSignup: (username: String, password: String) -> Unit) {
+              onClickSignup: () -> Unit) {
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -141,7 +141,7 @@ fun LoginPanel(onClickLogin : (username: String, password: String) -> Unit,
             }
 
             OutlinedButton(
-                onClick = { onClickSignup(username, password) },
+                onClick = { onClickSignup() },
                 border = BorderStroke(1.dp, Color.Transparent),
                 modifier = Modifier
                     .padding(10.dp)
@@ -155,5 +155,5 @@ fun LoginPanel(onClickLogin : (username: String, password: String) -> Unit,
 @Preview
 @Composable
 fun LoginPagePreview() {
-    LoginPage(onClickLogin = { _, _ -> }, onClickSignup = { _, _ -> })
+    LoginPage(onClickLogin = { _, _ -> }, onClickSignup = { })
 }
