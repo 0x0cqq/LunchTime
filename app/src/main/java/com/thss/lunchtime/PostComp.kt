@@ -44,134 +44,143 @@ data class PostData(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostPreviewCard(msg: PostData)
+fun PostReviewCard(msg: PostData)
 {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp)
+    Card(modifier = Modifier
+        .fillMaxWidth()
+        .padding(5.dp)
     ) {
-        Column {
-            Row (modifier = Modifier.padding(all = 8.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.touxaingnvhai),
-                    contentDescription = "heading",
-                    modifier = Modifier
-                        // Set image size to 40dp
-                        .size(40.dp)
-                        // Clip image to shaped as a circle
-                        .clip(CircleShape)
-                )
-                // Add a horizontal space between the image and the column
-                Spacer(modifier = Modifier.width(8.dp))
+        PostMainBody(msg = msg)
+        LikeStarComment(msg = msg)
+    }
+}
 
-                Column {
-                    Text(text = msg.publisherID)
-                    // Add a vertical space between the publisher and date
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = SimpleDateFormat("yyyy-MM-dd HH:mm").format(msg.publishDate))
-                }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PostMainBody(msg: PostData)
+{
+    Column (modifier = Modifier.padding(bottom = 5.dp)) {
+        Row (modifier = Modifier.padding(all = 8.dp)) {
+            Image(
+                painter = painterResource(id = R.drawable.touxaingnvhai),
+                contentDescription = "heading",
+                modifier = Modifier
+                    // Set image size to 40dp
+                    .size(40.dp)
+                    // Clip image to shaped as a circle
+                    .clip(CircleShape)
+            )
+            // Add a horizontal space between the image and the column
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Column {
+                Text(text = msg.publisherID)
+                // Add a vertical space between the publisher and date
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = SimpleDateFormat("yyyy-MM-dd HH:mm").format(msg.publishDate))
             }
+        }
 
-            Column (modifier = Modifier.padding(8.dp)) {
-                Row (
-                    verticalAlignment = Alignment.CenterVertically,
+        Column (modifier = Modifier.padding(8.dp)) {
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                val color = when (msg.Type) {
+                    1 -> Color.Blue
+                    2 -> Color.Red
+                    3 -> Color.Yellow
+                    else -> Color.Gray
+                }
+
+                // Tag
+                Card(
+                    shape = RoundedCornerShape(15.dp),
+                    colors = CardDefaults.cardColors(containerColor = color),
                 ) {
-                    val color = when (msg.Type) {
-                        1 -> Color.Blue
-                        2 -> Color.Red
-                        3 -> Color.Yellow
-                        else -> Color.Gray
-                    }
-
-                    // Tag
-                    Card(
-                        shape = RoundedCornerShape(15.dp),
-                        colors = CardDefaults.cardColors(containerColor = color),
-                    ) {
-                        Text(
-                            text = msg.Tag,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    // title
                     Text(
-                        text = msg.title,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp,
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .padding(bottom = 4.dp)
+                        text = msg.Tag,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp)
                     )
                 }
 
-                // content
-                Text(text = msg.content)
-            }
+                Spacer(modifier = Modifier.width(4.dp))
 
-            // image show
-            val imagesResources : List<ImageBitmap> =
-                msg.graphResources.map {
-                    ImageBitmap.imageResource(id = it)
-                }
-            PostPhotoGrid(images = imagesResources, columnCount = 3)
-
-            // location Tag
-            Card(
-                shape = RoundedCornerShape(15.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray),
-                modifier = Modifier.padding(start = 12.dp)
-            ) {
+                // title
                 Text(
-                    text = msg.Tag,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp),
-                    fontSize = 12.sp
+                    text = msg.title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(bottom = 4.dp)
                 )
             }
 
-            // bottom like, star, comment
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Filled.FavoriteBorder, "Liked")
-                    }
-                    Text(text = msg.likeCnt.toString())
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Filled.StarBorder, "Stared")
-                    }
-                    Text(text = msg.starCnt.toString())
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Filled.ModeComment, "Comment")
-                    }
-                    Text(text = msg.commentCnt.toString())
-                }
-
-            }
-
+            // content
+            Text(text = msg.content)
         }
+
+        // image show
+        val imagesResources : List<ImageBitmap> =
+            msg.graphResources.map {
+                ImageBitmap.imageResource(id = it)
+            }
+        PostPhotoGrid(images = imagesResources, columnCount = 3)
+
+        // location Tag
+        Card(
+            shape = RoundedCornerShape(15.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.LightGray),
+            modifier = Modifier.padding(start = 12.dp)
+        ) {
+            Text(
+                text = msg.Tag,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp),
+                fontSize = 12.sp
+            )
+        }
+    }
+}
+
+@Composable
+fun LikeStarComment(msg: PostData) {
+    // bottom like, star, comment
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(Icons.Filled.FavoriteBorder, "Liked")
+            }
+            Text(text = msg.likeCnt.toString())
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(Icons.Filled.StarBorder, "Stared")
+            }
+            Text(text = msg.starCnt.toString())
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(Icons.Filled.ModeComment, "Comment")
+            }
+            Text(text = msg.commentCnt.toString())
+        }
+
     }
 }
 
@@ -235,8 +244,19 @@ fun PostPhotoGrid(columnCount: Int, images: List<ImageBitmap>, modifier: Modifie
 
 @Preview
 @Composable
+fun PostBodyPreview() {
+    PostMainBody(
+        msg = PostData(
+            Type = 3,
+            graphResources = arrayOf(R.drawable.wp, R.drawable.wp, R.drawable.wp)
+        )
+    )
+}
+
+@Preview
+@Composable
 fun PostPreviewCardPreview() {
-    PostPreviewCard(
+    PostReviewCard(
         msg = PostData(
             Type = 3,
             graphResources = arrayOf(R.drawable.wp, R.drawable.wp, R.drawable.wp)
