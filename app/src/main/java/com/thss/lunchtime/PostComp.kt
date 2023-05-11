@@ -201,7 +201,7 @@ fun <T> Grid(
     columnCount: Int,
     modifier: Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
-    itemContent: @Composable BoxScope.(T) -> Unit,
+    itemContent: @Composable BoxScope.(index: Int, content: T) -> Unit,
 ) {
     val size = data.count()
     val rows = if (size == 0) 0 else 1 + (size - 1) / columnCount
@@ -219,7 +219,7 @@ fun <T> Grid(
                         modifier = Modifier.weight(1F, fill = true),
                         propagateMinConstraints = true
                     ) {
-                        itemContent(data[itemIndex])
+                        itemContent(itemIndex, data[itemIndex])
                     }
                 } else {
                     Spacer(Modifier.weight(1F, fill = true))
@@ -242,9 +242,9 @@ fun PostPhotoGrid(columnCount: Int, images: List<ImageBitmap>, modifier: Modifie
         columnCount = columnCount,
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
+    ) { _, image ->
         Image(
-            bitmap = it,
+            bitmap = image,
             contentDescription = "",
             contentScale = ContentScale.Crop,
             modifier = Modifier.aspectRatio(1F),

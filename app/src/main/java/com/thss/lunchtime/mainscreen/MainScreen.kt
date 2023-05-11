@@ -24,48 +24,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
 
-@Composable
-fun HomePageTopBar() {
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    var selectedMenuIndex by rememberSaveable { mutableStateOf(0) }
-    val dropDownMenuItems = listOf("All", "My Following", "Divider", "Tag1", "Tag2")
-    Row (
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Box(
-            modifier = Modifier
-                .wrapContentSize(Alignment.TopStart),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(dropDownMenuItems[selectedMenuIndex])
-                IconButton(onClick = { expanded = true }) {
-                    Icon(Icons.Default.ExpandMore, contentDescription = "Expand More")
-                }
-            }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                dropDownMenuItems.forEachIndexed { index, name ->
-                    if (name == "Divider") {
-                        Divider()
-                    } else {
-                        DropdownMenuItem(
-                            text = { Text(name) },
-                            onClick = { /* TODO */ selectedMenuIndex = index; expanded = false },
-                            modifier = Modifier.wrapContentHeight()
-                        )
-                    }
-                }
-            }
-        }
-        IconButton(onClick = { /* TODO */}) {
-            Icon(Icons.Outlined.Search, contentDescription = "Search")
-        }
-    }
-}
-
 // https://stackoverflow.com/questions/66703448/how-to-disable-ripple-effect-when-clicking-in-jetpack-compose
 class NoRippleInteractionSource : MutableInteractionSource {
     override val interactions: Flow<Interaction> = emptyFlow()
