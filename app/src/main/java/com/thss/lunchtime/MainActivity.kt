@@ -1,5 +1,6 @@
 package com.thss.lunchtime
 
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -9,14 +10,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,12 +28,16 @@ import com.thss.lunchtime.mainscreen.MainScreen
 import com.thss.lunchtime.mainscreen.MainScreenViewModel
 import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.newpost.NewPostPage
+import com.thss.lunchtime.newpost.NewPostViewModel
 import com.thss.lunchtime.signup.SignUpPage
 import com.thss.lunchtime.signup.SignUpViewModel
-
 import com.thss.lunchtime.ui.theme.LunchTimeTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.ByteArrayOutputStream
 
 @RequiresApi(Build.VERSION_CODES.R)
 class MainActivity : ComponentActivity() {
@@ -67,6 +71,7 @@ class MainActivity : ComponentActivity() {
 fun Application(modifier: Modifier = Modifier) {
     val signupViewModel : SignUpViewModel = viewModel()
     val mainScreenViewModel : MainScreenViewModel = viewModel()
+    val newPostViewModel : NewPostViewModel = viewModel()
     val applicationNavController = rememberNavController()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -90,7 +95,12 @@ fun Application(modifier: Modifier = Modifier) {
                                 8.coerceAtLeast(message.length)
                             ).show()
                             delay(1000)
-                            applicationNavController.navigate("main", NavOptions.Builder().setPopUpTo("login", true).build())
+                            if(response.status) {
+                                applicationNavController.navigate(
+                                    "main",
+                                    NavOptions.Builder().setPopUpTo("login", true).build()
+                                )
+                            }
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())
                             Toast.makeText(
@@ -149,7 +159,9 @@ fun Application(modifier: Modifier = Modifier) {
                                 8.coerceAtLeast(message.length)
                             ).show()
                             delay(1000)
-                            applicationNavController.navigate("login")
+                            if( response.status ) {
+                                applicationNavController.navigate("login")
+                            }
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())
                             Toast.makeText(
@@ -166,7 +178,54 @@ fun Application(modifier: Modifier = Modifier) {
             NewPostPage(
                 onClickBack = {
                     applicationNavController.popBackStack()
-                }
+                },
+                onClickSend = { state ->
+                    scope.launch {
+//                        try {
+                            val images = state.selectedImgUris.mapIndexed { index, it ->
+                                val stream = ByteArrayOutputStream()
+                                it.asAndroidBitmap()
+                                    .compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                                val requestBody = RequestBody.create(
+                                    MediaType.get("image/*"),
+                                    stream.toByteArray()
+                                )
+                                MultipartBody.Part.createFormData(
+                                    "files[]",
+                                    "uploaded-$index.jpeg",
+                                    requestBody
+                                )
+                            }
+
+                            val response = LunchTimeApi.retrofitService.post(
+                                RequestBody.create(MediaType.get("text/plain"), "Steve"),
+                                RequestBody.create(MediaType.get("text/plain"), state.title),
+                                RequestBody.create(MediaType.get("text/plain"), state.content),
+                                RequestBody.create(MediaType.get("text/plain"), state.location),
+                                RequestBody.create(MediaType.get("text/plain"), state.tag),
+                                images
+                            )
+
+                            val message = if( response.status ){
+                                "发布成功！" + response.postId
+                            } else {
+                                "发布失败," + response.message
+                            }
+                            Toast.makeText(
+                                context, message,
+                                8.coerceAtLeast(message.length)
+                            ).show()
+                            delay(1000)
+//                        } catch ( e : Exception) {
+//                            Log.e("LunchTime", e.toString())
+//                            Toast.makeText(
+//                                context, "网络错误",
+//                                8.coerceAtLeast("网络错误".length)
+//                            ).show()
+//                        }
+                    }
+                },
+                newPostViewModel
             )
         }
         composable("main") {

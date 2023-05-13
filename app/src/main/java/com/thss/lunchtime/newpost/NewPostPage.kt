@@ -72,7 +72,9 @@ import com.thss.lunchtime.common.LocationUtils
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
-fun NewPostPage(onClickBack: () -> Unit = {}, onClickSend : () -> Unit = {}, newPostViewModel: NewPostViewModel = viewModel()) {
+fun NewPostPage(onClickBack: () -> Unit = {}, onClickSend : ( newPostData : NewPostData) -> Unit = { _ -> }, newPostViewModel: NewPostViewModel = viewModel()) {
+    val uiState = newPostViewModel.uiState.collectAsState()
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -98,7 +100,9 @@ fun NewPostPage(onClickBack: () -> Unit = {}, onClickSend : () -> Unit = {}, new
                 },
                 actions = {
                     IconButton(
-                        onClick = onClickSend,
+                        onClick = {
+                            onClickSend(uiState.value)
+                        },
                     ) {
                         Icon(
                             Icons.Outlined.Send,
