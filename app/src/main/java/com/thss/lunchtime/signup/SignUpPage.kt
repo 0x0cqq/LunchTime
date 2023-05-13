@@ -2,6 +2,7 @@ package com.thss.lunchtime.signup
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
@@ -125,8 +127,10 @@ fun CountdownButton(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpPage(
+    onBackClick: () -> Unit,
     onRequestEmailCodeClick: (email: String) -> Unit,
     onSignUpClick: (userData: SignUpUiState) -> Unit,
     viewModel: SignUpViewModel
@@ -136,171 +140,185 @@ fun SignUpPage(
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var confirmPasswordVisible by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-    // 用户名
-    LazyColumn (
-        modifier = Modifier.padding(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        item {
-            Text(
-                "Sign Up",
-                modifier = Modifier.padding(10.dp),
-                style = MaterialTheme.typography.titleLarge,
-            )
-        }
-        item {
-            OutlineTextFieldWithErrorView(
-                value = uiState.name,
-                onValueChange = { viewModel.inputUsername(it) },
-                label = { Text("Username") },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                leadingIcon = {
-                    Icon(Icons.Outlined.Person, "Username")
-                },
-                singleLine = true,
-                keyboardActions = KeyboardActions {
-                    focusManager.moveFocus(FocusDirection.Next)
-                },
-                isError = !uiState.isNameValid,
-                errorMsg = uiState.nameErrorMsg
-            )
-        }
-        // 密码输入栏
-        item {
-            OutlineTextFieldWithErrorView(
-                value = uiState.password,
-                onValueChange = { viewModel.inputPassword(it) },
-                label = { Text("Password") },
-                visualTransformation =
-                if (passwordVisible) VisualTransformation.None
-                else PasswordVisualTransformation(),
-                modifier = Modifier
-                    .fillMaxWidth(),
-                leadingIcon = {
-                    Icon(Icons.Outlined.Lock, "Password")
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                keyboardActions = KeyboardActions {
-                    focusManager.moveFocus(FocusDirection.Next)
-                },
-                isError = !uiState.isPasswordValid,
-                trailingIcon = {
-                    val image = if (passwordVisible)
-                        Icons.Filled.Visibility
-                    else Icons.Filled.VisibilityOff
-
-                    val description = if (passwordVisible) "Hide password" else "Show password"
-
-                    IconButton(onClick = { passwordVisible = !passwordVisible }){
-                        Icon(imageVector = image, description)
+    Scaffold (
+        modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp),
+        topBar = {
+            SmallTopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.Outlined.ArrowBack, "Back")
                     }
                 },
-                errorMsg = uiState.passwordErrorMsg
-
+                title = {
+                    Text(
+                        "Sign Up"
+                    )
+                },
             )
-        }
-        // confirm password
-        item {
-            OutlineTextFieldWithErrorView(
-                value = uiState.confirmPassword,
-                onValueChange = { viewModel.inputConfirmPassword(it) },
-                label = { Text("Confirm Password") },
-                visualTransformation =
-                if (confirmPasswordVisible) VisualTransformation.None
-                else PasswordVisualTransformation(),
-                modifier = Modifier
-                    .fillMaxWidth(),
-                leadingIcon = {
-                    Icon(Icons.Outlined.Lock, "Password")
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                keyboardActions = KeyboardActions {
-                    focusManager.moveFocus(FocusDirection.Next)
-                },
-                isError = !uiState.isConfirmPasswordValid,
-                trailingIcon = {
-                    val image = if (confirmPasswordVisible)
-                        Icons.Filled.Visibility
-                    else Icons.Filled.VisibilityOff
+        },
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier.padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-                    val description = if (confirmPasswordVisible) "Hide password" else "Show password"
+            item {
 
-                    IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }){
-                        Icon(imageVector = image, description)
-                    }
-                },
-                errorMsg = uiState.confirmPasswordErrorMsg
-
-            )
-        }
-
-        // email
-        item {
-            OutlineTextFieldWithErrorView(
-                value = uiState.email,
-                onValueChange = { viewModel.inputEmail(it) },
-                label = { Text("Email") },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                leadingIcon = {
-                    Icon(Icons.Outlined.Email, "Email")
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                singleLine = true,
-                keyboardActions = KeyboardActions {
-                    focusManager.moveFocus(FocusDirection.Next)
-                },
-                isError = !uiState.isEmailValid,
-                errorMsg = uiState.emailErrorMsg
-            )
-        }
-        // email validation code
-        item {
-            OutlineTextFieldWithErrorView(
-                value = uiState.emailValidationCode,
-                onValueChange = { viewModel.inputEmailValidationCode(it) },
-                label = { Text("Email Validation Code") },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                leadingIcon = {
-                    Icon(Icons.Outlined.Code, "Code")
-                },
-                trailingIcon = {
-                    CountdownButton(
-                        onClick = {
-                            onRequestEmailCodeClick(uiState.email)
-                        },
-                        modifier = Modifier.padding(end = 5.dp),
-                        shape = RoundedCornerShape(10.dp)
-                    ) {
-                        Text("Send")
-                    }
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true,
-                keyboardActions = KeyboardActions {
-                    focusManager.clearFocus()
-                },
-                isError = !uiState.isEmailValidationCodeValid,
-                errorMsg = uiState.emailValidationCodeErrorMsg
-            )
-        }
-        item {
-            Button(
-                onClick = {
-                    onSignUpClick(uiState)
-                },
-                modifier = Modifier.padding(10.dp),
-                shape = RoundedCornerShape(10.dp),
-                enabled = viewModel.isEnabledRegisterButton.value
-            ) {
-                Text(
-                    "Sign Up"
+            }
+            item {
+                OutlineTextFieldWithErrorView(
+                    value = uiState.name,
+                    onValueChange = { viewModel.inputUsername(it) },
+                    label = { Text("Username") },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(Icons.Outlined.Person, "Username")
+                    },
+                    singleLine = true,
+                    keyboardActions = KeyboardActions {
+                        focusManager.moveFocus(FocusDirection.Next)
+                    },
+                    isError = !uiState.isNameValid,
+                    errorMsg = uiState.nameErrorMsg
                 )
+            }
+            // 密码输入栏
+            item {
+                OutlineTextFieldWithErrorView(
+                    value = uiState.password,
+                    onValueChange = { viewModel.inputPassword(it) },
+                    label = { Text("Password") },
+                    visualTransformation =
+                    if (passwordVisible) VisualTransformation.None
+                    else PasswordVisualTransformation(),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(Icons.Outlined.Lock, "Password")
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    keyboardActions = KeyboardActions {
+                        focusManager.moveFocus(FocusDirection.Next)
+                    },
+                    isError = !uiState.isPasswordValid,
+                    trailingIcon = {
+                        val image = if (passwordVisible)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        val description = if (passwordVisible) "Hide password" else "Show password"
+
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = image, description)
+                        }
+                    },
+                    errorMsg = uiState.passwordErrorMsg
+
+                )
+            }
+            // confirm password
+            item {
+                OutlineTextFieldWithErrorView(
+                    value = uiState.confirmPassword,
+                    onValueChange = { viewModel.inputConfirmPassword(it) },
+                    label = { Text("Confirm Password") },
+                    visualTransformation =
+                    if (confirmPasswordVisible) VisualTransformation.None
+                    else PasswordVisualTransformation(),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(Icons.Outlined.Lock, "Password")
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    keyboardActions = KeyboardActions {
+                        focusManager.moveFocus(FocusDirection.Next)
+                    },
+                    isError = !uiState.isConfirmPasswordValid,
+                    trailingIcon = {
+                        val image = if (confirmPasswordVisible)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        val description =
+                            if (confirmPasswordVisible) "Hide password" else "Show password"
+
+                        IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                            Icon(imageVector = image, description)
+                        }
+                    },
+                    errorMsg = uiState.confirmPasswordErrorMsg
+
+                )
+            }
+
+            // email
+            item {
+                OutlineTextFieldWithErrorView(
+                    value = uiState.email,
+                    onValueChange = { viewModel.inputEmail(it) },
+                    label = { Text("Email") },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(Icons.Outlined.Email, "Email")
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    singleLine = true,
+                    keyboardActions = KeyboardActions {
+                        focusManager.moveFocus(FocusDirection.Next)
+                    },
+                    isError = !uiState.isEmailValid,
+                    errorMsg = uiState.emailErrorMsg
+                )
+            }
+            // email validation code
+            item {
+                OutlineTextFieldWithErrorView(
+                    value = uiState.emailValidationCode,
+                    onValueChange = { viewModel.inputEmailValidationCode(it) },
+                    label = { Text("Email Validation Code") },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(Icons.Outlined.Code, "Code")
+                    },
+                    trailingIcon = {
+                        CountdownButton(
+                            onClick = {
+                                onRequestEmailCodeClick(uiState.email)
+                            },
+                            modifier = Modifier.padding(end = 5.dp),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text("Send")
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    keyboardActions = KeyboardActions {
+                        focusManager.clearFocus()
+                    },
+                    isError = !uiState.isEmailValidationCodeValid,
+                    errorMsg = uiState.emailValidationCodeErrorMsg
+                )
+            }
+            item {
+                Button(
+                    onClick = {
+                        onSignUpClick(uiState)
+                    },
+                    modifier = Modifier.padding(10.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    enabled = viewModel.isEnabledRegisterButton.value
+                ) {
+                    Text(
+                        "Sign Up"
+                    )
+                }
             }
         }
     }

@@ -14,7 +14,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 
 private const val BASE_URL =
-    "http://lunchtime.cqqqwq.com:8000"
+    "http://82.156.30.206:8000"
 
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -33,6 +33,8 @@ interface LunchTimeApiService {
     @FormUrlEncoded
     @POST("/api/login")
     suspend fun login(@Field("name") name: String, @Field("password") password: String): Response
+
+
 
     @FormUrlEncoded
     @POST("/api/register")

@@ -17,6 +17,11 @@ class HomepageViewModel : ViewModel() {
             state.copy(selectedIndex = index)
         }
     }
+
+    fun refresh() {
+        // TODO
+    }
+
     fun addRandomPost() {
         _uiState.update { state ->
             state.copy(postDataList = state.postDataList + PostData(title = "test", content = Random.nextInt().toString()))

@@ -3,6 +3,7 @@ package com.thss.lunchtime
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -24,6 +25,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.mainscreen.MainScreen
 import com.thss.lunchtime.mainscreen.MainScreenViewModel
 import com.thss.lunchtime.network.LunchTimeApi
@@ -33,15 +35,16 @@ import com.thss.lunchtime.signup.SignUpPage
 import com.thss.lunchtime.signup.SignUpViewModel
 import com.thss.lunchtime.ui.theme.LunchTimeTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
+import java.security.MessageDigest
 
 @RequiresApi(Build.VERSION_CODES.R)
 class MainActivity : ComponentActivity() {
-    val mainScreenViewModel : MainScreenViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 //            window.setDecorFitsSystemWindows(false)
@@ -75,16 +78,27 @@ fun Application(modifier: Modifier = Modifier) {
     val applicationNavController = rememberNavController()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val userData = context.userPreferencesStore
+
     NavHost(
         navController = applicationNavController,
-        startDestination = "main"
+        startDestination = "login"
     ) {
         composable("login") {
             LoginPage(
                 onClickLogin = { name, password ->
                     scope.launch {
                         try {
-                            val response = LunchTimeApi.retrofitService.login(name, password)
+                            Log.d("Lunchtime", password)
+
+                            val passwordHashed = Base64.encodeToString(MessageDigest.getInstance("SHA-256").digest(password.toByteArray()), Base64.DEFAULT)
+                            Log.d("Lunchtime", passwordHashed)
+
+                            val response = LunchTimeApi.retrofitService.login(
+                                name = name,
+                                password = passwordHashed
+                            )
+
                             val message = if( response.status ){
                                 "登录成功"
                             } else {
@@ -100,6 +114,9 @@ fun Application(modifier: Modifier = Modifier) {
                                     "main",
                                     NavOptions.Builder().setPopUpTo("login", true).build()
                                 )
+                                userData.updateData { userData ->
+                                    userData.toBuilder().setUserName(name).build()
+                                }
                             }
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())
@@ -117,6 +134,9 @@ fun Application(modifier: Modifier = Modifier) {
         }
         composable("register") {
             SignUpPage(
+                onBackClick = {
+                    applicationNavController.popBackStack()
+                },
                 onRequestEmailCodeClick = { address ->
                     scope.launch {
                         try {
@@ -143,10 +163,12 @@ fun Application(modifier: Modifier = Modifier) {
                 onSignUpClick = { state ->
                     scope.launch {
                         try {
+                            val passwordHashed = Base64.encodeToString(MessageDigest.getInstance("SHA-256").digest(state.password.toByteArray()), Base64.DEFAULT)
+
                             val response =
                                 LunchTimeApi.retrofitService.register(
                                     state.name,
-                                    state.password,
+                                    passwordHashed,
                                     state.email,
                                     state.emailValidationCode)
                             val message = if( response.status ){
@@ -181,7 +203,7 @@ fun Application(modifier: Modifier = Modifier) {
                 },
                 onClickSend = { state ->
                     scope.launch {
-//                        try {
+                        try {
                             val images = state.selectedImgUris.mapIndexed { index, it ->
                                 val stream = ByteArrayOutputStream()
                                 it.asAndroidBitmap()
@@ -191,14 +213,16 @@ fun Application(modifier: Modifier = Modifier) {
                                     stream.toByteArray()
                                 )
                                 MultipartBody.Part.createFormData(
-                                    "files[]",
+                                    "picture",
                                     "uploaded-$index.jpeg",
                                     requestBody
                                 )
                             }
 
+                            val userName = userData.data.first().userName
+                            Log.d("LunchTime", "Current Username:$userName")
                             val response = LunchTimeApi.retrofitService.post(
-                                RequestBody.create(MediaType.get("text/plain"), "Steve"),
+                                RequestBody.create(MediaType.get("text/plain"), userName),
                                 RequestBody.create(MediaType.get("text/plain"), state.title),
                                 RequestBody.create(MediaType.get("text/plain"), state.content),
                                 RequestBody.create(MediaType.get("text/plain"), state.location),
@@ -207,7 +231,7 @@ fun Application(modifier: Modifier = Modifier) {
                             )
 
                             val message = if( response.status ){
-                                "发布成功！" + response.postId
+                                "发布成功, postID: " + response.postId
                             } else {
                                 "发布失败," + response.message
                             }
@@ -216,13 +240,16 @@ fun Application(modifier: Modifier = Modifier) {
                                 8.coerceAtLeast(message.length)
                             ).show()
                             delay(1000)
-//                        } catch ( e : Exception) {
-//                            Log.e("LunchTime", e.toString())
-//                            Toast.makeText(
-//                                context, "网络错误",
-//                                8.coerceAtLeast("网络错误".length)
-//                            ).show()
-//                        }
+                            if( response.status ) {
+                                applicationNavController.navigate("main")
+                            }
+                        } catch ( e : Exception) {
+                            Log.e("LunchTime", e.toString())
+                            Toast.makeText(
+                                context, "网络错误",
+                                8.coerceAtLeast("网络错误".length)
+                            ).show()
+                        }
                     }
                 },
                 newPostViewModel

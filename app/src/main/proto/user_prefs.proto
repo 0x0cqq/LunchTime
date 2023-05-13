@@ -1,0 +1,7 @@
+syntax = "proto3";
+option java_package = "com.thss.lunchtime.datastore";
+option java_multiple_files = true;
+
+message UserPreferences {
+  string userName = 1;
+}
