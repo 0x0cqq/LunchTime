@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.mainscreen.homepage.Homepage
+import com.thss.lunchtime.mainscreen.messagepage.Messagepage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -89,7 +90,7 @@ fun MainScreen(onNewPost: () -> Unit, mainScreenViewModel: MainScreenViewModel) 
                 Homepage(onClickNewPost = onNewPost)
             }
             composable(MainScreens.Message.route) {
-                MessagePage()
+                Messagepage()
             }
             composable(MainScreens.My.route) {
                 MyPage()
@@ -98,11 +99,6 @@ fun MainScreen(onNewPost: () -> Unit, mainScreenViewModel: MainScreenViewModel) 
     }
 }
 
-
-@Composable
-fun MessagePage() {
-    Text("Message page")
-}
 
 @Composable
 fun MyPage() {
