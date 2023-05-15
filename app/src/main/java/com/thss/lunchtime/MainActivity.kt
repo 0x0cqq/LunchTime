@@ -8,7 +8,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -106,7 +105,7 @@ fun Application(modifier: Modifier = Modifier) {
                             }
                             Toast.makeText(
                                 context, message,
-                                8.coerceAtLeast(message.length)
+                                Toast.LENGTH_SHORT
                             ).show()
                             delay(1000)
                             if(response.status) {
@@ -122,7 +121,7 @@ fun Application(modifier: Modifier = Modifier) {
                             Log.e("LunchTime", e.toString())
                             Toast.makeText(
                                 context, "网络错误",
-                                8.coerceAtLeast("网络错误".length)
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
@@ -149,13 +148,13 @@ fun Application(modifier: Modifier = Modifier) {
                             }
                             Toast.makeText(
                                 context, message,
-                                8.coerceAtLeast(message.length)
+                                Toast.LENGTH_SHORT
                             ).show()
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())
                             Toast.makeText(
                                 context, "网络错误",
-                                8.coerceAtLeast("网络错误".length)
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
@@ -178,7 +177,7 @@ fun Application(modifier: Modifier = Modifier) {
                             }
                             Toast.makeText(
                                 context, message,
-                                8.coerceAtLeast(message.length)
+                                Toast.LENGTH_SHORT
                             ).show()
                             delay(1000)
                             if( response.status ) {
@@ -188,7 +187,7 @@ fun Application(modifier: Modifier = Modifier) {
                             Log.e("LunchTime", e.toString())
                             Toast.makeText(
                                 context, "网络错误",
-                                8.coerceAtLeast("网络错误".length)
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
@@ -237,7 +236,7 @@ fun Application(modifier: Modifier = Modifier) {
                             }
                             Toast.makeText(
                                 context, message,
-                                8.coerceAtLeast(message.length)
+                                Toast.LENGTH_SHORT
                             ).show()
                             delay(1000)
                             if( response.status ) {
@@ -247,7 +246,7 @@ fun Application(modifier: Modifier = Modifier) {
                             Log.e("LunchTime", e.toString())
                             Toast.makeText(
                                 context, "网络错误",
-                                8.coerceAtLeast("网络错误".length)
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }

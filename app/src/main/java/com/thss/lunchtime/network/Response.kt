@@ -8,3 +8,28 @@ data class Response(
     val status: Boolean,
     val message: String
 )
+
+@Serializable
+data class ResponseWithPostID(
+    val status: Boolean,
+    val message: String,
+    @SerialName("post_id")
+    val postId: Int? = null
+)
+
+@Serializable
+data class ResponseWithPostDetail(
+    val status: Boolean,
+    val message: String,
+    val post: Post,
+    @SerialName("comment")
+    val comments: List<Comment>
+)
+
+
+@Serializable
+data class ResponseWithPostList (
+    var status: Boolean = false,
+    var message: String = "",
+    var posts: List<Post> = listOf()
+)

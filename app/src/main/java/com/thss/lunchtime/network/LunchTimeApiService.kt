@@ -9,6 +9,7 @@ import okhttp3.RequestBody
 import retrofit2.Retrofit
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -35,6 +36,13 @@ interface LunchTimeApiService {
     suspend fun login(@Field("name") name: String, @Field("password") password: String): Response
 
 
+    @FormUrlEncoded
+    @GET("/api/post_detail")
+    suspend fun getPostDetail(@Field("user_name") name : String, @Field("post_id") postID: Int) : ResponseWithPostDetail
+
+    @FormUrlEncoded
+    @GET("/api/posts")
+    suspend fun getPostList(@Field("user_name") name : String, @Field("type") type: Int) : ResponseWithPostList
 
     @FormUrlEncoded
     @POST("/api/register")
@@ -48,7 +56,7 @@ interface LunchTimeApiService {
     suspend fun post(@Part("user_name") userName: RequestBody,
                      @Part("title") title: RequestBody, @Part("content") content: RequestBody,
                      @Part("location") location: RequestBody, @Part("tag") tag: RequestBody,
-                     @Part images: List<MultipartBody.Part>): ResponseWithPost
+                     @Part images: List<MultipartBody.Part>): ResponseWithPostID
 }
 
 object LunchTimeApi {
