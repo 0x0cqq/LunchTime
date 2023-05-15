@@ -36,9 +36,9 @@ import com.thss.lunchtime.ui.theme.LunchTimeTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
 
@@ -81,7 +81,8 @@ fun Application(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = applicationNavController,
-        startDestination = "login"
+        startDestination = "login",
+        modifier = modifier
     ) {
         composable("login") {
             LoginPage(
@@ -207,10 +208,10 @@ fun Application(modifier: Modifier = Modifier) {
                                 val stream = ByteArrayOutputStream()
                                 it.asAndroidBitmap()
                                     .compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                                val requestBody = RequestBody.create(
-                                    MediaType.get("image/*"),
-                                    stream.toByteArray()
-                                )
+                                val requestBody = stream.toByteArray()
+                                    .toRequestBody(
+                                        "image/*".toMediaType()
+                                    )
                                 MultipartBody.Part.createFormData(
                                     "picture",
                                     "uploaded-$index.jpeg",
@@ -221,11 +222,11 @@ fun Application(modifier: Modifier = Modifier) {
                             val userName = userData.data.first().userName
                             Log.d("LunchTime", "Current Username:$userName")
                             val response = LunchTimeApi.retrofitService.post(
-                                RequestBody.create(MediaType.get("text/plain"), userName),
-                                RequestBody.create(MediaType.get("text/plain"), state.title),
-                                RequestBody.create(MediaType.get("text/plain"), state.content),
-                                RequestBody.create(MediaType.get("text/plain"), state.location),
-                                RequestBody.create(MediaType.get("text/plain"), state.tag),
+                                userName.toRequestBody("text/plain".toMediaType()),
+                                state.title.toRequestBody("text/plain".toMediaType()),
+                                state.content.toRequestBody("text/plain".toMediaType()),
+                                state.location.toRequestBody("text/plain".toMediaType()),
+                                state.tag.toRequestBody("text/plain".toMediaType()),
                                 images
                             )
 
