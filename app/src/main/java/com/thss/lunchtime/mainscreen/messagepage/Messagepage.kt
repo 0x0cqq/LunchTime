@@ -76,7 +76,6 @@ fun MessagePageTopBar() {
     Column(
         Modifier
             .fillMaxWidth()
-            .background(Color.White)
     ) {
         Text(
             "Notification",
@@ -89,7 +88,7 @@ fun MessagePageTopBar() {
                 fontWeight = FontWeight.Bold)
         )
         Divider(
-            color = Color.LightGray,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
             thickness = 1.dp,
             modifier = Modifier.fillMaxWidth()
         )
