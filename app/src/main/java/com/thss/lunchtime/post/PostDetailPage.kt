@@ -33,12 +33,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.thss.lunchtime.CommentComp
 import com.thss.lunchtime.Like
 import com.thss.lunchtime.LikeBtn
 import com.thss.lunchtime.Star
 import com.thss.lunchtime.StarBtn
-import com.thss.lunchtime.commentData
+import com.thss.lunchtime.component.CommentComp
+import com.thss.lunchtime.component.PostMainBody
+import com.thss.lunchtime.component.PostType
+import com.thss.lunchtime.component.commentData
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)

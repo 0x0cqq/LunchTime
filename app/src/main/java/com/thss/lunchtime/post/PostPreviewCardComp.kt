@@ -9,6 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import com.thss.lunchtime.component.LikeStarComment
+import com.thss.lunchtime.component.PostMainBody
+import com.thss.lunchtime.component.PostType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -13,10 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.thss.lunchtime.component.InfoComp
+import com.thss.lunchtime.component.InfoData
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun OtherInfoPage(msg: InfoData) {
+fun MyInfoPage(msg: InfoData) {
     Scaffold(
         topBar = {
             SmallTopAppBar(
@@ -32,7 +34,7 @@ fun OtherInfoPage(msg: InfoData) {
             )
         }
     ) {
-            paddingValues -> Column(
+        paddingValues -> Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(paddingValues)
@@ -54,19 +56,16 @@ fun OtherInfoPage(msg: InfoData) {
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp)
         ) {
-            Text(text = "TA的动态", fontSize = 14.sp)
+            Text(text = "我的动态", fontSize = 14.sp)
 
             Icon(Icons.Rounded.Sort, contentDescription = null, Modifier.size(18.dp))
         }
-
-        //TODO: LazyColumn
-
-    }
+    } 
     }
 }
 
 @Preview
 @Composable
-fun OtherInfoPagePreview() {
-    MyInfoPage(msg = InfoData(InfoType = 2, relation = 3))
+fun MyInfoPagePreview() {
+    MyInfoPage(msg = InfoData(InfoType = 1))
 }

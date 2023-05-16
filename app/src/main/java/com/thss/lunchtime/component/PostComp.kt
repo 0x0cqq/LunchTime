@@ -1,4 +1,4 @@
-package com.thss.lunchtime.post
+package com.thss.lunchtime.component
 
 import android.net.Uri
 import androidx.compose.runtime.*
@@ -31,6 +31,7 @@ import com.thss.lunchtime.LikeBtn
 import com.thss.lunchtime.R
 import com.thss.lunchtime.Star
 import com.thss.lunchtime.StarBtn
+import com.thss.lunchtime.post.PostData
 import com.thss.lunchtime.ui.theme.Purple40
 import java.text.SimpleDateFormat
 import java.util.Date

@@ -62,9 +62,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.thss.lunchtime.post.Grid
 import com.thss.lunchtime.R
 import com.thss.lunchtime.common.LocationUtils
+import com.thss.lunchtime.component.Grid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
