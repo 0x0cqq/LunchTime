@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +28,11 @@ fun Messagepage(messageViewModel: MessageViewModel = viewModel()) {
     val uiState = messageViewModel.uiState.collectAsState()
     val tabs = listOf(MessageTabs.Comment, MessageTabs.Like, MessageTabs.Chat)
     val context = LocalContext.current
+
+    LaunchedEffect(uiState.value.selectedIndex) {
+       messageViewModel.refresh(context)
+    }
+
     Scaffold(
         topBar = {
             Column {
