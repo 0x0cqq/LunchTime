@@ -26,27 +26,14 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+import com.thss.lunchtime.Like
+import com.thss.lunchtime.LikeBtn
 import com.thss.lunchtime.R
+import com.thss.lunchtime.Star
+import com.thss.lunchtime.StarBtn
 import com.thss.lunchtime.ui.theme.Purple40
 import java.text.SimpleDateFormat
 import java.util.Date
-
-data class PostData(
-    val publisherAvatar: String = "User_default",
-    val publisherID: String = "User_default",
-    val publishDate: Date = Date(),
-    val postID: Int = 0,
-    val title: String = "title",
-    val content: String = "content",
-    val commentCnt: Int = 0,
-    var likeCnt: Int = 0,
-    val starCnt: Int = 0,
-    var isLiked: Boolean = false,
-    val Type: Int = -1,
-    val Tag: String = "Tag",
-    val graphResources : Array<Int> = arrayOf(),
-    val publisherStatus: Int = 2,
-)
 
 data class PostType(
     val Detailed: Boolean = false
