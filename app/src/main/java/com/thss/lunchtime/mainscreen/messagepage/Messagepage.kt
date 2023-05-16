@@ -4,6 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -21,13 +25,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.noticeData
 import com.thss.lunchtime.noticePreviewCard
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 @Preview
 fun Messagepage(messageViewModel: MessageViewModel = viewModel()) {
     val uiState = messageViewModel.uiState.collectAsState()
     val tabs = listOf(MessageTabs.Comment, MessageTabs.Like, MessageTabs.Chat)
     val context = LocalContext.current
+
+    val state = rememberPullRefreshState(refreshing = uiState.value.isRefreshing, onRefresh = {
+        messageViewModel.refresh(context)
+    })
 
     LaunchedEffect(uiState.value.selectedIndex) {
        messageViewModel.refresh(context)
@@ -56,19 +64,15 @@ fun Messagepage(messageViewModel: MessageViewModel = viewModel()) {
         },
         modifier = Modifier.padding(10.dp),
     ) {innerPadding ->
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
-            item {
-                Button(
-                    onClick = { messageViewModel.refresh(context) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Refresh")
+        Box ( modifier = Modifier.padding(innerPadding).pullRefresh(state) ) {
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                val noticeDataList: List<noticeData> =
+                    uiState.value.NoticeDataLists[uiState.value.selectedIndex]
+                items(noticeDataList) { noticeData ->
+                    noticePreviewCard(msg = noticeData)
                 }
             }
-            val noticeDataList: List<noticeData> = uiState.value.NoticeDataLists[uiState.value.selectedIndex]
-            items(noticeDataList) { noticeData ->
-                noticePreviewCard(msg = noticeData)
-            }
+            PullRefreshIndicator(uiState.value.isRefreshing, state, Modifier.align(Alignment.TopCenter))
         }
     }
 }

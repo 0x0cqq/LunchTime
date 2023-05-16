@@ -28,6 +28,9 @@ class HomepageViewModel : ViewModel() {
 
     fun refresh(context: Context) {
         viewModelScope.launch {
+            _uiState.update {
+                it.copy(isRefreshing = true)
+            }
             val userData = context.userPreferencesStore
             try{
                 val response = LunchTimeApi.retrofitService.getPostList(
@@ -49,6 +52,9 @@ class HomepageViewModel : ViewModel() {
             } catch (e : IOException) {
                 e.printStackTrace()
                 Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+            _uiState.update {
+                it.copy(isRefreshing = false)
             }
         }
     }

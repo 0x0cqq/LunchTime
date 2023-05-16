@@ -27,6 +27,9 @@ class MessageViewModel : ViewModel() {
 
     fun refresh(context: Context) {
         viewModelScope.launch{
+            _uiState.update {
+                it.copy(isRefreshing = true)
+            }
             val userData = context.userPreferencesStore
             try{
                 val response = LunchTimeApi.retrofitService.getNotice(userData.data.first().userName, uiState.value.selectedIndex + 1)
@@ -48,6 +51,9 @@ class MessageViewModel : ViewModel() {
             } catch (e : IOException){
                 e.printStackTrace()
                 Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+            _uiState.update {
+                it.copy(isRefreshing = false)
             }
         }
     }
