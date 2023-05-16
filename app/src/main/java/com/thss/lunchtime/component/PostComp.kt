@@ -1,9 +1,11 @@
 package com.thss.lunchtime.component
 
 import android.net.Uri
+import androidx.compose.animation.animateContentSize
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -118,8 +121,23 @@ fun PostMainBody(msg: PostData, type: PostType)
                 )
             }
 
+            var expandcontent = remember {
+                mutableStateOf(false)
+            }
+
             // content
-            Text(text = msg.content)
+            Box(modifier = Modifier.animateContentSize()) {
+                Text(
+                    text = msg.content,
+                    maxLines = if (expandcontent.value) 100 else 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Text(
+                text = if (expandcontent.value) "收起" else "展开",
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.clickable { expandcontent.value = !expandcontent.value }
+            )
         }
 
         // image show
@@ -236,6 +254,7 @@ fun AsyncPostPhotoGrid(columnCount: Int, imageUris: List<Uri>, modifier: Modifie
 fun PostBodyPreview() {
     PostMainBody(
         msg = PostData(
+            content = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             Type = 3,
             graphResources = listOf()
         ),

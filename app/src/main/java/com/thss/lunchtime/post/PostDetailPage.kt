@@ -92,7 +92,9 @@ fun PostDetailedPage(msg: PostData, type: PostType, commentList: ArrayList<comme
                             modifier = Modifier.padding(horizontal = 10.dp)
                         ) {
                             Box(
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .animateContentSize { initialValue, targetValue ->  },
                                 contentAlignment = Alignment.CenterStart
                             ) {
                                 innerTextField()
