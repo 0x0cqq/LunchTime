@@ -28,7 +28,7 @@ data class Like(
 )
 
 @Composable
-fun LikeBtn(like: Like) {
+fun LikeBtn(onClickLike: () -> Unit, like: Like) {
     var change by remember{ mutableStateOf(false) }
     var flag by remember{ mutableStateOf(like.isLike) }
 
@@ -45,6 +45,7 @@ fun LikeBtn(like: Like) {
                 change = true
                 like.isLike = !like.isLike
                 flag = !flag
+                onClickLike()
             }
         ) {
             Icon(
@@ -66,12 +67,12 @@ data class Star(
 )
 
 @Composable
-fun StarBtn(star: Star) {
+fun StarBtn(onClickStar: () -> Unit, star: Star) {
     var change by remember{ mutableStateOf(false) }
     var flag by remember{ mutableStateOf(star.isStar) }
-    var cnt by remember {
-        mutableStateOf(star.starCnt)
-    }
+//    var cnt by remember {
+//        mutableStateOf(star.starCnt)
+//    }
 
     val buttonSize by animateDpAsState(
         targetValue = if(change) 34.dp else 28.dp
@@ -86,6 +87,7 @@ fun StarBtn(star: Star) {
                 change = true
                 star.isStar = !star.isStar
                 flag = !flag
+                onClickStar()
             },
         ) {
             Icon(
@@ -96,7 +98,7 @@ fun StarBtn(star: Star) {
             )
         }
 
-        Text(text = cnt.toString(), color = Color.Gray)
+        Text(text = star.starCnt.toString(), color = Color.Gray)
     }
 }
 
@@ -133,11 +135,11 @@ fun ThumbBtn() {
 @Preview
 @Composable
 fun LikeBtnAnimationPreview() {
-    LikeBtn(like = Like(10, false))
+    LikeBtn({}, like = Like(10, false))
 }
 
 @Preview
 @Composable
 fun StarBtnAnimationPreview() {
-    StarBtn(star = Star(10, false))
+    StarBtn({}, star = Star(10, false))
 }

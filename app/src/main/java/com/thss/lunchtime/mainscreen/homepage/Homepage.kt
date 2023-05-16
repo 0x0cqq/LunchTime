@@ -95,7 +95,10 @@ fun Homepage(onClickNewPost: () -> Unit, homepageViewModel: HomepageViewModel) {
                 }
             }
             items(uiState.value.postDataList) { postData ->
-                PostReviewCard(postData)
+                PostReviewCard(
+                    onClickLike = {homepageViewModel.onClickLike(context, postData.postID)},
+                    onClickStar = {homepageViewModel.onClickStar(context, postData.postID)},
+                    msg = postData)
             }
         }
     }

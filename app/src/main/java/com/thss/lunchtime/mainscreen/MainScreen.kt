@@ -15,6 +15,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.thss.lunchtime.MyInfoPage
+import com.thss.lunchtime.component.InfoData
 import com.thss.lunchtime.mainscreen.homepage.Homepage
 import com.thss.lunchtime.mainscreen.homepage.HomepageViewModel
 import com.thss.lunchtime.mainscreen.messagepage.Messagepage
@@ -91,16 +93,10 @@ fun MainScreen(onNewPost: () -> Unit, mainScreenViewModel: MainScreenViewModel) 
                 Messagepage()
             }
             composable(MainScreens.My.route) {
-                MyPage()
+                MyInfoPage(msg = InfoData(InfoType = 1))
             }
         }
     }
-}
-
-
-@Composable
-fun MyPage() {
-    Text("My page")
 }
 
 @Preview

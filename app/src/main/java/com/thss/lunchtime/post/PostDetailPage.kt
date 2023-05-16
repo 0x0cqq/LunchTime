@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +42,7 @@ import com.thss.lunchtime.component.CommentComp
 import com.thss.lunchtime.component.PostMainBody
 import com.thss.lunchtime.component.PostType
 import com.thss.lunchtime.component.commentData
+import com.thss.lunchtime.mainscreen.homepage.HomepageViewModel
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
@@ -48,6 +50,8 @@ import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 fun PostDetailedPage(msg: PostData, type: PostType, commentList: ArrayList<commentData>)
 {
     var inputText = remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val homepageViewModel = HomepageViewModel()
 
     Scaffold(
         topBar = {
@@ -70,9 +74,9 @@ fun PostDetailedPage(msg: PostData, type: PostType, commentList: ArrayList<comme
                     .height(60.dp),
             ) {
                 if (inputText.value.isEmpty()) {
-                    LikeBtn(Like(10, false))
+                    LikeBtn({homepageViewModel.onClickLike(context, msg.postID)}, Like(msg.likeCount, msg.isLiked))
 
-                    StarBtn(Star(10, false))
+                    StarBtn({homepageViewModel.onClickStar(context, msg.postID)}, Star(msg.starCount, msg.isStared))
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
