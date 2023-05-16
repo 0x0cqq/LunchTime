@@ -8,3 +8,11 @@ data class Response(
     val status: Boolean,
     val message: String
 )
+
+@Serializable
+data class ResponseWithNotice(
+    val status: Boolean = false,
+    val message: String = "",
+    @SerialName("notice_list")
+    val noticeList: List<Notice> = listOf()
+)

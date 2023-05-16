@@ -15,11 +15,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -30,10 +35,11 @@ data class noticeData(
     val noticeType: Int = -1,
     val reply: String = "",
     val refData: refData = refData(),
+    val postId: Int = -1,
 )
 
 data class refData(
-    val graphResources : Array<Int> = arrayOf(),
+    val graphResources : Array<String> = arrayOf(),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,17 +115,30 @@ fun noticePreviewCard(msg: noticeData)
             }
 
             if (msg.refData.graphResources.isNotEmpty()) {
-                Image(
-                    painter = painterResource(id = msg.refData.graphResources[0]),
+                AsyncImage(
+                    model = msg.refData.graphResources[0],
                     contentDescription = "heading",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         // Clip image to shaped as a circle
                         .size(60.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .padding(start = 8.dp)
                         .aspectRatio(1F)
-                        .height(IntrinsicSize.Min)
+                        .height(IntrinsicSize.Min),
+                    alignment = Alignment.Center
                 )
+//                Image(
+//                    painter = painterResource(id = msg.refData.graphResources[0]),
+//                    contentDescription = "heading",
+//                    modifier = Modifier
+//                        // Clip image to shaped as a circle
+//                        .size(60.dp)
+//                        .clip(RoundedCornerShape(8.dp))
+//                        .padding(start = 8.dp)
+//                        .aspectRatio(1F)
+//                        .height(IntrinsicSize.Min)
+//                )
             }
         }
     }
@@ -140,7 +159,7 @@ fun NoticeLike() {
     noticePreviewCard(msg =
     noticeData(
         noticeType = 2,
-        refData = refData(graphResources = arrayOf(R.drawable.wp, R.drawable.wp, R.drawable.wp)),
+        refData = refData(graphResources = arrayOf("http://82.156.30.206:8000/media/postImage/1684160879_0.jpeg")),
     )
     )
 }

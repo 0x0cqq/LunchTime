@@ -38,6 +38,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
@@ -209,7 +210,7 @@ fun Application(modifier: Modifier = Modifier) {
                                 it.asAndroidBitmap()
                                     .compress(Bitmap.CompressFormat.JPEG, 100, stream)
                                 val requestBody = RequestBody.create(
-                                    MediaType.get("image/*"),
+                                    "image/*".toMediaType(),
                                     stream.toByteArray()
                                 )
                                 MultipartBody.Part.createFormData(
@@ -222,11 +223,11 @@ fun Application(modifier: Modifier = Modifier) {
                             val userName = userData.data.first().userName
                             Log.d("LunchTime", "Current Username:$userName")
                             val response = LunchTimeApi.retrofitService.post(
-                                RequestBody.create(MediaType.get("text/plain"), userName),
-                                RequestBody.create(MediaType.get("text/plain"), state.title),
-                                RequestBody.create(MediaType.get("text/plain"), state.content),
-                                RequestBody.create(MediaType.get("text/plain"), state.location),
-                                RequestBody.create(MediaType.get("text/plain"), state.tag),
+                                RequestBody.create("text/plain".toMediaType(), userName),
+                                RequestBody.create("text/plain".toMediaType(), state.title),
+                                RequestBody.create("text/plain".toMediaType(), state.content),
+                                RequestBody.create("text/plain".toMediaType(), state.location),
+                                RequestBody.create("text/plain".toMediaType(), state.tag),
                                 images
                             )
 

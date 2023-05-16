@@ -4,6 +4,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Retrofit
@@ -12,6 +13,8 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.GET
+import retrofit2.http.Query
 
 private const val BASE_URL =
     "http://82.156.30.206:8000"
@@ -19,7 +22,7 @@ private const val BASE_URL =
 
 @OptIn(ExperimentalSerializationApi::class)
 private val retrofit = Retrofit.Builder()
-    .addConverterFactory(Json.asConverterFactory(MediaType.get("application/json")))
+    .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
     .baseUrl(BASE_URL)
     .build()
 
@@ -49,6 +52,9 @@ interface LunchTimeApiService {
                      @Part("title") title: RequestBody, @Part("content") content: RequestBody,
                      @Part("location") location: RequestBody, @Part("tag") tag: RequestBody,
                      @Part images: List<MultipartBody.Part>): ResponseWithPost
+
+    @GET("api/notice")
+    suspend fun getNotice(@Query("user_name") name: String, @Query("type") type: Int): ResponseWithNotice
 }
 
 object LunchTimeApi {
