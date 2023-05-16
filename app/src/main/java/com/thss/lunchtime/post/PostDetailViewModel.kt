@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class PostDetailViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(PostDetailData())
@@ -47,6 +48,73 @@ class PostDetailViewModel : ViewModel() {
             }
             _uiState.update {
                 it.copy(isRefreshing = false)
+            }
+        }
+    }
+
+
+    fun onClickLike(context: Context, postID: Int){
+        viewModelScope.launch {
+            val userData = context.userPreferencesStore
+            try{
+                val response = LunchTimeApi.retrofitService.likePost(
+                    userData.data.first().userName,
+                    postID)
+                if (response.status){
+                    // update starCount and isStared
+                    _uiState.update{state ->
+                        val newPostData  = if(state.postData.postID == postID){
+                            if(response.result == 1){
+                                state.postData.copy(likeCount = state.postData.likeCount + 1, isLiked = true)
+                            }
+                            else{
+                                state.postData.copy(likeCount = state.postData.likeCount - 1, isLiked = false)
+                            }
+                        }
+                        else{
+                            state.postData
+                        }
+                        state.copy(postData = newPostData)
+                    }
+                } else {
+                    Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                }
+            }catch (e : IOException) {
+                e.printStackTrace()
+                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun onClickStar(context: Context, postID: Int){
+        viewModelScope.launch {
+            val userData = context.userPreferencesStore
+            try{
+                val response = LunchTimeApi.retrofitService.starPost(
+                    userData.data.first().userName,
+                    postID)
+                if (response.status){
+                    // update starCount and isStared
+                    _uiState.update{state ->
+                        val newPostData  = if(state.postData.postID == postID){
+                            if(response.result == 1){
+                                state.postData.copy(starCount = state.postData.starCount + 1, isStared = true)
+                            }
+                            else{
+                                state.postData.copy(starCount = state.postData.starCount - 1, isStared = false)
+                            }
+                        }
+                        else{
+                            state.postData
+                        }
+                        state.copy(postData = newPostData)
+                    }
+                } else {
+                    Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                }
+            }catch (e : IOException) {
+                e.printStackTrace()
+                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
             }
         }
     }

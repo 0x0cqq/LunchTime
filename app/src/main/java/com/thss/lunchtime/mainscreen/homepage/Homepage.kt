@@ -55,7 +55,7 @@ fun Homepage(onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () 
     })
 
     // refresh on the launch
-    LaunchedEffect(Unit) {
+    LaunchedEffect(uiState.value.selectedIndex) {
         homepageViewModel.refresh(context)
     }
 
