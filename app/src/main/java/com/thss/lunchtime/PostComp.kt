@@ -162,32 +162,16 @@ fun LikeStarComment(msg: PostData) {
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.FavoriteBorder, "Liked")
-            }
-            Text(text = msg.likeCnt.toString())
-        }
+        LikeBtn(like = Like(10, false))
+
+        StarBtn(star = Star(10, false))
 
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.StarBorder, "Stared")
-            }
-            Text(text = msg.starCnt.toString())
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.ModeComment, "Comment")
+                Icon(Icons.Filled.ModeComment, "Comment", tint = Color.Gray)
             }
             Text(text = msg.commentCnt.toString())
         }
