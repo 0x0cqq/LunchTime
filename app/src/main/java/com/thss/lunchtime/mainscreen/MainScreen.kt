@@ -4,22 +4,19 @@ package com.thss.lunchtime.mainscreen
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.mainscreen.homepage.Homepage
+import com.thss.lunchtime.mainscreen.homepage.HomepageViewModel
 import com.thss.lunchtime.mainscreen.messagepage.Messagepage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -40,6 +37,7 @@ fun MainScreen(onNewPost: () -> Unit, mainScreenViewModel: MainScreenViewModel) 
     val navigationBarItems = listOf(
         MainScreens.Home, MainScreens.Message, MainScreens.My
     )
+    val homepageViewModel: HomepageViewModel = viewModel()
 
     Scaffold(
         bottomBar = {
@@ -87,7 +85,7 @@ fun MainScreen(onNewPost: () -> Unit, mainScreenViewModel: MainScreenViewModel) 
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(MainScreens.Home.route) {
-                Homepage(onClickNewPost = onNewPost)
+                Homepage(onClickNewPost = onNewPost, homepageViewModel)
             }
             composable(MainScreens.Message.route) {
                 Messagepage()

@@ -27,6 +27,7 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,18 +35,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.thss.lunchtime.PostData
-import com.thss.lunchtime.PostReviewCard
+import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview
-fun Homepage(onClickNewPost: () -> Unit = {}, homepageViewModel: HomepageViewModel = viewModel()) {
+fun Homepage(onClickNewPost: () -> Unit, homepageViewModel: HomepageViewModel) {
     val uiState = homepageViewModel.uiState.collectAsState()
     val tabs = listOf(HomepageTabs.byTime, HomepageTabs.byLike, HomepageTabs.byFav)
+    val context = LocalContext.current
+
+    // refresh on the launch
+    LaunchedEffect(Unit) {
+        homepageViewModel.refresh(context)
+    }
+
     Scaffold(
         topBar = {
             Column {
@@ -83,7 +88,7 @@ fun Homepage(onClickNewPost: () -> Unit = {}, homepageViewModel: HomepageViewMod
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             item {
                 Button(
-                    onClick = { homepageViewModel.refresh() },
+                    onClick = { homepageViewModel.refresh(context) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Refresh")
