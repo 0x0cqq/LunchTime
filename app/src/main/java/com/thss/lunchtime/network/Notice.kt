@@ -29,5 +29,6 @@ fun Notice.toNoticeData(selectedIndex : Int) : noticeData {
         noticeType = selectedIndex + 1,
         reply = content,
         postId = postId,
+        refData = pictureURL
     )
 }

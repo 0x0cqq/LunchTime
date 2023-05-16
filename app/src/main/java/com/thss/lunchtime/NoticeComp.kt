@@ -34,12 +34,8 @@ data class noticeData(
     val noticeDate: Date = Date(),
     val noticeType: Int = -1,
     val reply: String = "",
-    val refData: refData = refData(),
+    val refData: String = "",
     val postId: Int = -1,
-)
-
-data class refData(
-    val graphResources : Array<String> = arrayOf(),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,9 +110,9 @@ fun noticePreviewCard(msg: noticeData)
                 }
             }
 
-            if (msg.refData.graphResources.isNotEmpty()) {
+            if (msg.refData != "") {
                 AsyncImage(
-                    model = msg.refData.graphResources[0],
+                    model = msg.refData,
                     contentDescription = "heading",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -157,11 +153,11 @@ fun NoticeComment() {
 @Composable
 fun NoticeLike() {
     noticePreviewCard(msg =
-    noticeData(
-        noticeType = 2,
-        refData = refData(graphResources = arrayOf("http://82.156.30.206:8000/media/postImage/1684160879_0.jpeg")),
+        noticeData(
+            noticeType = 2,
+            refData = "http://82.156.30.206:8000/media/postImage/1684160879_0.jpeg")
     )
-    )
+
 }
 
 @Preview
