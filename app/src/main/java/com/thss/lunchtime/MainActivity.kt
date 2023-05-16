@@ -8,7 +8,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +39,7 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
 
@@ -83,10 +82,21 @@ fun Application(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = applicationNavController,
-        startDestination = "login"
+        startDestination = "login",
+        modifier = modifier
     ) {
         composable("login") {
             LoginPage(
+                onAlreadyLogin = {
+                    applicationNavController.navigate(
+                        "main",
+                        NavOptions.Builder().setPopUpTo("login", true).build()
+                    )
+                    scope.launch {
+                        val userName = userData.data.first().userName
+                        Toast.makeText(context, "Welcome Back, $userName" , Toast.LENGTH_SHORT).show()
+                    }
+                },
                 onClickLogin = { name, password ->
                     scope.launch {
                         try {
@@ -107,7 +117,7 @@ fun Application(modifier: Modifier = Modifier) {
                             }
                             Toast.makeText(
                                 context, message,
-                                8.coerceAtLeast(message.length)
+                                Toast.LENGTH_SHORT
                             ).show()
                             delay(1000)
                             if(response.status) {
@@ -116,14 +126,14 @@ fun Application(modifier: Modifier = Modifier) {
                                     NavOptions.Builder().setPopUpTo("login", true).build()
                                 )
                                 userData.updateData { userData ->
-                                    userData.toBuilder().setUserName(name).build()
+                                    userData.toBuilder().setUserName(name).setIsLogin(true).build()
                                 }
                             }
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())
                             Toast.makeText(
                                 context, "网络错误",
-                                8.coerceAtLeast("网络错误".length)
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
@@ -150,13 +160,13 @@ fun Application(modifier: Modifier = Modifier) {
                             }
                             Toast.makeText(
                                 context, message,
-                                8.coerceAtLeast(message.length)
+                                Toast.LENGTH_SHORT
                             ).show()
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())
                             Toast.makeText(
                                 context, "网络错误",
-                                8.coerceAtLeast("网络错误".length)
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
@@ -179,17 +189,18 @@ fun Application(modifier: Modifier = Modifier) {
                             }
                             Toast.makeText(
                                 context, message,
-                                8.coerceAtLeast(message.length)
+                                Toast.LENGTH_SHORT
                             ).show()
                             delay(1000)
                             if( response.status ) {
-                                applicationNavController.navigate("login")
+                                // back to login
+                                applicationNavController.popBackStack()
                             }
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())
                             Toast.makeText(
                                 context, "网络错误",
-                                8.coerceAtLeast("网络错误".length)
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
@@ -209,10 +220,10 @@ fun Application(modifier: Modifier = Modifier) {
                                 val stream = ByteArrayOutputStream()
                                 it.asAndroidBitmap()
                                     .compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                                val requestBody = RequestBody.create(
-                                    "image/*".toMediaType(),
-                                    stream.toByteArray()
-                                )
+                                val requestBody = stream.toByteArray()
+                                    .toRequestBody(
+                                        "image/*".toMediaType()
+                                    )
                                 MultipartBody.Part.createFormData(
                                     "picture",
                                     "uploaded-$index.jpeg",
@@ -223,11 +234,11 @@ fun Application(modifier: Modifier = Modifier) {
                             val userName = userData.data.first().userName
                             Log.d("LunchTime", "Current Username:$userName")
                             val response = LunchTimeApi.retrofitService.post(
-                                RequestBody.create("text/plain".toMediaType(), userName),
-                                RequestBody.create("text/plain".toMediaType(), state.title),
-                                RequestBody.create("text/plain".toMediaType(), state.content),
-                                RequestBody.create("text/plain".toMediaType(), state.location),
-                                RequestBody.create("text/plain".toMediaType(), state.tag),
+                                userName.toRequestBody("text/plain".toMediaType()),
+                                state.title.toRequestBody("text/plain".toMediaType()),
+                                state.content.toRequestBody("text/plain".toMediaType()),
+                                state.location.toRequestBody("text/plain".toMediaType()),
+                                state.tag.toRequestBody("text/plain".toMediaType()),
                                 images
                             )
 
@@ -238,7 +249,7 @@ fun Application(modifier: Modifier = Modifier) {
                             }
                             Toast.makeText(
                                 context, message,
-                                8.coerceAtLeast(message.length)
+                                Toast.LENGTH_SHORT
                             ).show()
                             delay(1000)
                             if( response.status ) {
@@ -248,7 +259,7 @@ fun Application(modifier: Modifier = Modifier) {
                             Log.e("LunchTime", e.toString())
                             Toast.makeText(
                                 context, "网络错误",
-                                8.coerceAtLeast("网络错误".length)
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
