@@ -3,6 +3,7 @@ package com.thss.lunchtime.network
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -57,7 +58,10 @@ interface LunchTimeApiService {
     suspend fun post(@Part("user_name") userName: RequestBody,
                      @Part("title") title: RequestBody, @Part("content") content: RequestBody,
                      @Part("location") location: RequestBody, @Part("tag") tag: RequestBody,
-                     @Part images: List<MultipartBody.Part>): ResponseWithPostID
+                     @Part images: List<MultipartBody.Part>): ResponseWithPost
+
+    @GET("api/notice")
+    suspend fun getNotice(@Query("user_name") name: String, @Query("type") type: Int): ResponseWithNotice
 }
 
 object LunchTimeApi {

@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import com.thss.lunchtime.noticePreviewCard
 fun Messagepage(messageViewModel: MessageViewModel = viewModel()) {
     val uiState = messageViewModel.uiState.collectAsState()
     val tabs = listOf(MessageTabs.Comment, MessageTabs.Like, MessageTabs.Chat)
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             Column {
@@ -51,18 +53,13 @@ fun Messagepage(messageViewModel: MessageViewModel = viewModel()) {
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             item {
                 Button(
-                    onClick = { messageViewModel.refresh() },
+                    onClick = { messageViewModel.refresh(context) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Refresh")
                 }
             }
-            var noticeDataList: List<noticeData> = uiState.value.commentDataList
-            when(uiState.value.selectedIndex){
-                0 -> noticeDataList = uiState.value.commentDataList
-                1 -> noticeDataList = uiState.value.likeDataList
-                2 -> noticeDataList = uiState.value.chatDataList
-            }
+            val noticeDataList: List<noticeData> = uiState.value.NoticeDataLists[uiState.value.selectedIndex]
             items(noticeDataList) { noticeData ->
                 noticePreviewCard(msg = noticeData)
             }

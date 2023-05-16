@@ -10,6 +10,12 @@ data class Response(
 )
 
 @Serializable
+data class ResponseWithNotice(
+    val status: Boolean = false,
+    val message: String = "",
+    @SerialName("notice_list")
+    val noticeList: List<Notice> = listOf()
+    
 data class ResponseWithPostID(
     val status: Boolean,
     val message: String,
