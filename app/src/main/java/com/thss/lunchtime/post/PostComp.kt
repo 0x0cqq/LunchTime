@@ -29,7 +29,24 @@ import coil.compose.SubcomposeAsyncImageContent
 import com.thss.lunchtime.R
 import com.thss.lunchtime.ui.theme.Purple40
 import java.text.SimpleDateFormat
+import java.util.Date
 
+data class PostData(
+    val publisherAvatar: String = "User_default",
+    val publisherID: String = "User_default",
+    val publishDate: Date = Date(),
+    val postID: Int = 0,
+    val title: String = "title",
+    val content: String = "content",
+    val commentCnt: Int = 0,
+    var likeCnt: Int = 0,
+    val starCnt: Int = 0,
+    var isLiked: Boolean = false,
+    val Type: Int = -1,
+    val Tag: String = "Tag",
+    val graphResources : Array<Int> = arrayOf(),
+    val publisherStatus: Int = 2,
+)
 
 data class PostType(
     val Detailed: Boolean = false
@@ -144,32 +161,16 @@ fun LikeStarComment(msg: PostData) {
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.FavoriteBorder, "Liked")
-            }
-            Text(text = msg.likeCount.toString())
-        }
+        LikeBtn(like = Like(10, false))
+
+        StarBtn(star = Star(10, false))
 
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.StarBorder, "Stared")
-            }
-            Text(text = msg.starCount.toString())
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.ModeComment, "Comment")
+                Icon(Icons.Filled.ModeComment, "Comment", tint = Color.Gray)
             }
             Text(text = msg.commentCount.toString())
         }
