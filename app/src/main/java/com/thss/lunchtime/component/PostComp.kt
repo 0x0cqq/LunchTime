@@ -2,6 +2,7 @@ package com.thss.lunchtime.component
 
 import android.net.Uri
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.Image
@@ -126,18 +127,14 @@ fun PostMainBody(msg: PostData, type: PostType)
             }
 
             // content
-            Box(modifier = Modifier.animateContentSize()) {
+            Box(modifier = Modifier.animateContentSize(animationSpec = tween(durationMillis = 100) )) {
                 Text(
                     text = msg.content,
                     maxLines = if (expandcontent.value) 100 else 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.clickable { expandcontent.value = !expandcontent.value }
                 )
             }
-            Text(
-                text = if (expandcontent.value) "收起" else "展开",
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.clickable { expandcontent.value = !expandcontent.value }
-            )
         }
 
         // image show
