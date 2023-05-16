@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,12 +29,26 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.thss.lunchtime.data.userPreferencesStore
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun LoginPage(onClickLogin : (username: String, password: String) -> Unit,
+fun LoginPage(onAlreadyLogin: () -> Unit, onClickLogin : (username: String, password: String) -> Unit,
               onClickSignup: () -> Unit) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        scope.launch {
+            if(context.userPreferencesStore.data.first().isLogin) {
+                onAlreadyLogin()
+            }
+        }
+    }
+
+
     BoxWithConstraints(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -155,5 +170,5 @@ fun LoginPanel(onClickLogin : (username: String, password: String) -> Unit,
 @Preview
 @Composable
 fun LoginPagePreview() {
-    LoginPage(onClickLogin = { _, _ -> }, onClickSignup = { })
+    LoginPage(onAlreadyLogin = {}, onClickLogin = { _, _ -> }, onClickSignup = { })
 }

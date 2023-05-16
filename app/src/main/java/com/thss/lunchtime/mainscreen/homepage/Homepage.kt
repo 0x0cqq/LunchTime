@@ -27,6 +27,7 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,11 @@ fun Homepage(onClickNewPost: () -> Unit, homepageViewModel: HomepageViewModel) {
     val uiState = homepageViewModel.uiState.collectAsState()
     val tabs = listOf(HomepageTabs.byTime, HomepageTabs.byLike, HomepageTabs.byFav)
     val context = LocalContext.current
+
+    // refresh on the launch
+    LaunchedEffect(Unit) {
+        homepageViewModel.refresh(context)
+    }
 
     Scaffold(
         topBar = {

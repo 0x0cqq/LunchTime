@@ -86,6 +86,16 @@ fun Application(modifier: Modifier = Modifier) {
     ) {
         composable("login") {
             LoginPage(
+                onAlreadyLogin = {
+                    applicationNavController.navigate(
+                        "main",
+                        NavOptions.Builder().setPopUpTo("login", true).build()
+                    )
+                    scope.launch {
+                        val userName = userData.data.first().userName
+                        Toast.makeText(context, "Welcome Back, $userName" , Toast.LENGTH_SHORT).show()
+                    }
+                },
                 onClickLogin = { name, password ->
                     scope.launch {
                         try {
@@ -115,7 +125,7 @@ fun Application(modifier: Modifier = Modifier) {
                                     NavOptions.Builder().setPopUpTo("login", true).build()
                                 )
                                 userData.updateData { userData ->
-                                    userData.toBuilder().setUserName(name).build()
+                                    userData.toBuilder().setUserName(name).setIsLogin(true).build()
                                 }
                             }
                         } catch ( e : Exception) {
@@ -182,7 +192,8 @@ fun Application(modifier: Modifier = Modifier) {
                             ).show()
                             delay(1000)
                             if( response.status ) {
-                                applicationNavController.navigate("login")
+                                // back to login
+                                applicationNavController.popBackStack()
                             }
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())

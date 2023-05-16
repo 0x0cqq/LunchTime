@@ -4,4 +4,5 @@ option java_multiple_files = true;
 
 message UserPreferences {
   string userName = 1;
+  bool isLogin = 2;
 }
