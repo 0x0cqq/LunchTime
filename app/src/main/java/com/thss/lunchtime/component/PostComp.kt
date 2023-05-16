@@ -10,9 +10,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.ModeComment
-import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -30,19 +27,19 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
-import com.thss.lunchtime.Like
+import com.thss.lunchtime.CommentBtn
 import com.thss.lunchtime.LikeBtn
 import com.thss.lunchtime.R
-import com.thss.lunchtime.Star
 import com.thss.lunchtime.StarBtn
 import com.thss.lunchtime.post.PostData
 import com.thss.lunchtime.ui.theme.Purple40
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.Locale
 
 data class PostType(
     val Detailed: Boolean = false
 )
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostMainBody(msg: PostData, type: PostType)
@@ -55,7 +52,10 @@ fun PostMainBody(msg: PostData, type: PostType)
                 .fillMaxWidth()
                 .padding(end = 16.dp)
         ) {
-            Row (modifier = Modifier.padding(all = 8.dp)) {
+            Row (
+                modifier = Modifier.padding(all = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Image(
                     painter = painterResource(id = R.drawable.touxaingnvhai),
                     contentDescription = "heading",
@@ -72,7 +72,7 @@ fun PostMainBody(msg: PostData, type: PostType)
                     Text(text = msg.publisherID)
                     // Add a vertical space between the publisher and date
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = SimpleDateFormat("yyyy-MM-dd HH:mm").format(msg.publishDate))
+                    Text(text = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINESE).format(msg.publishDate))
                 }
             }
 
@@ -122,7 +122,7 @@ fun PostMainBody(msg: PostData, type: PostType)
                 )
             }
 
-            var expandcontent = remember {
+            val expandContent = remember {
                 mutableStateOf(false)
             }
 
@@ -130,9 +130,9 @@ fun PostMainBody(msg: PostData, type: PostType)
             Box(modifier = Modifier.animateContentSize(animationSpec = tween(durationMillis = 100) )) {
                 Text(
                     text = msg.content,
-                    maxLines = if (expandcontent.value) 100 else 2,
+                    maxLines = if (expandContent.value) 100 else 2,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.clickable { expandcontent.value = !expandcontent.value }
+                    modifier = Modifier.clickable { expandContent.value = !expandContent.value }
                 )
             }
         }
@@ -141,16 +141,29 @@ fun PostMainBody(msg: PostData, type: PostType)
         AsyncPostPhotoGrid(imageUris = msg.graphResources, columnCount = 3)
 
         // location Tag
-        Card(
-            shape = RoundedCornerShape(15.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.LightGray),
-            modifier = Modifier.padding(start = 12.dp)
-        ) {
-            Text(
-                text = msg.tag,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp),
-                fontSize = 12.sp
-            )
+        if(type.Detailed) {
+            Card(
+                shape = RoundedCornerShape(50),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+                modifier = Modifier.padding(start = 12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                ) {
+                    Icon(
+                        Icons.Rounded.LocationOn,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = msg.location,
+                        fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
         }
     }
 }
@@ -164,20 +177,9 @@ fun LikeStarComment(onClickLike: () -> Unit, onClickStar: () -> Unit, msg: PostD
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        LikeBtn(onClickLike = onClickLike, like = Like(msg.likeCount, msg.isLiked))
-
-        StarBtn(onClickStar = onClickStar, star = Star(msg.starCount, msg.isStared))
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.ModeComment, "Comment", tint = Color.Gray)
-            }
-            Text(text = msg.commentCount.toString())
-        }
-
+        LikeBtn(onClickLike = onClickLike, msg.likeCount, msg.isLiked)
+        StarBtn(onClickStar = onClickStar, msg.starCount, msg.isStared)
+        CommentBtn(onClickComment = {/* TODO */}, msg.commentCount)
     }
 }
 

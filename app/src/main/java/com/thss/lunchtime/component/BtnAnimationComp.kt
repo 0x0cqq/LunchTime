@@ -1,36 +1,33 @@
 package com.thss.lunchtime
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ModeComment
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.thss.lunchtime.common.NoRippleInteractionSource
 import com.thss.lunchtime.ui.theme.Purple40
+import com.thss.lunchtime.ui.theme.Love
+import com.thss.lunchtime.ui.theme.Star
+import com.thss.lunchtime.ui.theme.Disabled
 
-
-data class Like(
-    var likeCnt: Int,
-    var isLike: Boolean
-)
 
 @Composable
-fun LikeBtn(onClickLike: () -> Unit, like: Like) {
+fun LikeBtn(onClickLike: () -> Unit, likeCount: Int, isLiked: Boolean) {
     var change by remember{ mutableStateOf(false) }
-    var flag by remember{ mutableStateOf(like.isLike) }
 
     val buttonSize by animateDpAsState(
         targetValue = if(change) 32.dp else 24.dp
@@ -43,36 +40,27 @@ fun LikeBtn(onClickLike: () -> Unit, like: Like) {
         IconButton(
             onClick = {
                 change = true
-                like.isLike = !like.isLike
-                flag = !flag
                 onClickLike()
-            }
+            },
+            interactionSource = NoRippleInteractionSource()
         ) {
             Icon(
                 Icons.Rounded.Favorite,
-                contentDescription = null,
+                contentDescription = "Like",
                 modifier = Modifier.size(buttonSize),
-                tint = if(flag) Color.Red else Color.Gray
+                tint = if(isLiked) Love else Disabled
             )
         }
 
-        Text(text = like.likeCnt.toString(), color = Color.Gray)
+        Text(text = likeCount.toString())
     }
 
 }
 
-data class Star(
-    var starCnt: Int,
-    var isStar: Boolean
-)
 
 @Composable
-fun StarBtn(onClickStar: () -> Unit, star: Star) {
+fun StarBtn(onClickStar: () -> Unit, starCount : Int, isStared: Boolean) {
     var change by remember{ mutableStateOf(false) }
-    var flag by remember{ mutableStateOf(star.isStar) }
-//    var cnt by remember {
-//        mutableStateOf(star.starCnt)
-//    }
 
     val buttonSize by animateDpAsState(
         targetValue = if(change) 34.dp else 28.dp
@@ -85,20 +73,19 @@ fun StarBtn(onClickStar: () -> Unit, star: Star) {
         IconButton(
             onClick = {
                 change = true
-                star.isStar = !star.isStar
-                flag = !flag
                 onClickStar()
             },
+            interactionSource = NoRippleInteractionSource()
         ) {
             Icon(
                 Icons.Rounded.Star,
-                contentDescription = null,
+                contentDescription = "Star",
                 modifier = Modifier.size(buttonSize),
-                tint = if(flag) Color.Yellow else Color.Gray
+                tint = if(isStared) Star else Disabled
             )
         }
 
-        Text(text = star.starCnt.toString(), color = Color.Gray)
+        Text(text = starCount.toString())
     }
 }
 
@@ -121,25 +108,39 @@ fun ThumbBtn() {
                 change = true
                 flag = !flag
             },
+            interactionSource = NoRippleInteractionSource()
         ) {
             Icon(
                 if (flag) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
                 contentDescription = null,
                 modifier = Modifier.size(buttonSize),
-                tint = if(flag) Purple40 else Color.Gray
+                tint = if(flag) Purple40 else Disabled
             )
         }
+    }
+}
+
+@Composable
+fun CommentBtn(onClickComment: () -> Unit, commentCount: Int) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = onClickComment) {
+            Icon(Icons.Filled.ModeComment, "Comment", tint = Disabled)
+        }
+        Text(text = commentCount.toString())
     }
 }
 
 @Preview
 @Composable
 fun LikeBtnAnimationPreview() {
-    LikeBtn({}, like = Like(10, false))
+    LikeBtn({}, 10, false)
 }
 
 @Preview
 @Composable
 fun StarBtnAnimationPreview() {
-    StarBtn({}, star = Star(10, false))
+    StarBtn({}, 10, false)
 }
