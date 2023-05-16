@@ -10,9 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ModeComment
-import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -38,11 +36,11 @@ import com.thss.lunchtime.StarBtn
 import com.thss.lunchtime.post.PostData
 import com.thss.lunchtime.ui.theme.Purple40
 import java.text.SimpleDateFormat
-import java.util.Date
 
 data class PostType(
     val Detailed: Boolean = false
 )
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostMainBody(msg: PostData, type: PostType)
@@ -55,7 +53,10 @@ fun PostMainBody(msg: PostData, type: PostType)
                 .fillMaxWidth()
                 .padding(end = 16.dp)
         ) {
-            Row (modifier = Modifier.padding(all = 8.dp)) {
+            Row (
+                modifier = Modifier.padding(all = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Image(
                     painter = painterResource(id = R.drawable.touxaingnvhai),
                     contentDescription = "heading",

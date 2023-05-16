@@ -30,13 +30,14 @@ import com.thss.lunchtime.mainscreen.MainScreenViewModel
 import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.newpost.NewPostPage
 import com.thss.lunchtime.newpost.NewPostViewModel
+import com.thss.lunchtime.post.PostDetailPage
+import com.thss.lunchtime.post.PostDetailViewModel
 import com.thss.lunchtime.signup.SignUpPage
 import com.thss.lunchtime.signup.SignUpViewModel
 import com.thss.lunchtime.ui.theme.LunchTimeTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -269,10 +270,24 @@ fun Application(modifier: Modifier = Modifier) {
         }
         composable("main") {
             MainScreen(
+                onOpenPost = { postId ->
+                    applicationNavController.navigate("post/$postId")
+                },
                 onNewPost = {
                     applicationNavController.navigate("newpost")
                 },
-                mainScreenViewModel
+                mainScreenViewModel = mainScreenViewModel
+            )
+        }
+        composable("post/{postId}") { backStackEntry ->
+            val postId : Int = backStackEntry.arguments?.getString("postId")!!.toInt()
+            val postDetailViewModel : PostDetailViewModel = viewModel()
+            PostDetailPage(
+                onBack = {
+                    applicationNavController.popBackStack()
+                },
+                postId = postId,
+                postDetailViewModel = postDetailViewModel
             )
         }
     }

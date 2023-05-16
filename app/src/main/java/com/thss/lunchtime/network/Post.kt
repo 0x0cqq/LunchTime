@@ -4,6 +4,7 @@ import com.thss.lunchtime.post.PostData
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import androidx.core.net.toUri
+import com.thss.lunchtime.component.CommentData
 import java.util.Date
 
 @Serializable
@@ -12,8 +13,16 @@ data class Comment (
     val userName: String = "",
     val content: String = "",
     @SerialName("create_time")
-    val createTime: String = "",
+    val createTime: Long = 0,
 )
+
+fun Comment.toCommentData() : CommentData {
+    return CommentData(
+        commentID = userName,
+        commentDate = Date(createTime * 1000),
+        commentContent = content
+    )
+}
 
 @Serializable
 data class Post (

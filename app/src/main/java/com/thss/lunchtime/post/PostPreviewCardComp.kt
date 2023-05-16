@@ -15,11 +15,11 @@ import com.thss.lunchtime.component.PostType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostReviewCard(msg: PostData)
+fun PostReviewCard(msg: PostData, modifier: Modifier = Modifier)
 {
     Card(
 //        colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = Modifier
+        modifier = modifier
         .fillMaxWidth()
         .padding(5.dp)
     ) {

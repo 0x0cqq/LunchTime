@@ -1,8 +1,6 @@
 package com.thss.lunchtime.mainscreen
 
 
-import androidx.compose.foundation.interaction.Interaction
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -15,23 +13,15 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.thss.lunchtime.common.NoRippleInteractionSource
 import com.thss.lunchtime.mainscreen.homepage.Homepage
 import com.thss.lunchtime.mainscreen.homepage.HomepageViewModel
 import com.thss.lunchtime.mainscreen.messagepage.Messagepage
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 
-
-// https://stackoverflow.com/questions/66703448/how-to-disable-ripple-effect-when-clicking-in-jetpack-compose
-class NoRippleInteractionSource : MutableInteractionSource {
-    override val interactions: Flow<Interaction> = emptyFlow()
-    override suspend fun emit(interaction: Interaction) {}
-    override fun tryEmit(interaction: Interaction) = true
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onNewPost: () -> Unit, mainScreenViewModel: MainScreenViewModel) {
+fun MainScreen(onNewPost: () -> Unit, onOpenPost: (postId: Int) -> Unit, mainScreenViewModel: MainScreenViewModel) {
     val mainScreenNavController = rememberNavController()
     // 脚手架，上面下面的栏和
     val navigationBarItems = listOf(
@@ -85,7 +75,11 @@ fun MainScreen(onNewPost: () -> Unit, mainScreenViewModel: MainScreenViewModel) 
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(MainScreens.Home.route) {
-                Homepage(onClickNewPost = onNewPost, homepageViewModel)
+                Homepage(
+                    onClickPostPreviewCard = onOpenPost,
+                    onClickNewPost = onNewPost,
+                    homepageViewModel = homepageViewModel
+                )
             }
             composable(MainScreens.Message.route) {
                 Messagepage()
@@ -106,5 +100,5 @@ fun MyPage() {
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen({}, MainScreenViewModel())
+    MainScreen({}, {_ -> }, MainScreenViewModel())
 }

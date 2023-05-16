@@ -1,36 +1,24 @@
 package com.thss.lunchtime.post
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Sort
-import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thss.lunchtime.Like
@@ -40,14 +28,18 @@ import com.thss.lunchtime.StarBtn
 import com.thss.lunchtime.component.CommentComp
 import com.thss.lunchtime.component.PostMainBody
 import com.thss.lunchtime.component.PostType
-import com.thss.lunchtime.component.commentData
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+import com.thss.lunchtime.component.CommentData
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun PostDetailedPage(msg: PostData, type: PostType, commentList: ArrayList<commentData>)
+fun PostDetailPage(onBack: () -> Unit, postId: Int, postDetailViewModel: PostDetailViewModel)
 {
-    var inputText = remember { mutableStateOf("") }
+    val postDetailData = postDetailViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        postDetailViewModel.refresh(context, postId)
+    }
 
     Scaffold(
         topBar = {
@@ -55,8 +47,14 @@ fun PostDetailedPage(msg: PostData, type: PostType, commentList: ArrayList<comme
                 title = {
                     Text(text = "动态详情")
                 },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = "back")
+                    }
+                },
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { /* TODO */ }) {
                         Icon(imageVector = Icons.Default.Share,
                             contentDescription = null)
                     }
@@ -69,7 +67,7 @@ fun PostDetailedPage(msg: PostData, type: PostType, commentList: ArrayList<comme
                     .fillMaxWidth()
                     .height(60.dp),
             ) {
-                if (inputText.value.isEmpty()) {
+                if (postDetailData.value.currentCommentInput.isEmpty()) {
                     LikeBtn(Like(10, false))
 
                     StarBtn(Star(10, false))
@@ -80,31 +78,43 @@ fun PostDetailedPage(msg: PostData, type: PostType, commentList: ArrayList<comme
                 // 自定义TextField
                 Box(modifier = Modifier.fillMaxWidth(1f)) {
                     BasicTextField(
-                        value = inputText.value,
-                        onValueChange = { inputText.value = it },
+                        value = postDetailData.value.currentCommentInput,
+                        onValueChange = { postDetailViewModel.updateCurrentComment(it) },
                         modifier = Modifier
-                            .background(Color.White, CircleShape)
+                            .background(
+                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                shape = RoundedCornerShape(25)
+                            )
                             .height(40.dp)
                             .fillMaxWidth(),
-                        decorationBox = {
-                            innerTextField -> Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 10.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .animateContentSize { initialValue, targetValue ->  },
-                                contentAlignment = Alignment.CenterStart
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        ),
+                        decorationBox = { innerTextField ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 10.dp)
                             ) {
-                                innerTextField()
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .animateContentSize { initialValue, targetValue ->  },
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    innerTextField()
+                                }
+                                IconButton(
+                                    onClick = {
+                                         postDetailViewModel.sendComment(context)
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Send,
+                                        "Send",
+                                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                                    )
+                                }
                             }
-                            IconButton(
-                                onClick = { },
-                            ) {
-                                Icon(Icons.Filled.Send, null)
-                            }
-                        }
                         }
                     )
                 }
@@ -115,12 +125,11 @@ fun PostDetailedPage(msg: PostData, type: PostType, commentList: ArrayList<comme
         .fillMaxWidth()
         .padding(paddingValues)
         ) {
-            Card(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(5.dp, 5.dp, 5.dp, 0.dp)
             ) {
-                PostMainBody(msg = msg, type = type)
+                PostMainBody(msg = postDetailData.value.postData, type = PostType(Detailed = true))
             }
 
             Row(
@@ -128,38 +137,38 @@ fun PostDetailedPage(msg: PostData, type: PostType, commentList: ArrayList<comme
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp)
+                    .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                    .padding(horizontal = 8.dp, vertical = 2.dp)
             ) {
-                Text(text = "评论", fontSize = 14.sp)
+                Text(
+                    text = "评论",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
 
                 Icon(Icons.Rounded.Sort, contentDescription = null, Modifier.size(18.dp))
             }
 
-            LazyColumn(modifier = Modifier.fillMaxSize()
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
             ) {
-                items(commentList) { commentData ->
-                    CommentComp(msg = commentData)
+                items(postDetailData.value.commentDataList) { commentData ->
+                    Column {
+                        CommentComp(msg = commentData)
+                        Divider(
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-val commentArray = arrayListOf(
-    commentData(
-        commentContent = "这是一个评论"
-    )
-)
 
-@Preview
-@Composable
-fun PostDetailedCardPreview() {
-    PostDetailedPage(
-        msg = PostData(
-            Type = 3,
-            graphResources = listOf(),
-        ),
-        type = PostType(Detailed = true),
-        commentList = commentArray
-    )
-}
+
+//@Preview
+//@Composable
+//fun PostDetailCardPreview() {
+//    PostDetailPage(4, viewModel())
+//}

@@ -29,7 +29,6 @@ data class ResponseWithPostDetail(
     val status: Boolean,
     val message: String,
     val post: Post,
-    @SerialName("comment")
     val comments: List<Comment>
 )
 
