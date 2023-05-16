@@ -58,7 +58,7 @@ interface LunchTimeApiService {
     suspend fun post(@Part("user_name") userName: RequestBody,
                      @Part("title") title: RequestBody, @Part("content") content: RequestBody,
                      @Part("location") location: RequestBody, @Part("tag") tag: RequestBody,
-                     @Part images: List<MultipartBody.Part>): ResponseWithPost
+                     @Part images: List<MultipartBody.Part>): ResponseWithPostID
 
     @GET("api/notice")
     suspend fun getNotice(@Query("user_name") name: String, @Query("type") type: Int): ResponseWithNotice
