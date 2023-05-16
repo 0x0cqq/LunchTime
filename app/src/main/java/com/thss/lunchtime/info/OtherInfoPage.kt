@@ -1,6 +1,8 @@
 package com.thss.lunchtime
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -15,10 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thss.lunchtime.component.InfoComp
 import com.thss.lunchtime.component.InfoData
+import com.thss.lunchtime.mainscreen.infopage.postArray
+import com.thss.lunchtime.post.PostData
+import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun OtherInfoPage(msg: InfoData) {
+fun OtherInfoPage(msg: InfoData, postList: List<PostData>) {
     Scaffold(
         topBar = {
             SmallTopAppBar(
@@ -38,9 +43,6 @@ fun OtherInfoPage(msg: InfoData) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(paddingValues)
-            .verticalScroll(
-                rememberScrollState()
-            )
     ) {
         Card(
             modifier = Modifier
@@ -61,7 +63,12 @@ fun OtherInfoPage(msg: InfoData) {
             Icon(Icons.Rounded.Sort, contentDescription = null, Modifier.size(18.dp))
         }
 
-        //TODO: LazyColumn
+        LazyColumn(modifier = Modifier.fillMaxSize()
+        ) {
+            items(postList) { postData ->
+                PostReviewCard({}, {}, msg = postData)
+            }
+        }
 
     }
     }
@@ -70,5 +77,5 @@ fun OtherInfoPage(msg: InfoData) {
 @Preview
 @Composable
 fun OtherInfoPagePreview() {
-    OtherInfoPage(msg = InfoData(InfoType = 2, relation = 3))
+    OtherInfoPage(msg = InfoData(InfoType = 2, relation = 3), postList = postArray)
 }

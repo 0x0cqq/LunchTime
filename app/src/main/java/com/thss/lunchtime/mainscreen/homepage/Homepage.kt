@@ -10,10 +10,14 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
@@ -39,12 +43,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.thss.lunchtime.post.PostReviewCard
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun Homepage(onClickNewPost: () -> Unit, homepageViewModel: HomepageViewModel) {
     val uiState = homepageViewModel.uiState.collectAsState()
     val tabs = listOf(HomepageTabs.byTime, HomepageTabs.byLike, HomepageTabs.byFav)
     val context = LocalContext.current
+
+    val state = rememberPullRefreshState(refreshing = uiState.value.isRefreshing, onRefresh = {
+        homepageViewModel.refresh(context)
+    })
 
     // refresh on the launch
     LaunchedEffect(Unit) {
@@ -85,21 +93,16 @@ fun Homepage(onClickNewPost: () -> Unit, homepageViewModel: HomepageViewModel) {
             }
         }
     ) { innerPadding ->
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
-            item {
-                Button(
-                    onClick = { homepageViewModel.refresh(context) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Refresh")
+        Box(modifier = Modifier.padding(innerPadding).pullRefresh(state = state)) {
+            LazyColumn( modifier = Modifier.fillMaxWidth()) {
+                items(uiState.value.postDataList) { postData ->
+                    PostReviewCard(
+                        onClickLike = {homepageViewModel.onClickLike(context, postData.postID)},
+                        onClickStar = {homepageViewModel.onClickStar(context, postData.postID)},
+                        msg = postData)
                 }
             }
-            items(uiState.value.postDataList) { postData ->
-                PostReviewCard(
-                    onClickLike = {homepageViewModel.onClickLike(context, postData.postID)},
-                    onClickStar = {homepageViewModel.onClickStar(context, postData.postID)},
-                    msg = postData)
-            }
+            PullRefreshIndicator(uiState.value.isRefreshing, state, Modifier.align(Alignment.TopCenter))
         }
     }
 }
