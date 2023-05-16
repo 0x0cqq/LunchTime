@@ -15,7 +15,7 @@ import com.thss.lunchtime.component.PostType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostReviewCard(msg: PostData, modifier: Modifier = Modifier)
+fun PostReviewCard(onClickLike: () -> Unit, onClickStar: () -> Unit, msg: PostData,  modifier: Modifier = Modifier)
 {
     Card(
 //        colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -24,7 +24,7 @@ fun PostReviewCard(msg: PostData, modifier: Modifier = Modifier)
         .padding(5.dp)
     ) {
         PostMainBody(msg = msg, type = PostType(false))
-        LikeStarComment(msg = msg)
+        LikeStarComment(onClickLike = onClickLike, onClickStar = onClickStar, msg = msg)
     }
 }
 
@@ -32,6 +32,8 @@ fun PostReviewCard(msg: PostData, modifier: Modifier = Modifier)
 @Composable
 fun PostPreviewCardPreview() {
     PostReviewCard(
+        onClickLike = {},
+        onClickStar = {},
         msg = PostData(
             Type = 3,
             graphResources = listOf(

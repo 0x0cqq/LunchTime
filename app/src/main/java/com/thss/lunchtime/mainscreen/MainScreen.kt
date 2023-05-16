@@ -14,9 +14,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.common.NoRippleInteractionSource
+import com.thss.lunchtime.mainscreen.infopage.MyInfoPage
+import com.thss.lunchtime.component.InfoData
 import com.thss.lunchtime.mainscreen.homepage.Homepage
 import com.thss.lunchtime.mainscreen.homepage.HomepageViewModel
 import com.thss.lunchtime.mainscreen.messagepage.Messagepage
+import com.thss.lunchtime.post.PostData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,16 +90,10 @@ fun MainScreen(onNewPost: () -> Unit, onOpenPost: (postId: Int) -> Unit, mainScr
                 Messagepage()
             }
             composable(MainScreens.My.route) {
-                MyPage()
+                MyInfoPage(msg = InfoData(InfoType = 1), postList = listOf(PostData(), PostData()))
             }
         }
     }
-}
-
-
-@Composable
-fun MyPage() {
-    Text("My page")
 }
 
 @Preview

@@ -96,9 +96,13 @@ fun Homepage(onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () 
         Box(modifier = Modifier.padding(innerPadding).pullRefresh(state = state)) {
             LazyColumn( modifier = Modifier.fillMaxWidth()) {
                 items(uiState.value.postDataList) { postData ->
-                    PostReviewCard(postData, modifier = Modifier.clickable {
-                        onClickPostPreviewCard(postData.postID)
-                    })
+                    PostReviewCard(
+                        onClickLike = {homepageViewModel.onClickLike(context, postData.postID)},
+                        onClickStar = {homepageViewModel.onClickStar(context, postData.postID)},
+                        modifier = Modifier.clickable { 
+                            onClickPostPreviewCard(postData.postID)
+                        },
+                        msg = postData)
                 }
             }
             PullRefreshIndicator(uiState.value.isRefreshing, state, Modifier.align(Alignment.TopCenter))

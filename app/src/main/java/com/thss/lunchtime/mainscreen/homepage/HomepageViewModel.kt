@@ -25,7 +25,75 @@ class HomepageViewModel : ViewModel() {
             state.copy(selectedIndex = index)
         }
     }
+    fun onClickLike(context: Context, postID: Int){
+        viewModelScope.launch {
+            val userData = context.userPreferencesStore
+            try{
+                val response = LunchTimeApi.retrofitService.likePost(
+                    userData.data.first().userName,
+                    postID)
+                if (response.status){
+                    // update likeCount and isLiked
+                    val newPostDataList = uiState.value.postDataList.map{ postData ->
+                        if(postData.postID == postID){
+                            if(response.result == 1){
+                                postData.copy(likeCount = postData.likeCount + 1, isLiked = true)
+                            }
+                            else{
+                                postData.copy(likeCount = postData.likeCount - 1, isLiked = false)
+                            }
+                        }
+                        else{
+                            postData
+                        }
+                    }
+                    _uiState.update{state ->
+                        state.copy(postDataList = newPostDataList)
+                    }
+                } else {
+                    Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                }
+            }catch (e : IOException) {
+                e.printStackTrace()
+                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
+    fun onClickStar(context: Context, postID: Int){
+        viewModelScope.launch {
+            val userData = context.userPreferencesStore
+            try{
+                val response = LunchTimeApi.retrofitService.starPost(
+                    userData.data.first().userName,
+                    postID)
+                if (response.status){
+                    // update starCount and isStared
+                    val newPostDataList = uiState.value.postDataList.map{ postData ->
+                        if(postData.postID == postID){
+                            if(response.result == 1){
+                                postData.copy(starCount = postData.starCount + 1, isStared = true)
+                            }
+                            else{
+                                postData.copy(starCount = postData.starCount - 1, isStared = false)
+                            }
+                        }
+                        else{
+                            postData
+                        }
+                    }
+                    _uiState.update{state ->
+                        state.copy(postDataList = newPostDataList)
+                    }
+                } else {
+                    Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                }
+            }catch (e : IOException) {
+                e.printStackTrace()
+                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     fun refresh(context: Context) {
         viewModelScope.launch {
             _uiState.update {
@@ -58,6 +126,7 @@ class HomepageViewModel : ViewModel() {
             }
         }
     }
+
 
     fun addRandomPost() {
         _uiState.update { state ->

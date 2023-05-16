@@ -18,7 +18,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thss.lunchtime.Like
@@ -29,18 +35,21 @@ import com.thss.lunchtime.component.CommentComp
 import com.thss.lunchtime.component.PostMainBody
 import com.thss.lunchtime.component.PostType
 import com.thss.lunchtime.component.CommentData
+import com.thss.lunchtime.mainscreen.homepage.HomepageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PostDetailPage(onBack: () -> Unit, postId: Int, postDetailViewModel: PostDetailViewModel)
 {
-    val postDetailData = postDetailViewModel.uiState.collectAsState()
+    var inputText = remember { mutableStateOf("") }
     val context = LocalContext.current
-
+    val homepageViewModel = HomepageViewModel()
+    val postDetailData = postDetailViewModel.uiState.collectAsState()
+    
+    
     LaunchedEffect(Unit) {
         postDetailViewModel.refresh(context, postId)
     }
-
     Scaffold(
         topBar = {
             SmallTopAppBar(
@@ -68,9 +77,8 @@ fun PostDetailPage(onBack: () -> Unit, postId: Int, postDetailViewModel: PostDet
                     .height(60.dp),
             ) {
                 if (postDetailData.value.currentCommentInput.isEmpty()) {
-                    LikeBtn(Like(10, false))
-
-                    StarBtn(Star(10, false))
+                    LikeBtn({homepageViewModel.onClickLike(context, msg.postID)}, Like(msg.likeCount, msg.isLiked))
+                    StarBtn({homepageViewModel.onClickStar(context, msg.postID)}, Star(msg.starCount, msg.isStared))
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))

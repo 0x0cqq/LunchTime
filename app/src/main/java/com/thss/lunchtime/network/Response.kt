@@ -39,3 +39,10 @@ data class ResponseWithPostList (
     var message: String = "",
     var posts: List<Post> = listOf()
 )
+
+@Serializable
+data class ResponseWithResult (
+    val status: Boolean = false,
+    val message: String = "",
+    val result: Int
+)

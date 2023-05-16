@@ -66,7 +66,7 @@ fun OtherInfoPage(msg: InfoData, postList: List<PostData>) {
         LazyColumn(modifier = Modifier.fillMaxSize()
         ) {
             items(postList) { postData ->
-                PostReviewCard(msg = postData)
+                PostReviewCard({}, {}, msg = postData)
             }
         }
 

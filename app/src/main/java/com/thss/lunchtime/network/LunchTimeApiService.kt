@@ -60,7 +60,15 @@ interface LunchTimeApiService {
                      @Part("location") location: RequestBody, @Part("tag") tag: RequestBody,
                      @Part images: List<MultipartBody.Part>): ResponseWithPostID
 
-    @GET("api/notice")
+    @FormUrlEncoded
+    @POST("/api/love_post")
+    suspend fun likePost(@Field("user_name") name: String, @Field("post_id") postID: Int): ResponseWithResult
+
+    @FormUrlEncoded
+    @POST("/api/save_post")
+    suspend fun starPost(@Field("user_name") name: String, @Field("post_id") postID: Int): ResponseWithResult
+
+    @GET("/api/notice")
     suspend fun getNotice(@Query("user_name") name: String, @Query("type") type: Int): ResponseWithNotice
 }
 

@@ -157,7 +157,7 @@ fun PostMainBody(msg: PostData, type: PostType)
 }
 
 @Composable
-fun LikeStarComment(msg: PostData) {
+fun LikeStarComment(onClickLike: () -> Unit, onClickStar: () -> Unit, msg: PostData) {
     // bottom like, star, comment
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
@@ -165,9 +165,9 @@ fun LikeStarComment(msg: PostData) {
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        LikeBtn(like = Like(10, false))
+        LikeBtn(onClickLike = onClickLike, like = Like(msg.likeCount, msg.isLiked))
 
-        StarBtn(star = Star(10, false))
+        StarBtn(onClickStar = onClickStar, star = Star(msg.starCount, msg.isStared))
 
         Row(
             horizontalArrangement = Arrangement.Center,
