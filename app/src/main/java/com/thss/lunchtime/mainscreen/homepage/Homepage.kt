@@ -14,7 +14,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowLeft
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -47,7 +48,7 @@ import com.thss.lunchtime.post.PostReviewCard
 @Composable
 fun Homepage(onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () -> Unit, homepageViewModel: HomepageViewModel) {
     val uiState = homepageViewModel.uiState.collectAsState()
-    val tabs = listOf(HomepageTabs.byTime, HomepageTabs.byLike, HomepageTabs.byFav)
+    val tabs = listOf(HomepageTabs.byTime, HomepageTabs.byPopularity, HomepageTabs.byComment)
     val context = LocalContext.current
 
     val state = rememberPullRefreshState(refreshing = uiState.value.isRefreshing, onRefresh = {
@@ -133,7 +134,11 @@ fun HomePageTopBar() {
                     modifier = Modifier.padding(start = 15.dp)
                 )
                 IconButton(onClick = { expanded = true }) {
-                    Icon(Icons.Default.ExpandMore, contentDescription = "Expand More")
+                    if(expanded) {
+                        Icon(Icons.Default.ArrowLeft, contentDescription = "Shrink")
+                    } else {
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Expand More")
+                    }
                 }
             }
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
