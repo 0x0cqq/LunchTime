@@ -32,6 +32,21 @@ fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (p
     val homepageViewModel: HomepageViewModel = viewModel()
     val myInfoPageViewModel: MyInfoPageViewModel = viewModel()
 
+    LaunchedEffect(Unit) {
+        val index = mainScreenViewModel.selectItem
+        val item = navigationBarItems[index]
+        mainScreenViewModel.selectNavItem(index)
+        mainScreenNavController.navigate(item.route) {
+            popUpTo(mainScreenNavController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            // Avoid multiple copies of the same destination when re-selecting the same item
+            launchSingleTop = true
+            // Restore state when re-selecting a previously selected item
+            restoreState = true
+        }
+    }
+
     Scaffold(
         bottomBar = {
             NavigationBar(
