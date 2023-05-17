@@ -141,7 +141,7 @@ fun PostMainBody(msg: PostData, type: PostType)
         AsyncPostPhotoGrid(imageUris = msg.graphResources, columnCount = 3)
 
         // location Tag
-        if(type.Detailed) {
+        if(type.Detailed && msg.location.isNotEmpty()) {
             Card(
                 shape = RoundedCornerShape(50),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),

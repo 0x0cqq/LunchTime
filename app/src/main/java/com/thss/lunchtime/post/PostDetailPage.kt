@@ -29,14 +29,14 @@ import com.thss.lunchtime.component.PostType
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun PostDetailPage(onBack: () -> Unit, postId: Int, postDetailViewModel: PostDetailViewModel)
+fun PostDetailPage(onBack: () -> Unit, postID: Int, postDetailViewModel: PostDetailViewModel)
 {
     val context = LocalContext.current
     val postDetailData = postDetailViewModel.uiState.collectAsState()
     
     
     LaunchedEffect(Unit) {
-        postDetailViewModel.refresh(context, postId)
+        postDetailViewModel.refresh(context, postID)
     }
     Scaffold(
         topBar = {
@@ -67,14 +67,14 @@ fun PostDetailPage(onBack: () -> Unit, postId: Int, postDetailViewModel: PostDet
                 if (postDetailData.value.currentCommentInput.isEmpty()) {
                     LikeBtn(
                         {
-                            postDetailViewModel.onClickLike(context, postId)
+                            postDetailViewModel.onClickLike(context, postID)
                         },
                         postDetailData.value.postData.likeCount,
                         postDetailData.value.postData.isLiked
                     )
                     StarBtn(
                         {
-                            postDetailViewModel.onClickStar(context, postId)
+                            postDetailViewModel.onClickStar(context, postID)
                         },
                         postDetailData.value.postData.starCount,
                         postDetailData.value.postData.isStared
@@ -113,7 +113,8 @@ fun PostDetailPage(onBack: () -> Unit, postId: Int, postDetailViewModel: PostDet
                                 }
                                 IconButton(
                                     onClick = {
-                                         postDetailViewModel.sendComment(context)
+                                        postDetailViewModel.sendComment(context)
+                                        postDetailViewModel.refresh(context, postID)
                                     }
                                 ) {
                                     Icon(

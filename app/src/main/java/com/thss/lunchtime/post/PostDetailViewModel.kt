@@ -126,24 +126,25 @@ class PostDetailViewModel : ViewModel() {
     }
 
     fun sendComment(context: Context) {
-//        viewModelScope.launch {
-//            val userData = context.userPreferencesStore
-//            try {
-//                val response =
-//                if (response.status) { // valid response
-//                    _uiState.update {
-//                        it.copy(
-//                            commentDataList = it.commentDataList + response.comment.toCommentData(),
-//                            currentCommentInput = ""
-//                        )
-//                    }
-//                } else { // invalid response
-//                    Toast.makeText(context, "无法发送评论, ${response.message}", Toast.LENGTH_SHORT).show()
-//                }
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
-//            }
-//        }
+        viewModelScope.launch {
+            val userData = context.userPreferencesStore
+            try {
+                val response = LunchTimeApi.retrofitService.commentPost(
+                    userData.data.first().userName,
+                    uiState.value.postData.postID,
+                    uiState.value.currentCommentInput
+                )
+
+                if (response.status) { // valid response
+                    Toast.makeText(context, "评论成功!", Toast.LENGTH_SHORT).show()
+                    updateCurrentComment("")
+                } else { // invalid response
+                    Toast.makeText(context, "无法发送评论, ${response.message}", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

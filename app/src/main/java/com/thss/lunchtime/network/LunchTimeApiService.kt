@@ -3,7 +3,6 @@ package com.thss.lunchtime.network
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -39,17 +38,16 @@ interface LunchTimeApiService {
     @POST("/api/login")
     suspend fun login(@Field("name") name: String, @Field("password") password: String): Response
 
+    @FormUrlEncoded
+    @POST("/api/register")
+    suspend fun register(@Field("name") name: String, @Field("password") password: String,
+                         @Field("email") email: String, @Field("verification") code: String): Response
 
     @GET("/api/post_detail")
     suspend fun getPostDetail(@Query("user_name") name : String, @Query("post_id") postID: Int) : ResponseWithPostDetail
 
     @GET("/api/posts")
     suspend fun getPostList(@Query("user_name") name : String, @Query("type") type: Int) : ResponseWithPostList
-
-    @FormUrlEncoded
-    @POST("/api/register")
-    suspend fun register(@Field("name") name: String, @Field("password") password: String,
-                         @Field("email") email: String, @Field("verification") code: String): Response
 
 
     // see https://stackoverflow.com/questions/39866676/retrofit-uploading-multiple-images-to-a-single-key
@@ -67,6 +65,10 @@ interface LunchTimeApiService {
     @FormUrlEncoded
     @POST("/api/save_post")
     suspend fun starPost(@Field("user_name") name: String, @Field("post_id") postID: Int): ResponseWithResult
+
+    @FormUrlEncoded
+    @POST("/api/comment_post")
+    suspend fun commentPost(@Field("user_name") name: String, @Field("post_id")postID: Int, @Field("comment") comment : String) : Response
 
     @GET("/api/notice")
     suspend fun getNotice(@Query("user_name") name: String, @Query("type") type: Int): ResponseWithNotice

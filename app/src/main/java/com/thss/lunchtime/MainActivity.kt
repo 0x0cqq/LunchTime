@@ -286,7 +286,7 @@ fun Application(modifier: Modifier = Modifier) {
                 onBack = {
                     applicationNavController.popBackStack()
                 },
-                postId = postId,
+                postID = postId,
                 postDetailViewModel = postDetailViewModel
             )
         }
