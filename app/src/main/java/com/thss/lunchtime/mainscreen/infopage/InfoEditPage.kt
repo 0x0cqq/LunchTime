@@ -1,51 +1,49 @@
 package com.thss.lunchtime.mainscreen.infopage
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.rounded.Sort
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.thss.lunchtime.R
-import com.thss.lunchtime.component.InfoComp
 import com.thss.lunchtime.component.InfoData
-import com.thss.lunchtime.post.PostData
-import com.thss.lunchtime.post.PostReviewCard
 
-class InfoEditViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
 
-}
-
+// 除了注销，其他（修改密码blabla）的应该都可以在这里再开一个 navigation 解决？
+// 就不要往上走了 上面好拥挤
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun InfoEditPage(myinfo: InfoData) {
+fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, infoEditViewModel: InfoEditViewModel) {
+    val infoData = infoEditViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        infoEditViewModel.refresh(context)
+    }
     Scaffold(
         topBar = {
             SmallTopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "back"
+                        )
+                    }
+                },
                 title = {
                     Text(text = "个人信息详情")
                 }
@@ -61,7 +59,7 @@ fun InfoEditPage(myinfo: InfoData) {
             .fillMaxWidth()
         ) {
             ImageChange()
-            SimpleInfoChange(myinfo)
+            SimpleInfoChange(infoData.value)
 
             Spacer(modifier = Modifier.height(50.dp))
 
@@ -88,7 +86,7 @@ fun InfoEditPage(myinfo: InfoData) {
                     containerColor = MaterialTheme.colorScheme.errorContainer,
                     contentColor = MaterialTheme.colorScheme.error
                 ),
-                onClick = { /*TODO*/ }
+                onClick = onLogOut
             ) {
                 Text(text = "退出登录", fontSize = 18.sp)
             }
@@ -160,5 +158,5 @@ fun SimpleInfoChange(myinfo: InfoData) {
 @Preview
 @Composable
 fun InfoEditPreview() {
-    InfoEditPage(myinfo = InfoData())
+    InfoEditPage({}, {}, infoEditViewModel = InfoEditViewModel())
 }

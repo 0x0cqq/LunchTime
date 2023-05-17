@@ -3,8 +3,6 @@ package com.thss.lunchtime
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.rounded.Sort
@@ -17,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thss.lunchtime.component.InfoComp
 import com.thss.lunchtime.component.InfoData
+import com.thss.lunchtime.component.InfoType
 import com.thss.lunchtime.mainscreen.infopage.postArray
 import com.thss.lunchtime.post.PostData
 import com.thss.lunchtime.post.PostReviewCard
@@ -48,7 +47,10 @@ fun OtherInfoPage(msg: InfoData, postList: List<PostData>) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            InfoComp(msg = msg)
+            InfoComp(
+                msg = msg,
+                type = InfoType.Others,
+            )
         }
 
         Row(
@@ -77,5 +79,5 @@ fun OtherInfoPage(msg: InfoData, postList: List<PostData>) {
 @Preview
 @Composable
 fun OtherInfoPagePreview() {
-    OtherInfoPage(msg = InfoData(InfoType = 2, relation = 3), postList = postArray)
+    OtherInfoPage(msg = InfoData(relation = 3), postList = postArray)
 }

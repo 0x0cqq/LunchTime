@@ -15,24 +15,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.common.NoRippleInteractionSource
 import com.thss.lunchtime.mainscreen.infopage.MyInfoPage
-import com.thss.lunchtime.component.InfoData
 import com.thss.lunchtime.mainscreen.homepage.Homepage
 import com.thss.lunchtime.mainscreen.homepage.HomepageViewModel
+import com.thss.lunchtime.mainscreen.infopage.MyInfoPageViewModel
 import com.thss.lunchtime.mainscreen.messagepage.Messagepage
-import com.thss.lunchtime.post.PostData
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onNewPost: () -> Unit, onOpenPost: (postId: Int) -> Unit, mainScreenViewModel: MainScreenViewModel) {
+fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (postId: Int) -> Unit, mainScreenViewModel: MainScreenViewModel) {
     val mainScreenNavController = rememberNavController()
     // 脚手架，上面下面的栏和
     val navigationBarItems = listOf(
         MainScreens.Home, MainScreens.Message, MainScreens.My
     )
     val homepageViewModel: HomepageViewModel = viewModel()
+    val myInfoPageViewModel: MyInfoPageViewModel = viewModel()
 
     Scaffold(
         bottomBar = {
@@ -90,7 +88,10 @@ fun MainScreen(onNewPost: () -> Unit, onOpenPost: (postId: Int) -> Unit, mainScr
                 Messagepage()
             }
             composable(MainScreens.My.route) {
-                MyInfoPage(msg = InfoData(InfoType = 1), postList = listOf(PostData(), PostData()))
+                MyInfoPage(
+                    onOpenInfoEdit = onOpenInfoEdit,
+                    myInfoPageViewModel = myInfoPageViewModel
+                )
             }
         }
     }
@@ -99,5 +100,5 @@ fun MainScreen(onNewPost: () -> Unit, onOpenPost: (postId: Int) -> Unit, mainScr
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen({}, {_ -> }, MainScreenViewModel())
+    MainScreen({}, {}, {_ -> }, MainScreenViewModel())
 }

@@ -98,18 +98,20 @@ fun PostMainBody(msg: PostData, type: PostType)
                     else -> Color.Gray
                 }
 
-                // Tag
-                Card(
-                    shape = RoundedCornerShape(15.dp),
-                    colors = CardDefaults.cardColors(containerColor = color),
-                ) {
-                    Text(
-                        text = msg.tag,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp)
-                    )
-                }
+                if(msg.tag.isNotEmpty()) {
+                    // Tag
+                    Card(
+                        shape = RoundedCornerShape(15.dp),
+                        colors = CardDefaults.cardColors(containerColor = color),
+                    ) {
+                        Text(
+                            text = msg.tag,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp)
+                        )
+                    }
 
-                Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
 
                 // title
                 Text(

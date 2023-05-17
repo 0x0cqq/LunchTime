@@ -27,6 +27,8 @@ import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.mainscreen.MainScreen
 import com.thss.lunchtime.mainscreen.MainScreenViewModel
+import com.thss.lunchtime.mainscreen.infopage.InfoEditPage
+import com.thss.lunchtime.mainscreen.infopage.InfoEditViewModel
 import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.newpost.NewPostPage
 import com.thss.lunchtime.newpost.NewPostViewModel
@@ -76,6 +78,7 @@ fun Application(modifier: Modifier = Modifier) {
     val signupViewModel : SignUpViewModel = viewModel()
     val mainScreenViewModel : MainScreenViewModel = viewModel()
     val newPostViewModel : NewPostViewModel = viewModel()
+    val infoEditViewModel : InfoEditViewModel = viewModel()
     val applicationNavController = rememberNavController()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -270,6 +273,9 @@ fun Application(modifier: Modifier = Modifier) {
         }
         composable("main") {
             MainScreen(
+                onOpenInfoEdit = {
+                    applicationNavController.navigate("editProfile")
+                },
                 onOpenPost = { postId ->
                     applicationNavController.navigate("post/$postId")
                 },
@@ -288,6 +294,23 @@ fun Application(modifier: Modifier = Modifier) {
                 },
                 postID = postId,
                 postDetailViewModel = postDetailViewModel
+            )
+        }
+        composable("editProfile") {
+            InfoEditPage(
+                onBack = {
+                    applicationNavController.popBackStack()
+                },
+                onLogOut = {
+                    scope.launch {
+                        userData.updateData { userData ->
+                            userData.toBuilder().setUserName("").setIsLogin(false).build()
+                        }
+                        while (applicationNavController.popBackStack()) {}
+                        applicationNavController.navigate("login")
+                    }
+                },
+                infoEditViewModel = infoEditViewModel
             )
         }
     }

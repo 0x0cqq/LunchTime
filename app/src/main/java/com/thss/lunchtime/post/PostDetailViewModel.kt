@@ -126,6 +126,10 @@ class PostDetailViewModel : ViewModel() {
     }
 
     fun sendComment(context: Context) {
+        if(uiState.value.currentCommentInput.isEmpty()){
+            Toast.makeText(context, "评论不能为空", Toast.LENGTH_SHORT).show()
+            return
+        }
         viewModelScope.launch {
             val userData = context.userPreferencesStore
             try {

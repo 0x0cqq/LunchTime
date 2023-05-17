@@ -3,10 +3,8 @@ package com.thss.lunchtime.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Chat
-import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.rounded.HowToReg
 import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material.icons.rounded.PersonOff
@@ -16,8 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,21 +21,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thss.lunchtime.R
 import com.thss.lunchtime.ui.theme.Purple40
-import java.text.SimpleDateFormat
 import java.util.*
 
 data class InfoData(
     val Avatar: String = "User_default",
     val ID: String = "User_default",
-    val InfoType: Int = -1, //1: personal, 2:other
     val SelfIntro: String = "Hello World",
     val followCnt: Int = 0,
     val fansCnt: Int = 0,
     val relation: Int = 1, //1: unfollow, 2: followed, 3:blocked
 )
 
+data class InfoType(
+    val infoType: Int = 1, //1: self, 2: others
+) {
+    companion object {
+        val Self: InfoType
+            get() = InfoType(1)
+
+        val Others: InfoType
+            get() = InfoType(2)
+    }
+}
+
 @Composable
-fun InfoComp(msg: InfoData)
+fun InfoComp(msg: InfoData, type: InfoType)
 {
     Column (modifier = Modifier.padding(all = 16.dp)) {
         Row(
@@ -59,7 +65,7 @@ fun InfoComp(msg: InfoData)
             )
 
             Row (verticalAlignment = Alignment.CenterVertically) {
-                if (msg.InfoType == 2) {
+                if (type.infoType == 2) {
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
                             Icons.Outlined.Chat,
@@ -108,9 +114,10 @@ fun InfoComp(msg: InfoData)
             Spacer(modifier = Modifier.width(24.dp))
             Text(text = msg.fansCnt.toString() + "  粉丝")
             Spacer(modifier = Modifier.width(24.dp))
-            if (msg.InfoType == 2) {
+            // 可以考虑替换成 when 语句
+            if (type.infoType == 2) {
                 Text(text = "TA的收藏")
-            } else if (msg.InfoType == 1) {
+            } else if (type.infoType == 1) {
                 Text(text = "我的收藏")
             }
 
@@ -192,7 +199,8 @@ fun InfoPreviewComp(msg: InfoData)
 @Composable
 fun InfoPreview() {
     InfoComp(
-        msg = InfoData()
+        msg = InfoData(),
+        type = InfoType(1)
     )
 }
 
