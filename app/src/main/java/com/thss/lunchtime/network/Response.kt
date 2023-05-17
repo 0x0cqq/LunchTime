@@ -16,7 +16,8 @@ data class ResponseWithNotice(
     @SerialName("notice_list")
     val noticeList: List<Notice> = listOf()
 )
-    
+
+@Serializable
 data class ResponseWithPostID(
     val status: Boolean,
     val message: String,
