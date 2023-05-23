@@ -9,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowLeft
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +29,7 @@ fun SearchTextField() {
     }
 
     Box(
-        modifier = Modifier.fillMaxWidth(0.9f)
+        modifier = Modifier.fillMaxWidth()
     ) {
         BasicTextField(
             value = searchText,
@@ -45,12 +46,22 @@ fun SearchTextField() {
             decorationBox = { innerTextField ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Box(
                         contentAlignment = Alignment.CenterStart,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.weight(1f)
                     ) {
                         innerTextField()
+                    }
+                   IconButton(
+                        onClick = {}
+                    ) {
+                        androidx.compose.material3.Icon(
+                            Icons.Filled.Search,
+                            "Send",
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
                     }
                 }
             }
@@ -66,7 +77,8 @@ fun SearchPageTopBar() {
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -78,7 +90,6 @@ fun SearchPageTopBar() {
             ) {
                 androidx.compose.material3.Text(
                     dropDownMenuItems[selectedMenuIndex],
-                    modifier = Modifier.padding(start = 10.dp)
                 )
                 androidx.compose.material3.IconButton(onClick = { expanded = true }) {
                     if (expanded) {
@@ -112,10 +123,6 @@ fun SearchPageTopBar() {
         }
 
         SearchTextField()
-
-        IconButton(onClick = { /* TODO */ }) {
-            Icon(Icons.Outlined.Search, contentDescription = "Search")
-        }
     }
 }
 
