@@ -72,9 +72,6 @@ fun CommentComp(msg: CommentData)
                         }
                     }
 
-                    // likebtn
-                    ThumbBtn()
-
                 }
 
                 Text(
