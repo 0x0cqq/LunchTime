@@ -6,15 +6,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -99,6 +101,7 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, infoEditViewModel: In
 fun ImageChange() {
     Row(
         horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom,
         modifier = Modifier
             .fillMaxWidth()
             .padding(20.dp)
@@ -113,6 +116,21 @@ fun ImageChange() {
                 .clip(CircleShape)
                 .clickable { /*TODO*/ }
         )
+
+        IconButton(
+            modifier = Modifier
+                .offset((-57).dp, (-3).dp)
+                .clip(CircleShape)
+                .size(45.dp),
+            colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White),
+            onClick = { /*TODO*/ }) {
+            Icon(
+                Icons.Default.PhotoCamera,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier.size(30.dp)
+            )
+        }
     }
 }
 
@@ -121,6 +139,11 @@ fun ImageChange() {
 @Composable
 fun SimpleInfoChange(myinfo: InfoData) {
     Card() {
+        var openNameDialog = remember { mutableStateOf(true) }
+        var openIntroDialog = remember { mutableStateOf(false) }
+        var newNameText = remember { mutableStateOf(myinfo.ID) }
+        var newIntroText = remember { mutableStateOf(myinfo.SelfIntro) }
+
         Row (modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 15.dp)
             .fillMaxWidth()) {
@@ -128,7 +151,60 @@ fun SimpleInfoChange(myinfo: InfoData) {
             Text(
                 text = myinfo.ID,
                 fontSize = 20.sp,
-                modifier = Modifier.clickable{}
+                modifier = Modifier.clickable{
+                    openNameDialog.value = ! openNameDialog.value
+                }
+            )
+        }
+
+        if ( openNameDialog.value) {
+            AlertDialog(
+                onDismissRequest = {
+                    // 当用户点击对话框以外的地方或者按下系统返回键将会执行的代码
+                    openNameDialog.value = false
+                },
+                title = {
+                    Text(
+                        text = "修改用户名",
+                        fontWeight = FontWeight.W700,
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                },
+                text = {
+                    TextField(
+                        value = newNameText.value,
+                        onValueChange = {
+                            newNameText.value = it
+                        },
+                        singleLine = true
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            openNameDialog.value = false
+                        },
+                    ) {
+                        Text(
+                            "确认",
+                            fontWeight = FontWeight.W700,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            openNameDialog.value = false
+                        }
+                    ) {
+                        Text(
+                            "取消",
+                            fontWeight = FontWeight.W700,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             )
         }
 
@@ -139,15 +215,69 @@ fun SimpleInfoChange(myinfo: InfoData) {
             Text(
                 text = myinfo.SelfIntro,
                 fontSize = 16.sp,
-                modifier = Modifier.clickable{}
+                modifier = Modifier.clickable{
+                    openIntroDialog.value = !openIntroDialog.value
+                }
             )
         }
+
+        if ( openIntroDialog.value) {
+            AlertDialog(
+                onDismissRequest = {
+                    // 当用户点击对话框以外的地方或者按下系统返回键将会执行的代码
+                    openIntroDialog.value = false
+                },
+                title = {
+                    Text(
+                        text = "修改个人简介",
+                        fontWeight = FontWeight.W700,
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                },
+                text = {
+                    TextField(
+                        value = newIntroText.value,
+                        onValueChange = {
+                            newIntroText.value = it
+                        },
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            openIntroDialog.value = false
+                        },
+                    ) {
+                        Text(
+                            "确认",
+                            fontWeight = FontWeight.W700,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            openIntroDialog.value = false
+                        }
+                    ) {
+                        Text(
+                            "取消",
+                            fontWeight = FontWeight.W700,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            )
+        }
+
 
         Text(
             text = "黑名单",
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 15.dp),
+                .padding(horizontal = 20.dp, vertical = 15.dp)
+                .clickable {  },
             fontSize = 20.sp,
             color = Color.Gray
         )

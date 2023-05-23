@@ -88,6 +88,8 @@ val postArray = listOf(
     PostData(),
     PostData(),
     PostData(),
+    PostData(),
+    PostData(),
 )
 
 @Preview

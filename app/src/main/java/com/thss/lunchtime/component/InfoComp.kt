@@ -29,7 +29,7 @@ data class InfoData(
     val SelfIntro: String = "Hello World",
     val followCnt: Int = 0,
     val fansCnt: Int = 0,
-    val relation: Int = 1, //1: unfollow, 2: followed, 3:blocked
+    val relation: Int = 2, //1: unfollow, 2: followed, 3:blocked
 )
 
 data class InfoType(
