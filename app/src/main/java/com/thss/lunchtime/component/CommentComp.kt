@@ -2,6 +2,7 @@ package com.thss.lunchtime.component
 
 import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -29,7 +30,7 @@ data class CommentData(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentComp(msg: CommentData)
+fun CommentComp(msg: CommentData, onClickTopBar: () -> Unit)
 {
     Box(
         modifier = Modifier
@@ -45,10 +46,11 @@ fun CommentComp(msg: CommentData)
             Column (modifier = Modifier.weight(1f)) {
                 Row (
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row {
+                    Row (
+                        modifier = Modifier.clickable { onClickTopBar() }
+                    ){
                         AsyncImage(
                             model = msg.commentAvatar,
                             contentDescription = "Avatar",
@@ -102,7 +104,8 @@ fun CommentComp(msg: CommentData)
 @Preview
 @Composable
 fun CommentCompPreview() {
-    CommentComp(msg =
-        CommentData(commentContent = "你说得对")
+    CommentComp(
+        msg = CommentData(commentContent = "你说得对"),
+        onClickTopBar = {}
     )
 }

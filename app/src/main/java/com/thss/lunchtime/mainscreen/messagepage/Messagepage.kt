@@ -27,8 +27,7 @@ import com.thss.lunchtime.noticePreviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-@Preview
-fun Messagepage(messageViewModel: MessageViewModel = viewModel()) {
+fun Messagepage(onClickPostNotice: (postId: Int) -> Unit , messageViewModel: MessageViewModel = viewModel()) {
     val uiState = messageViewModel.uiState.collectAsState()
     val tabs = listOf(MessageTabs.Comment, MessageTabs.Like, MessageTabs.Chat)
     val context = LocalContext.current
@@ -68,8 +67,21 @@ fun Messagepage(messageViewModel: MessageViewModel = viewModel()) {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 val noticeDataList: List<noticeData> =
                     uiState.value.NoticeDataLists[uiState.value.selectedIndex]
-                items(noticeDataList) { noticeData ->
-                    noticePreviewCard(msg = noticeData)
+                if (uiState.value.selectedIndex < 2){
+                    items(noticeDataList) { noticeData ->
+                        noticePreviewCard(
+                            msg = noticeData,
+                            onClickNotice = {onClickPostNotice(noticeData.postId)}
+                        )
+                    }
+                }
+                else{
+                    items(noticeDataList) { noticeData ->
+                        noticePreviewCard(
+                            msg = noticeData,
+                            onClickNotice = {}
+                        )
+                    }
                 }
             }
             PullRefreshIndicator(uiState.value.isRefreshing, state, Modifier.align(Alignment.TopCenter))

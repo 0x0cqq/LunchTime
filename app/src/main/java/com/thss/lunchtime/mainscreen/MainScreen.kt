@@ -18,6 +18,7 @@ import com.thss.lunchtime.mainscreen.infopage.MyInfoPage
 import com.thss.lunchtime.mainscreen.homepage.Homepage
 import com.thss.lunchtime.mainscreen.homepage.HomepageViewModel
 import com.thss.lunchtime.mainscreen.infopage.MyInfoPageViewModel
+import com.thss.lunchtime.mainscreen.messagepage.MessageViewModel
 import com.thss.lunchtime.mainscreen.messagepage.Messagepage
 
 
@@ -30,6 +31,7 @@ fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (p
         MainScreens.Home, MainScreens.Message, MainScreens.My
     )
     val homepageViewModel: HomepageViewModel = viewModel()
+    val messageViewModel: MessageViewModel = viewModel()
     val myInfoPageViewModel: MyInfoPageViewModel = viewModel()
 
     LaunchedEffect(Unit) {
@@ -101,12 +103,16 @@ fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (p
                 )
             }
             composable(MainScreens.Message.route) {
-                Messagepage()
+                Messagepage(
+                    onClickPostNotice = onOpenPost,
+                    messageViewModel = messageViewModel
+                )
             }
             composable(MainScreens.My.route) {
                 MyInfoPage(
                     onOpenInfoEdit = onOpenInfoEdit,
-                    myInfoPageViewModel = myInfoPageViewModel
+                    myInfoPageViewModel = myInfoPageViewModel,
+                    onClickPost = onOpenPost
                 )
             }
         }

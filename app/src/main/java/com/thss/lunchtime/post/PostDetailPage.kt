@@ -166,7 +166,9 @@ fun PostDetailPage(onBack: () -> Unit, onOpenUserInfo: (userName: String) -> Uni
             ) {
                 items(postDetailData.value.commentDataList) { commentData ->
                     Column {
-                        CommentComp(msg = commentData)
+                        CommentComp(
+                            msg = commentData,
+                            onClickTopBar = { onOpenUserInfo(commentData.commentID) })
                         Divider(
                             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                         )

@@ -350,7 +350,9 @@ fun Application(modifier: Modifier = Modifier) {
         composable("myInfoPage"){
             MyInfoPage(
                 onOpenInfoEdit = { applicationNavController.navigate("editProfile") },
-                myInfoPageViewModel = myInfoPageViewModel
+                onClickPost = { postId ->
+                    applicationNavController.navigate("post/$postId") },
+                myInfoPageViewModel = myInfoPageViewModel,
             )
         }
     }
