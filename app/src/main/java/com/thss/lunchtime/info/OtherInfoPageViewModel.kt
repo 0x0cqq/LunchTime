@@ -1,4 +1,4 @@
-package com.thss.lunchtime.mainscreen.infopage
+package com.thss.lunchtime.info
 
 import android.content.Context
 import android.widget.Toast
@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thss.lunchtime.component.InfoData
 import com.thss.lunchtime.data.userPreferencesStore
+import com.thss.lunchtime.mainscreen.infopage.MyInfoPageState
 import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.network.toInfoData
 import com.thss.lunchtime.network.toPostData
@@ -15,24 +16,24 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MyInfoPageViewModel: ViewModel() {
+class OtherInfoPageViewModel : ViewModel(){
     private val _uiState = MutableStateFlow(MyInfoPageState(InfoData(), listOf()))
     val uiState = _uiState.asStateFlow()
 
-    fun refresh(context: Context) {
+    fun refresh(context: Context, targetUserName: String){
         val userData = context.userPreferencesStore
         viewModelScope.launch {
-            val userName = userData.data.first().userName
             try{
+                val myUserName = userData.data.first().userName
                 val response = LunchTimeApi.retrofitService.getUserInfo(
-                    name = userName,
-                    target_name = userName
+                    name = myUserName,
+                    target_name = targetUserName
                 )
                 if (response.status) {
                     val info = response.userInfo.toInfoData()
                     _uiState.update { state ->
                         state.copy(
-                            infoData = info.copy(ID = userName)
+                            infoData = info.copy(ID = targetUserName)
                         )
                     }
                 }
@@ -42,10 +43,11 @@ class MyInfoPageViewModel: ViewModel() {
             }
 
             try {
+                val myUserName = userData.data.first().userName
                 val response = LunchTimeApi.retrofitService.getPostList(
-                    name = userName,
+                    name = myUserName,
                     type = 0,
-                    targetName = userName
+                    targetName = targetUserName
                 )
                 if (response.status) {
                     _uiState.update { state ->
@@ -62,5 +64,4 @@ class MyInfoPageViewModel: ViewModel() {
             }
         }
     }
-
 }

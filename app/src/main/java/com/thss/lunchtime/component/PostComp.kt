@@ -42,7 +42,7 @@ data class PostType(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostMainBody(msg: PostData, type: PostType)
+fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit)
 {
     Column (modifier = Modifier.padding(bottom = 5.dp)) {
         Row(
@@ -51,6 +51,9 @@ fun PostMainBody(msg: PostData, type: PostType)
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 16.dp)
+                .clickable{
+                    onClickTopBar()
+                }
         ) {
             Row (
                 modifier = Modifier.padding(all = 8.dp),
@@ -259,6 +262,7 @@ fun PostBodyPreview() {
             Type = 3,
             graphResources = listOf()
         ),
-        type = PostType(Detailed = true)
+        type = PostType(Detailed = true),
+        onClickTopBar = {}
     )
 }

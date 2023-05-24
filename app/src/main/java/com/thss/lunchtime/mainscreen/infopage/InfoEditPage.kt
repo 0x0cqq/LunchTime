@@ -1,5 +1,7 @@
 package com.thss.lunchtime.mainscreen.infopage
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,12 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.thss.lunchtime.R
 import com.thss.lunchtime.component.InfoData
 
@@ -60,8 +64,8 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, infoEditViewModel: In
             modifier = Modifier
             .fillMaxWidth()
         ) {
-            ImageChange()
-            SimpleInfoChange(infoData.value)
+            ImageChange(infoData.value.Avatar)
+            SimpleInfoChange(infoData.value, infoEditViewModel, context)
 
             Spacer(modifier = Modifier.height(50.dp))
 
@@ -98,7 +102,7 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, infoEditViewModel: In
 }
 
 @Composable
-fun ImageChange() {
+fun ImageChange(avatar: Uri) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.Bottom,
@@ -106,15 +110,16 @@ fun ImageChange() {
             .fillMaxWidth()
             .padding(20.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.touxaingnvhai),
-            contentDescription = "heading",
+        AsyncImage(
+            model = avatar,
+            contentDescription = "Avatar",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                // Set image size to 40dp
-                .size(200.dp)
                 // Clip image to shaped as a circle
+                .size(200.dp)
                 .clip(CircleShape)
-                .clickable { /*TODO*/ }
+                .clickable {/* TODO */ },
+            alignment = Alignment.Center
         )
 
         IconButton(
@@ -137,12 +142,12 @@ fun ImageChange() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SimpleInfoChange(myinfo: InfoData) {
+fun SimpleInfoChange(myinfo: InfoData, infoEditViewModel: InfoEditViewModel, context: Context) {
     Card() {
-        var openNameDialog = remember { mutableStateOf(true) }
+        var openNameDialog = remember { mutableStateOf(false) }
         var openIntroDialog = remember { mutableStateOf(false) }
-        var newNameText = remember { mutableStateOf(myinfo.ID) }
-        var newIntroText = remember { mutableStateOf(myinfo.SelfIntro) }
+        var newNameText = remember { mutableStateOf("") }
+        var newIntroText = remember { mutableStateOf("") }
 
         Row (modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 15.dp)
@@ -183,6 +188,7 @@ fun SimpleInfoChange(myinfo: InfoData) {
                     TextButton(
                         onClick = {
                             openNameDialog.value = false
+                            infoEditViewModel.modifyUserName(context, newNameText.value)
                         },
                     ) {
                         Text(
@@ -208,13 +214,13 @@ fun SimpleInfoChange(myinfo: InfoData) {
             )
         }
 
-        Column (modifier = Modifier
+        Row (modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 5.dp)
             .fillMaxWidth()) {
             Text(text = "个人简介", modifier = Modifier.width(130.dp), fontSize = 20.sp, color = Color.Gray)
             Text(
                 text = myinfo.SelfIntro,
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 modifier = Modifier.clickable{
                     openIntroDialog.value = !openIntroDialog.value
                 }
@@ -246,6 +252,7 @@ fun SimpleInfoChange(myinfo: InfoData) {
                     TextButton(
                         onClick = {
                             openIntroDialog.value = false
+                            infoEditViewModel.modifyDescription(context, newIntroText.value)
                         },
                     ) {
                         Text(

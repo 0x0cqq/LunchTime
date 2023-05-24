@@ -1,8 +1,10 @@
 package com.thss.lunchtime.component
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.rounded.HowToReg
@@ -14,17 +16,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.thss.lunchtime.R
 import com.thss.lunchtime.ui.theme.Purple40
 import java.util.*
 
 data class InfoData(
-    val Avatar: String = "User_default",
+    val Avatar: Uri = Uri.EMPTY,
     val ID: String = "User_default",
     val SelfIntro: String = "Hello World",
     val followCnt: Int = 0,
@@ -54,15 +58,25 @@ fun InfoComp(msg: InfoData, type: InfoType)
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.touxaingnvhai),
-                contentDescription = "heading",
+            AsyncImage(
+                model = msg.Avatar,
+                contentDescription = "Avatar",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    // Set image size to 40dp
-                    .size(100.dp)
                     // Clip image to shaped as a circle
-                    .clip(CircleShape)
+                    .size(90.dp)
+                    .clip(CircleShape),
+                alignment = Alignment.Center
             )
+//            Image(
+//                painter = painterResource(id = R.drawable.touxaingnvhai),
+//                contentDescription = "heading",
+//                modifier = Modifier
+//                    // Set image size to 40dp
+//                    .size(100.dp)
+//                    // Clip image to shaped as a circle
+//                    .clip(CircleShape)
+//            )
 
             Row (verticalAlignment = Alignment.CenterVertically) {
                 if (type.infoType == 2) {

@@ -46,7 +46,7 @@ import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun Homepage(onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () -> Unit, homepageViewModel: HomepageViewModel) {
+fun Homepage(onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () -> Unit, onOpenUserInfo: (userName: String) -> Unit,homepageViewModel: HomepageViewModel) {
     val uiState = homepageViewModel.uiState.collectAsState()
     val tabs = listOf(HomepageTabs.byTime, HomepageTabs.byPopularity, HomepageTabs.byComment)
     val context = LocalContext.current
@@ -100,6 +100,7 @@ fun Homepage(onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () 
                     PostReviewCard(
                         onClickLike = {homepageViewModel.onClickLike(context, postData.postID)},
                         onClickStar = {homepageViewModel.onClickStar(context, postData.postID)},
+                        onClickTopBar = {onOpenUserInfo(postData.publisherID)},
                         modifier = Modifier.clickable { 
                             onClickPostPreviewCard(postData.postID)
                         },

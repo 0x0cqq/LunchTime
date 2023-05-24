@@ -76,7 +76,7 @@ fun MyInfoPage(onOpenInfoEdit: () -> Unit, myInfoPageViewModel: MyInfoPageViewMo
         LazyColumn(modifier = Modifier.fillMaxSize()
         ) {
             items(uiState.value.postList) { postData ->
-                PostReviewCard({}, {}, msg = postData)
+                PostReviewCard({}, {}, {}, msg = postData)
             }
         }
     } 

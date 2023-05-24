@@ -29,7 +29,7 @@ import com.thss.lunchtime.component.PostType
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun PostDetailPage(onBack: () -> Unit, postID: Int, postDetailViewModel: PostDetailViewModel)
+fun PostDetailPage(onBack: () -> Unit, onOpenUserInfo: (userName: String) -> Unit, postID: Int, postDetailViewModel: PostDetailViewModel)
 {
     val context = LocalContext.current
     val postDetailData = postDetailViewModel.uiState.collectAsState()
@@ -138,7 +138,10 @@ fun PostDetailPage(onBack: () -> Unit, postID: Int, postDetailViewModel: PostDet
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                PostMainBody(msg = postDetailData.value.postData, type = PostType(Detailed = true))
+                PostMainBody(
+                    msg = postDetailData.value.postData,
+                    type = PostType(Detailed = true),
+                    onClickTopBar = {onOpenUserInfo(postDetailData.value.postData.publisherID)})
             }
 
             Row(
