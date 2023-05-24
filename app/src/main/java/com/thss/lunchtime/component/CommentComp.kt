@@ -1,5 +1,6 @@
 package com.thss.lunchtime.component
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -7,10 +8,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.thss.lunchtime.R
 import com.thss.lunchtime.ThumbBtn
 import java.text.SimpleDateFormat
@@ -18,7 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 data class CommentData(
-    val commentAvatar: String = "User_default",
+    val commentAvatar: Uri = Uri.EMPTY,
     val commentID: String = "User_default",
     val commentDate: Date = Date(),
     val commentContent: String = "",
@@ -46,15 +49,24 @@ fun CommentComp(msg: CommentData)
                         .fillMaxWidth()
                 ) {
                     Row {
-                        Image(
-                            painter = painterResource(id = R.drawable.touxaingnvhai),
-                            contentDescription = "heading",
+                        AsyncImage(
+                            model = msg.commentAvatar,
+                            contentDescription = "Avatar",
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                // Set image size to 40dp
-                                .size(40.dp)
                                 // Clip image to shaped as a circle
-                                .clip(CircleShape)
+                                .size(40.dp)
+                                .clip(CircleShape),
                         )
+//                        Image(
+//                            painter = painterResource(id = R.drawable.touxaingnvhai),
+//                            contentDescription = "heading",
+//                            modifier = Modifier
+//                                // Set image size to 40dp
+//                                .size(40.dp)
+//                                // Clip image to shaped as a circle
+//                                .clip(CircleShape)
+//                        )
 
                         Spacer(modifier = Modifier.width(4.dp))
 

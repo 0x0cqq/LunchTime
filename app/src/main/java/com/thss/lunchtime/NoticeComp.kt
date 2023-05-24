@@ -1,5 +1,6 @@
 package com.thss.lunchtime
 
+import android.net.Uri
 import androidx.compose.runtime.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -29,7 +30,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 data class noticeData(
-    val noticerAvatar: String = "User_default",
+    val noticerAvatar: Uri = Uri.EMPTY,
     val noticerID: String = "User_default",
     val noticeDate: Date = Date(),
     val noticeType: Int = -1,
@@ -60,15 +61,24 @@ fun noticePreviewCard(msg: noticeData)
                         .fillMaxWidth()
                 ) {
                     Row {
-                        Image(
-                            painter = painterResource(id = R.drawable.touxaingnvhai),
-                            contentDescription = "heading",
+                        AsyncImage(
+                            model = msg.noticerAvatar,
+                            contentDescription = "Avatar",
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                // Set image size to 40dp
-                                .size(40.dp)
                                 // Clip image to shaped as a circle
-                                .clip(CircleShape)
+                                .size(40.dp)
+                                .clip(CircleShape),
                         )
+//                        Image(
+//                            painter = painterResource(id = R.drawable.touxaingnvhai),
+//                            contentDescription = "heading",
+//                            modifier = Modifier
+//                                // Set image size to 40dp
+//                                .size(40.dp)
+//                                // Clip image to shaped as a circle
+//                                .clip(CircleShape)
+//                        )
 
                         Spacer(modifier = Modifier.width(4.dp))
 
