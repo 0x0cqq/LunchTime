@@ -13,6 +13,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.thss.lunchtime.chat.ChatPage
+import com.thss.lunchtime.chat.ChatPageViewModel
 import com.thss.lunchtime.common.NoRippleInteractionSource
 import com.thss.lunchtime.mainscreen.infopage.MyInfoPage
 import com.thss.lunchtime.mainscreen.homepage.Homepage
@@ -31,6 +33,7 @@ fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (p
     )
     val homepageViewModel: HomepageViewModel = viewModel()
     val myInfoPageViewModel: MyInfoPageViewModel = viewModel()
+    val chatPageViewModel : ChatPageViewModel = viewModel()
 
     LaunchedEffect(Unit) {
         val index = mainScreenViewModel.selectItem
@@ -100,7 +103,7 @@ fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (p
                 )
             }
             composable(MainScreens.Message.route) {
-                Messagepage()
+                ChatPage({}, chatPageViewModel)
             }
             composable(MainScreens.My.route) {
                 MyInfoPage(

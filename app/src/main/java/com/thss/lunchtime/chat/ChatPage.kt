@@ -27,6 +27,9 @@ import java.util.*
 @Composable
 fun ChatPage(onBack: () -> Unit, chatPageViewModel: ChatPageViewModel) {
     val uiState = chatPageViewModel.uiState.collectAsState()
+    LaunchedEffect(Unit) {
+        chatPageViewModel.connect(123, 456)
+    }
     Scaffold(
         topBar = {
             SmallTopAppBar(
@@ -97,6 +100,13 @@ fun ChatPage(onBack: () -> Unit, chatPageViewModel: ChatPageViewModel) {
             .fillMaxWidth()
             .padding(paddingValues)
         ) {
+            item {
+                Button(
+                    onClick = { chatPageViewModel.send("test") },
+                ) {
+                    Text(text = "send")
+                }
+            }
             items(uiState.value.messageList) { message ->
                 if (message.userID == uiState.value.userID) {
                     // Opposite chat bubble
@@ -159,7 +169,6 @@ fun ChatBubbleMine(message: ChatMessage) {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatBubbleOpposite(message: ChatMessage) {
     Row(
