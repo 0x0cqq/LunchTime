@@ -81,7 +81,9 @@ fun ChatPage(onBack: () -> Unit, chatPageViewModel: ChatPageViewModel) {
                                     innerTextField()
                                 }
                                 IconButton(
-                                    onClick = {  }
+                                    onClick = {
+                                        chatPageViewModel.send(uiState.value.inputValue)
+                                    }
                                 ) {
                                     Icon(
                                         Icons.Filled.Send,
@@ -96,17 +98,12 @@ fun ChatPage(onBack: () -> Unit, chatPageViewModel: ChatPageViewModel) {
             }
         },
     ) { paddingValues ->
-        LazyColumn(modifier = Modifier
+        LazyColumn(
+            modifier = Modifier
             .fillMaxWidth()
-            .padding(paddingValues)
+            .padding(paddingValues),
+            reverseLayout = true
         ) {
-            item {
-                Button(
-                    onClick = { chatPageViewModel.send("test") },
-                ) {
-                    Text(text = "send")
-                }
-            }
             items(uiState.value.messageList) { message ->
                 if (message.userID == uiState.value.userID) {
                     // Opposite chat bubble
@@ -135,7 +132,7 @@ fun ChatMessageAvatar(uri: Uri) {
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun ChatMessageBody(message: ChatMessage) {
+fun ChatMessageBody(message: ChatData) {
     Card() {
         Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)) {
             Row() {
@@ -157,7 +154,7 @@ fun ChatMessageBody(message: ChatMessage) {
 }
 
 @Composable
-fun ChatBubbleMine(message: ChatMessage) {
+fun ChatBubbleMine(message: ChatData) {
     Row(
         verticalAlignment = Alignment.Top,
         modifier = Modifier.padding(start = 70.dp, end = 10.dp)
@@ -170,7 +167,7 @@ fun ChatBubbleMine(message: ChatMessage) {
 
 
 @Composable
-fun ChatBubbleOpposite(message: ChatMessage) {
+fun ChatBubbleOpposite(message: ChatData) {
     Row(
         verticalAlignment = Alignment.Top,
         modifier = Modifier.padding(end = 70.dp, start = 10.dp)
@@ -192,11 +189,11 @@ fun ChatPreview() {
 @Preview
 @Composable
 fun ChatBubbleMinePreview() {
-    ChatBubbleMine(ChatMessage())
+    ChatBubbleMine(ChatData())
 }
 
 @Preview
 @Composable
 fun ChatBubbleOppositePreview() {
-    ChatBubbleOpposite(ChatMessage())
+    ChatBubbleOpposite(ChatData())
 }

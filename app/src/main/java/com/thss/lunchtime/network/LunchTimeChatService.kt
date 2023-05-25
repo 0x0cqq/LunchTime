@@ -31,25 +31,30 @@ class LunchTimeChatService(private val senderID: Int, private val receiverID: In
         }
     }
     private var webSocketSession: DefaultClientWebSocketSession? = null
-    suspend fun connect() {
+    suspend fun connect(onReceive: (chatResponse: ChatResponse) -> Unit) {
         if (webSocketSession == null) {
             Log.d("LunchTime Chat", "Connect to $BASE_WS_URL/chat/$senderID/$receiverID/")
             webSocketSession = client.webSocketSession {
                 url("$BASE_WS_URL/chat/$senderID/$receiverID/")
             }
         }
+        getChatHistory()
         webSocketSession!!.incoming.consumeAsFlow().collect { frame ->
-            val chatMessage = webSocketSession!!.converter?.deserialize(frame) as? ChatMessage
-            Log.d("LunchTime Chat", "Receive ${chatMessage?.message}")
+            onReceive(webSocketSession!!.converter?.deserialize(frame) as ChatResponse)
         }
     }
-    suspend fun send(value : String) {
+    suspend fun send(onSend: (chatMessage: ChatMessage) -> Unit, value : String) {
+        val chatMessage = ChatMessage(senderID, value)
         webSocketSession!!.sendSerialized(
-            ChatMessage(
-                senderID = senderID,
-                message = value,
-                timestamp = System.currentTimeMillis()
-            )
+            ChatRequest("message", chatMessage)
+        )
+//        onSend(chatMessage)
+        // TODO: 这里浪费比较大
+        getChatHistory()
+    }
+    suspend fun getChatHistory() {
+        webSocketSession!!.sendSerialized(
+            ChatRequest("history")
         )
     }
     suspend fun close() {
