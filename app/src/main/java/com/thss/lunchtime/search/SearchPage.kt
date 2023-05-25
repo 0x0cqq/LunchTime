@@ -29,7 +29,7 @@ fun SearchPage()
         LazyColumn(modifier = Modifier.fillMaxSize()
         ) {
             items(postArray) { postData ->
-                PostReviewCard({}, {}, msg = postData)
+                PostReviewCard({}, {}, {}, msg = postData)
             }
         }
     }

@@ -11,6 +11,8 @@ import java.util.Date
 data class Comment (
     @SerialName("user_name")
     val userName: String = "",
+    @SerialName("user_image")
+    val userAvatar: String = "",
     val content: String = "",
     @SerialName("create_time")
     val createTime: Long = 0,
@@ -19,6 +21,7 @@ data class Comment (
 fun Comment.toCommentData() : CommentData {
     return CommentData(
         commentID = userName,
+        commentAvatar = userAvatar.toUri(),
         commentDate = Date(createTime * 1000),
         commentContent = content
     )
@@ -30,6 +33,8 @@ data class Post (
     val postID: Int = 0,
     @SerialName("user_name")
     val name: String = "",
+    @SerialName("user_image")
+    val avatar: String = "",
     val tag: String = "",
     val location: String = "",
     val title: String = "",
@@ -56,6 +61,7 @@ fun Post.toPostData() : PostData {
     return PostData(
         postID = postID,
         publisherID = name,
+        publisherAvatar = avatar.toUri(),
         tag = tag,
         location = location,
         title = title,

@@ -72,6 +72,21 @@ interface LunchTimeApiService {
 
     @GET("/api/notice")
     suspend fun getNotice(@Query("user_name") name: String, @Query("type") type: Int): ResponseWithNotice
+
+    @GET("/api/user_info")
+    suspend fun getUserInfo(@Query("user_name") name: String, @Query("target_user_name") target_name: String): ResponseWithUserInfo
+
+    @FormUrlEncoded
+    @POST("/api/modify_user_name")
+    suspend fun modifyUserName(@Field("original_user_name") old_name: String, @Field("new_user_name") new_name: String): Response
+
+    @FormUrlEncoded
+    @POST("/api/modify_user_description")
+    suspend fun modifyUserDescription(@Field("user_name") name: String, @Field("new_description") description: String): Response
+
+    @FormUrlEncoded
+    @POST("/api/modify_user_password")
+    suspend fun modifyUserPassword(@Field("user_name") name: String, @Field("old_password") old_password: String, @Field("new_password") new_password: String): Response
 }
 
 object LunchTimeApi {

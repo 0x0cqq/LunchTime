@@ -1,5 +1,6 @@
 package com.thss.lunchtime.network
 
+import androidx.core.net.toUri
 import com.thss.lunchtime.noticeData
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -23,7 +24,7 @@ data class Notice(
 
 fun Notice.toNoticeData(selectedIndex : Int) : noticeData {
     return noticeData(
-        noticerAvatar = "User_default",
+        noticerAvatar = userImage.toUri(),
         noticerID = userName,
         noticeDate = Date(createTime * 1000),
         noticeType = selectedIndex + 1,

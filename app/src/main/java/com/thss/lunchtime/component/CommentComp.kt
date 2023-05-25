@@ -1,16 +1,20 @@
 package com.thss.lunchtime.component
 
+import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.thss.lunchtime.R
 import com.thss.lunchtime.ThumbBtn
 import java.text.SimpleDateFormat
@@ -18,7 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 data class CommentData(
-    val commentAvatar: String = "User_default",
+    val commentAvatar: Uri = Uri.EMPTY,
     val commentID: String = "User_default",
     val commentDate: Date = Date(),
     val commentContent: String = "",
@@ -26,7 +30,7 @@ data class CommentData(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentComp(msg: CommentData)
+fun CommentComp(msg: CommentData, onClickTopBar: () -> Unit)
 {
     Box(
         modifier = Modifier
@@ -42,19 +46,29 @@ fun CommentComp(msg: CommentData)
             Column (modifier = Modifier.weight(1f)) {
                 Row (
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row {
-                        Image(
-                            painter = painterResource(id = R.drawable.touxaingnvhai),
-                            contentDescription = "heading",
+                    Row (
+                        modifier = Modifier.clickable { onClickTopBar() }
+                    ){
+                        AsyncImage(
+                            model = msg.commentAvatar,
+                            contentDescription = "Avatar",
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                // Set image size to 40dp
-                                .size(40.dp)
                                 // Clip image to shaped as a circle
-                                .clip(CircleShape)
+                                .size(40.dp)
+                                .clip(CircleShape),
                         )
+//                        Image(
+//                            painter = painterResource(id = R.drawable.touxaingnvhai),
+//                            contentDescription = "heading",
+//                            modifier = Modifier
+//                                // Set image size to 40dp
+//                                .size(40.dp)
+//                                // Clip image to shaped as a circle
+//                                .clip(CircleShape)
+//                        )
 
                         Spacer(modifier = Modifier.width(4.dp))
 
@@ -87,7 +101,8 @@ fun CommentComp(msg: CommentData)
 @Preview
 @Composable
 fun CommentCompPreview() {
-    CommentComp(msg =
-        CommentData(commentContent = "你说得对")
+    CommentComp(
+        msg = CommentData(commentContent = "你说得对"),
+        onClickTopBar = {}
     )
 }

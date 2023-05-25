@@ -20,7 +20,7 @@ fun ChatList() {
         LazyColumn(modifier = Modifier.fillMaxSize()
         ) {
             items(chatArray) {chatItem ->
-                noticePreviewCard(msg = chatItem)
+                noticePreviewCard(msg = chatItem, onClickNotice = {})
             }
         }
     }

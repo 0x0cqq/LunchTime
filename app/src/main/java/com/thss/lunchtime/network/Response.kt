@@ -47,3 +47,11 @@ data class ResponseWithResult (
     val message: String = "",
     val result: Int
 )
+
+@Serializable
+data class ResponseWithUserInfo(
+    val status: Boolean = false,
+    val message: String = "",
+    @SerialName("user_info")
+    val userInfo: UserInfo
+)

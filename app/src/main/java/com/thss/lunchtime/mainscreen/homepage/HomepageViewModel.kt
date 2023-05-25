@@ -2,6 +2,8 @@ package com.thss.lunchtime.mainscreen.homepage
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thss.lunchtime.post.PostData
@@ -88,12 +90,13 @@ class HomepageViewModel : ViewModel() {
                 } else {
                     Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
                 }
-            }catch (e : IOException) {
+            } catch (e : IOException) {
                 e.printStackTrace()
                 Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
     fun refresh(context: Context) {
         viewModelScope.launch {
             _uiState.update {

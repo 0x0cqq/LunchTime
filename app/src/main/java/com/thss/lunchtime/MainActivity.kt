@@ -25,10 +25,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.data.userPreferencesStore
+import com.thss.lunchtime.info.OtherInfoPageViewModel
 import com.thss.lunchtime.mainscreen.MainScreen
 import com.thss.lunchtime.mainscreen.MainScreenViewModel
 import com.thss.lunchtime.mainscreen.infopage.InfoEditPage
 import com.thss.lunchtime.mainscreen.infopage.InfoEditViewModel
+import com.thss.lunchtime.mainscreen.infopage.MyInfoPage
+import com.thss.lunchtime.mainscreen.infopage.MyInfoPageViewModel
 import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.newpost.NewPostPage
 import com.thss.lunchtime.newpost.NewPostViewModel
@@ -79,6 +82,8 @@ fun Application(modifier: Modifier = Modifier) {
     val mainScreenViewModel : MainScreenViewModel = viewModel()
     val newPostViewModel : NewPostViewModel = viewModel()
     val infoEditViewModel : InfoEditViewModel = viewModel()
+    val otherInfoPageViewModel : OtherInfoPageViewModel = viewModel()
+    val myInfoPageViewModel : MyInfoPageViewModel = viewModel()
     val applicationNavController = rememberNavController()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -282,6 +287,17 @@ fun Application(modifier: Modifier = Modifier) {
                 onNewPost = {
                     applicationNavController.navigate("newpost")
                 },
+                onOpenUserInfo = { targetUserName ->
+                    scope.launch {
+                        val myUserName = userData.data.first().userName
+                        if (myUserName == targetUserName){
+                            applicationNavController.navigate("myInfoPage")
+                        }
+                        else{
+                            applicationNavController.navigate("otherInfoPage/$targetUserName")
+                        }
+                    }
+                },
                 mainScreenViewModel = mainScreenViewModel
             )
         }
@@ -291,6 +307,17 @@ fun Application(modifier: Modifier = Modifier) {
             PostDetailPage(
                 onBack = {
                     applicationNavController.popBackStack()
+                },
+                onOpenUserInfo = { targetUserName ->
+                    scope.launch {
+                        val myUserName = userData.data.first().userName
+                        if (myUserName == targetUserName){
+                            applicationNavController.navigate("myInfoPage")
+                        }
+                        else{
+                            applicationNavController.navigate("otherInfoPage/$targetUserName")
+                        }
+                    }
                 },
                 postID = postId,
                 postDetailViewModel = postDetailViewModel
@@ -311,6 +338,21 @@ fun Application(modifier: Modifier = Modifier) {
                     }
                 },
                 infoEditViewModel = infoEditViewModel
+            )
+        }
+        composable("otherInfoPage/{userName}"){ backStackEntry ->
+            val userName : String = backStackEntry.arguments?.getString("userName")!!
+            OtherInfoPage(
+                otherInfoPageViewModel = otherInfoPageViewModel,
+                userName = userName
+            )
+        }
+        composable("myInfoPage"){
+            MyInfoPage(
+                onOpenInfoEdit = { applicationNavController.navigate("editProfile") },
+                onClickPost = { postId ->
+                    applicationNavController.navigate("post/$postId") },
+                myInfoPageViewModel = myInfoPageViewModel,
             )
         }
     }
