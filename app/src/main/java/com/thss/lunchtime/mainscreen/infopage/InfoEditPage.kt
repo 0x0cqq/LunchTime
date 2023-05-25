@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +21,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,6 +67,17 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, infoEditViewModel: In
             modifier = Modifier
             .fillMaxWidth()
         ) {
+            val openPasswordDialog = remember { mutableStateOf(false) }
+            val originPassword = remember {
+                mutableStateOf("")
+            }
+            val newPassword = remember {
+                mutableStateOf("")
+            }
+            val originPasswordHidden = remember { mutableStateOf(false) }
+            val newPasswordHidden = remember { mutableStateOf(false) }
+
+
             ImageChange(infoData.value.Avatar)
             SimpleInfoChange(infoData.value, infoEditViewModel, context)
 
@@ -77,9 +91,102 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, infoEditViewModel: In
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
-                onClick = { /*TODO*/ }
+                onClick = { openPasswordDialog.value = !openPasswordDialog.value }
             ) {
                 Text(text = "修改密码", fontSize = 18.sp)
+            }
+
+            if (openPasswordDialog.value) {
+                AlertDialog(
+                    onDismissRequest = {
+                        // 当用户点击对话框以外的地方或者按下系统返回键将会执行的代码
+                        openPasswordDialog.value = false
+                    },
+                    title = {
+                        Text(
+                            text = "修改用户名",
+                            fontWeight = FontWeight.W700,
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                    },
+                    text = {
+                        Column() {
+                            TextField(
+                                value = originPassword.value,
+                                onValueChange = {
+                                    originPassword.value = it
+                                },
+                                singleLine = true,
+                                label = {
+                                    Text("原密码")
+                                },
+                                trailingIcon = {
+                                    IconButton(
+                                        onClick = {
+                                            originPasswordHidden.value = !originPasswordHidden.value
+                                        }
+                                    ){
+                                        Icon(Icons.Default.Visibility, contentDescription = null)
+                                    }
+                                },
+                                visualTransformation = if(originPasswordHidden.value) PasswordVisualTransformation() else VisualTransformation.None
+                            )
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            TextField(
+                                value = newPassword.value,
+                                onValueChange = {
+                                    newPassword.value = it
+                                },
+                                singleLine = true,
+                                label = {
+                                    Text(text = "新密码")
+                                },
+                                trailingIcon = {
+                                    IconButton(
+                                        onClick = {
+                                            newPasswordHidden.value = !newPasswordHidden.value
+                                        }
+                                    ){
+                                        Icon(Icons.Default.Visibility, contentDescription = null)
+                                    }
+                                },
+                                visualTransformation = if(newPasswordHidden.value) PasswordVisualTransformation() else VisualTransformation.None
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                newPasswordHidden.value = false
+                                originPasswordHidden.value = false
+                                openPasswordDialog.value = false
+                            },
+                        ) {
+                            Text(
+                                "确认",
+                                fontWeight = FontWeight.W700,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                newPasswordHidden.value = false
+                                originPasswordHidden.value = false
+                                openPasswordDialog.value = false
+                            }
+                        ) {
+                            Text(
+                                "取消",
+                                fontWeight = FontWeight.W700,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                )
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -162,7 +269,7 @@ fun SimpleInfoChange(myinfo: InfoData, infoEditViewModel: InfoEditViewModel, con
             )
         }
 
-        if ( openNameDialog.value) {
+        if (openNameDialog.value) {
             AlertDialog(
                 onDismissRequest = {
                     // 当用户点击对话框以外的地方或者按下系统返回键将会执行的代码
@@ -227,7 +334,7 @@ fun SimpleInfoChange(myinfo: InfoData, infoEditViewModel: InfoEditViewModel, con
             )
         }
 
-        if ( openIntroDialog.value) {
+        if (openIntroDialog.value) {
             AlertDialog(
                 onDismissRequest = {
                     // 当用户点击对话框以外的地方或者按下系统返回键将会执行的代码
@@ -284,7 +391,7 @@ fun SimpleInfoChange(myinfo: InfoData, infoEditViewModel: InfoEditViewModel, con
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 15.dp)
-                .clickable {  },
+                .clickable { },
             fontSize = 20.sp,
             color = Color.Gray
         )

@@ -63,7 +63,9 @@ fun Messagepage(onClickPostNotice: (postId: Int) -> Unit , messageViewModel: Mes
         },
         modifier = Modifier.padding(10.dp),
     ) {innerPadding ->
-        Box ( modifier = Modifier.padding(innerPadding).pullRefresh(state) ) {
+        Box ( modifier = Modifier
+            .padding(innerPadding)
+            .pullRefresh(state) ) {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 val noticeDataList: List<noticeData> =
                     uiState.value.NoticeDataLists[uiState.value.selectedIndex]

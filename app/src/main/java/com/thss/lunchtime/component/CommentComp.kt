@@ -86,9 +86,6 @@ fun CommentComp(msg: CommentData, onClickTopBar: () -> Unit)
                         }
                     }
 
-                    // likebtn
-                    ThumbBtn()
-
                 }
 
                 Text(
