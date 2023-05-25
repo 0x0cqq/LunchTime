@@ -24,7 +24,7 @@ import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MyInfoPage(onOpenInfoEdit: () -> Unit, onClickPost: (postId: Int) -> Unit, myInfoPageViewModel: MyInfoPageViewModel) {
+fun MyInfoPage(onOpenInfoEdit: () -> Unit, onOpenFollowingList : () -> Unit, onOpenFansList: () -> Unit, onOpenSavedList: () -> Unit,onClickPost: (postId: Int) -> Unit, myInfoPageViewModel: MyInfoPageViewModel) {
     val uiState = myInfoPageViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
@@ -59,6 +59,9 @@ fun MyInfoPage(onOpenInfoEdit: () -> Unit, onClickPost: (postId: Int) -> Unit, m
             InfoComp(
                 msg = uiState.value.infoData,
                 type = InfoType.Self,
+                onClickFans = onOpenFansList,
+                onClickFollows = onOpenFollowingList,
+                onClickSaved = onOpenSavedList,
             )
         }
 
@@ -105,5 +108,8 @@ fun MyInfoPagePreview() {
     MyInfoPage(
         onOpenInfoEdit = {},
         onClickPost = {},
+        onOpenFansList = {},
+        onOpenFollowingList = {},
+        onOpenSavedList = {},
         myInfoPageViewModel = MyInfoPageViewModel())
 }

@@ -49,6 +49,8 @@ interface LunchTimeApiService {
     @GET("/api/posts")
     suspend fun getPostList(@Query("user_name") name : String, @Query("type") type: Int, @Query("target_user_name") targetName: String = "") : ResponseWithPostList
 
+    @GET("/api/posts_saved")
+    suspend fun getPostListSaved(@Query("user_name") name : String,  @Query("target_user_name") targetName: String = "") : ResponseWithPostList
 
     // see https://stackoverflow.com/questions/39866676/retrofit-uploading-multiple-images-to-a-single-key
     @Multipart
@@ -87,6 +89,17 @@ interface LunchTimeApiService {
     @FormUrlEncoded
     @POST("/api/modify_user_password")
     suspend fun modifyUserPassword(@Field("user_name") name: String, @Field("old_password") old_password: String, @Field("new_password") new_password: String): Response
+
+    @FormUrlEncoded
+    @POST("/api/attention")
+    suspend fun FollowUser(@Field("user_name") name: String, @Field("target_user_name") targetName: String): ResponseWithResult
+
+    @FormUrlEncoded
+    @POST("/api/hate")
+    suspend fun BlockUser(@Field("user_name") name: String, @Field("target_user_name") targetName: String): ResponseWithResult
+
+    @GET("/api/attention_list")
+    suspend fun getAttentionList(@Query("user_name") name: String, @Query("type") type: Int): ResponseWithUserList
 }
 
 object LunchTimeApi {

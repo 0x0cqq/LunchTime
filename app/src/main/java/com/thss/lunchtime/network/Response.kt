@@ -55,3 +55,11 @@ data class ResponseWithUserInfo(
     @SerialName("user_info")
     val userInfo: UserInfo
 )
+
+@Serializable
+data class ResponseWithUserList (
+    val status: Boolean = false,
+    val message: String = "",
+    @SerialName("user_list")
+    val userList: List<UserInfo> = listOf()
+)

@@ -6,6 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserInfo(
+    @SerialName("user_name")
+    val userName: String,
     @SerialName("user_image")
     val userImage: String,
     @SerialName("user_description")
@@ -25,11 +27,12 @@ fun UserInfo.toInfoData(): InfoData {
     if (isFollowing){
         relation = 2
     }
-    else if(isHating){
+    if(isHating){
         relation = 3
     }
     return InfoData(
         Avatar = userImage.toUri(),
+        ID = userName,
         SelfIntro = userDescription,
         followCnt = followCount,
         fansCnt = fansCount,
