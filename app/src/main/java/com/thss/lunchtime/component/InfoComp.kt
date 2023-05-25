@@ -2,6 +2,7 @@ package com.thss.lunchtime.component
 
 import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,7 +50,7 @@ data class InfoType(
 }
 
 @Composable
-fun InfoComp(msg: InfoData, type: InfoType)
+fun InfoComp(onClickRelation: () -> Unit = {}, onClickFollows: () -> Unit, onClickFans: () -> Unit, onClickSaved: () -> Unit, msg: InfoData, type: InfoType)
 {
     Column (modifier = Modifier.padding(all = 16.dp)) {
         Row(
@@ -98,7 +99,7 @@ fun InfoComp(msg: InfoData, type: InfoType)
                         icon,
                         contentDescription = null,
                         tint = Purple40,
-                        modifier = Modifier.size(35.dp)
+                        modifier = Modifier.size(35.dp).clickable { onClickRelation() }
                     )
                 }
             }
@@ -124,15 +125,26 @@ fun InfoComp(msg: InfoData, type: InfoType)
                 .fillMaxWidth()
                 .padding(end = 16.dp, top = 16.dp)
         ) {
-            Text(text = msg.followCnt.toString() + "  关注")
+            Text(
+                text = msg.followCnt.toString() + "  关注",
+                modifier = Modifier.clickable { onClickFollows() }
+            )
             Spacer(modifier = Modifier.width(24.dp))
-            Text(text = msg.fansCnt.toString() + "  粉丝")
+            Text(
+                text = msg.fansCnt.toString() + "  粉丝",
+                modifier = Modifier.clickable { onClickFans() }
+            )
             Spacer(modifier = Modifier.width(24.dp))
             // 可以考虑替换成 when 语句
             if (type.infoType == 2) {
-                Text(text = "TA的收藏")
+                Text(
+                    text = "TA的收藏",
+                    modifier = Modifier.clickable { onClickSaved() })
             } else if (type.infoType == 1) {
-                Text(text = "我的收藏")
+                Text(
+                    text = "我的收藏",
+                    modifier = Modifier.clickable { onClickSaved() }
+                )
             }
 
         }
@@ -141,10 +153,10 @@ fun InfoComp(msg: InfoData, type: InfoType)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InfoPreviewComp(msg: InfoData)
+fun InfoPreviewComp(msg: InfoData, modifier: Modifier = Modifier)
 {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(5.dp)
     ) {
@@ -161,15 +173,25 @@ fun InfoPreviewComp(msg: InfoData)
                         .fillMaxWidth()
                 ) {
                     Row {
-                        Image(
-                            painter = painterResource(id = R.drawable.touxaingnvhai),
-                            contentDescription = "heading",
+                        AsyncImage(
+                            model = msg.Avatar,
+                            contentDescription = "Avatar",
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                // Set image size to 40dp
-                                .size(40.dp)
                                 // Clip image to shaped as a circle
-                                .clip(CircleShape)
+                                .size(40.dp)
+                                .clip(CircleShape),
+                            alignment = Alignment.Center
                         )
+//                        Image(
+//                            painter = painterResource(id = R.drawable.touxaingnvhai),
+//                            contentDescription = "heading",
+//                            modifier = Modifier
+//                                // Set image size to 40dp
+//                                .size(40.dp)
+//                                // Clip image to shaped as a circle
+//                                .clip(CircleShape)
+//                        )
 
                         Spacer(modifier = Modifier.width(4.dp))
 
@@ -214,7 +236,11 @@ fun InfoPreviewComp(msg: InfoData)
 fun InfoPreview() {
     InfoComp(
         msg = InfoData(),
-        type = InfoType(1)
+        type = InfoType(1),
+        onClickRelation = {},
+        onClickFans = {},
+        onClickFollows = {},
+        onClickSaved = {}
     )
 }
 

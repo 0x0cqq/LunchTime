@@ -26,6 +26,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.info.OtherInfoPageViewModel
+import com.thss.lunchtime.listpages.BlockListPage
+import com.thss.lunchtime.listpages.FansListPage
+import com.thss.lunchtime.listpages.FollowingListPage
+import com.thss.lunchtime.listpages.StarPostListPage
 import com.thss.lunchtime.mainscreen.MainScreen
 import com.thss.lunchtime.mainscreen.MainScreenViewModel
 import com.thss.lunchtime.mainscreen.infopage.InfoEditPage
@@ -298,6 +302,21 @@ fun Application(modifier: Modifier = Modifier) {
                         }
                     }
                 },
+                onOpenFans = { scope.launch{
+                    val userName = userData.data.first().userName
+                    applicationNavController.navigate("fansList/$userName")
+                }
+                },
+                onOpenFollows = {scope.launch {
+                    val userName = userData.data.first().userName
+                    applicationNavController.navigate("followingList/$userName")
+                }
+                },
+                onOpenSaved = { scope.launch{
+                    val userName = userData.data.first().userName
+                    applicationNavController.navigate("starPostList/$userName")
+                }
+                },
                 mainScreenViewModel = mainScreenViewModel
             )
         }
@@ -337,6 +356,10 @@ fun Application(modifier: Modifier = Modifier) {
                         applicationNavController.navigate("login")
                     }
                 },
+                onOpenBlockList = { scope.launch{
+                    val userName = userData.data.first().userName
+                    applicationNavController.navigate("blockList/$userName")
+                } },
                 infoEditViewModel = infoEditViewModel
             )
         }
@@ -344,7 +367,12 @@ fun Application(modifier: Modifier = Modifier) {
             val userName : String = backStackEntry.arguments?.getString("userName")!!
             OtherInfoPage(
                 otherInfoPageViewModel = otherInfoPageViewModel,
-                userName = userName
+                userName = userName,
+                onClickPost = { postId ->
+                    applicationNavController.navigate("post/$postId") },
+                onClickFans = { applicationNavController.navigate("fansList/$userName") },
+                onClickFollows = { applicationNavController.navigate("followingList/$userName") },
+                onClickSaved = { applicationNavController.navigate("starPostList/$userName") }
             )
         }
         composable("myInfoPage"){
@@ -352,8 +380,66 @@ fun Application(modifier: Modifier = Modifier) {
                 onOpenInfoEdit = { applicationNavController.navigate("editProfile") },
                 onClickPost = { postId ->
                     applicationNavController.navigate("post/$postId") },
+                onOpenFansList = { scope.launch{
+                        val userName = userData.data.first().userName
+                        applicationNavController.navigate("fansList/$userName")
+                    }
+                },
+                onOpenFollowingList = {scope.launch {
+                        val userName = userData.data.first().userName
+                        applicationNavController.navigate("followingList/$userName")
+                    }
+                },
+                onOpenSavedList = {scope.launch {
+                    val userName = userData.data.first().userName
+                    applicationNavController.navigate("starPostList/$userName")
+                }
+                },
                 myInfoPageViewModel = myInfoPageViewModel,
             )
+        }
+        composable("blockList/{userName}"){ backStackEntry ->
+            val userName : String = backStackEntry.arguments?.getString("userName")!!
+            BlockListPage(
+                onBack = { applicationNavController.popBackStack() },
+                userName = userName,
+                onClickUserInfo = { targetUserName -> applicationNavController.navigate("otherInfoPage/$targetUserName") }
+            )
+        }
+        composable("followingList/{userName}"){backStackEntry ->
+            val userName : String = backStackEntry.arguments?.getString("userName")!!
+            FollowingListPage(
+                onBack = { applicationNavController.popBackStack() },
+                userName = userName,
+                onClickUserInfo = { targetUserName -> applicationNavController.navigate("otherInfoPage/$targetUserName") }
+            )
+        }
+        composable("fansList/{userName}"){backStackEntry ->
+            val userName : String = backStackEntry.arguments?.getString("userName")!!
+            FansListPage(
+                onBack = { applicationNavController.popBackStack() },
+                userName = userName,
+                onClickUserInfo = { targetUserName -> applicationNavController.navigate("otherInfoPage/$targetUserName") }
+            )
+        }
+        composable("starPostList/{userName}"){backStackEntry ->
+            val userName : String = backStackEntry.arguments?.getString("userName")!!
+            StarPostListPage(
+                onBack = { applicationNavController.popBackStack() },
+                onOpenUserInfo = { targetUserName ->
+                    scope.launch {
+                        val myUserName = userData.data.first().userName
+                        if (myUserName == targetUserName){
+                            applicationNavController.navigate("myInfoPage")
+                        }
+                        else{
+                            applicationNavController.navigate("otherInfoPage/$targetUserName")
+                        }
+                    } },
+                onOpenPost = {postId ->
+                    applicationNavController.navigate("post/$postId")
+                },
+                userName = userName)
         }
     }
 }

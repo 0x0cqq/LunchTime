@@ -1,5 +1,6 @@
 package com.thss.lunchtime
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.component.InfoComp
 import com.thss.lunchtime.component.InfoData
 import com.thss.lunchtime.component.InfoType
@@ -27,7 +29,7 @@ import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun OtherInfoPage(otherInfoPageViewModel: OtherInfoPageViewModel, userName: String) {
+fun OtherInfoPage(onClickPost: (postId: Int) -> Unit, onClickFans : () -> Unit, onClickFollows : () -> Unit, onClickSaved: () -> Unit, otherInfoPageViewModel: OtherInfoPageViewModel = viewModel(), userName: String) {
     val uiState = otherInfoPageViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
@@ -42,7 +44,7 @@ fun OtherInfoPage(otherInfoPageViewModel: OtherInfoPageViewModel, userName: Stri
                     Text(text = uiState.value.infoData.ID + " 的主页")
                 },
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {otherInfoPageViewModel.onClickBlock(context)}) {
                         Icon(imageVector = Icons.Default.PersonOff,
                             contentDescription = null)
                     }
@@ -62,6 +64,10 @@ fun OtherInfoPage(otherInfoPageViewModel: OtherInfoPageViewModel, userName: Stri
             InfoComp(
                 msg = uiState.value.infoData,
                 type = InfoType.Others,
+                onClickFollows = onClickFollows,
+                onClickFans = onClickFans,
+                onClickSaved = onClickSaved,
+                onClickRelation = {otherInfoPageViewModel.onClickRelation(context)}
             )
         }
 
@@ -80,7 +86,13 @@ fun OtherInfoPage(otherInfoPageViewModel: OtherInfoPageViewModel, userName: Stri
         LazyColumn(modifier = Modifier.fillMaxSize()
         ) {
             items(uiState.value.postList) { postData ->
-                PostReviewCard({}, {}, {}, msg = postData)
+                PostReviewCard(
+                    onClickStar = { otherInfoPageViewModel.onClickStar(context, postData.postID) },
+                    onClickLike = { otherInfoPageViewModel.onClickLike(context, postData.postID) },
+                    onClickTopBar = {},
+                    msg = postData,
+                    modifier = Modifier.clickable { onClickPost(postData.postID)}
+                )
             }
         }
 
@@ -91,5 +103,5 @@ fun OtherInfoPage(otherInfoPageViewModel: OtherInfoPageViewModel, userName: Stri
 @Preview
 @Composable
 fun OtherInfoPagePreview() {
-    OtherInfoPage(OtherInfoPageViewModel(),"Other User")
+    OtherInfoPage({}, {}, {}, {}, OtherInfoPageViewModel(),"Other User")
 }

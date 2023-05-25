@@ -15,7 +15,7 @@ import com.thss.lunchtime.component.PostType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostReviewCard(onClickLike: () -> Unit, onClickStar: () -> Unit, onClickTopBar: () -> Unit,msg: PostData,  modifier: Modifier = Modifier)
+fun PostReviewCard(onClickLike: () -> Unit, onClickStar: () -> Unit, onClickTopBar: () -> Unit, msg: PostData,  modifier: Modifier = Modifier)
 {
     Card(
 //        colors = CardDefaults.cardColors(containerColor = Color.White),

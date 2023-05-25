@@ -35,7 +35,7 @@ import com.thss.lunchtime.component.InfoData
 // 就不要往上走了 上面好拥挤
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, infoEditViewModel: InfoEditViewModel) {
+fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, onOpenBlockList: () -> Unit, infoEditViewModel: InfoEditViewModel) {
     val infoData = infoEditViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
@@ -79,7 +79,7 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, infoEditViewModel: In
 
 
             ImageChange(infoData.value.Avatar)
-            SimpleInfoChange(infoData.value, infoEditViewModel, context)
+            SimpleInfoChange(onOpenBlockList ,infoData.value, infoEditViewModel, context)
 
             Spacer(modifier = Modifier.height(50.dp))
 
@@ -249,12 +249,12 @@ fun ImageChange(avatar: Uri) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SimpleInfoChange(myinfo: InfoData, infoEditViewModel: InfoEditViewModel, context: Context) {
+fun SimpleInfoChange(onOpenBlockList : () -> Unit, myinfo: InfoData, infoEditViewModel: InfoEditViewModel, context: Context) {
     Card() {
-        var openNameDialog = remember { mutableStateOf(false) }
-        var openIntroDialog = remember { mutableStateOf(false) }
-        var newNameText = remember { mutableStateOf("") }
-        var newIntroText = remember { mutableStateOf("") }
+        val openNameDialog = remember { mutableStateOf(false) }
+        val openIntroDialog = remember { mutableStateOf(false) }
+        val newNameText = remember { mutableStateOf("") }
+        val newIntroText = remember { mutableStateOf("") }
 
         Row (modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 15.dp)
@@ -391,7 +391,7 @@ fun SimpleInfoChange(myinfo: InfoData, infoEditViewModel: InfoEditViewModel, con
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 15.dp)
-                .clickable { },
+                .clickable { onOpenBlockList() },
             fontSize = 20.sp,
             color = Color.Gray
         )
@@ -402,5 +402,5 @@ fun SimpleInfoChange(myinfo: InfoData, infoEditViewModel: InfoEditViewModel, con
 @Preview
 @Composable
 fun InfoEditPreview() {
-    InfoEditPage({}, {}, infoEditViewModel = InfoEditViewModel())
+    InfoEditPage({}, {}, {}, infoEditViewModel = InfoEditViewModel())
 }

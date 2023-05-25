@@ -1,5 +1,6 @@
 package com.thss.lunchtime.listpages
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,30 +13,27 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.component.InfoData
 import com.thss.lunchtime.component.InfoPreviewComp
-import com.thss.lunchtime.mainscreen.infopage.ImageChange
-import com.thss.lunchtime.mainscreen.infopage.InfoEditPage
-import com.thss.lunchtime.mainscreen.infopage.InfoEditViewModel
-import com.thss.lunchtime.mainscreen.infopage.SimpleInfoChange
-import com.thss.lunchtime.post.PostData
-import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun BlockListPage(followingList: List<InfoData>) {
+fun BlockListPage(onBack : ()->Unit, onClickUserInfo : (userName: String) -> Unit, userName: String, listPageViewModel: ListPageViewModel = viewModel()) {
     val context = LocalContext.current
+    val uiState = listPageViewModel.uiState.collectAsState()
+    val type = 2
 
     LaunchedEffect(Unit) {
-
+        listPageViewModel.refresh(context, userName, type)
     }
+
     Scaffold(
         topBar = {
             SmallTopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton( onClick = onBack ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back"
@@ -58,8 +56,11 @@ fun BlockListPage(followingList: List<InfoData>) {
         ) {
             LazyColumn(modifier = Modifier.fillMaxSize()
             ) {
-                items(followingList) { infoData ->
-                    InfoPreviewComp(msg = infoData)
+                items(uiState.value.userList) { infoData ->
+                    InfoPreviewComp(
+                        msg = infoData,
+                        modifier = Modifier.clickable { onClickUserInfo(infoData.ID) }
+                    )
                 }
             }
         }
@@ -78,5 +79,5 @@ val BlockArray = listOf(
 @Preview
 @Composable
 fun BlockPreview() {
-    BlockListPage (followingList = BlockArray)
+    BlockListPage ({}, {}, userName = "Bob")
 }
