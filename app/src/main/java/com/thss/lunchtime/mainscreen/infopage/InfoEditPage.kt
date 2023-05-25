@@ -74,8 +74,8 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, onOpenBlockList: () -
             val newPassword = remember {
                 mutableStateOf("")
             }
-            val originPasswordHidden = remember { mutableStateOf(false) }
-            val newPasswordHidden = remember { mutableStateOf(false) }
+            val originPasswordHidden = remember { mutableStateOf(true) }
+            val newPasswordHidden = remember { mutableStateOf(true) }
 
 
             ImageChange(infoData.value.Avatar)
@@ -159,6 +159,7 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, onOpenBlockList: () -
                     confirmButton = {
                         TextButton(
                             onClick = {
+                                infoEditViewModel.modifyPassword(context, originPassword.value, newPassword.value)
                                 newPasswordHidden.value = false
                                 originPasswordHidden.value = false
                                 openPasswordDialog.value = false
@@ -167,7 +168,7 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, onOpenBlockList: () -
                             Text(
                                 "确认",
                                 fontWeight = FontWeight.W700,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
                             )
                         }
                     },

@@ -1,6 +1,7 @@
 package com.thss.lunchtime.mainscreen.infopage
 
 import android.content.Context
+import android.util.Base64
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.security.MessageDigest
 
 class InfoEditViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(InfoData())
@@ -87,6 +89,26 @@ class InfoEditViewModel: ViewModel() {
                             SelfIntro = newDescription,
                         )
                     }
+                }
+            } catch (e: Exception){
+                e.printStackTrace()
+                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun modifyPassword(context: Context, oldPassword: String, newPassword: String){
+        val userData = context.userPreferencesStore
+        viewModelScope.launch {
+            val userName = userData.data.first().userName
+            try{
+                val oldPasswordHashed = Base64.encodeToString(MessageDigest.getInstance("SHA-256").digest(oldPassword.toByteArray()), Base64.DEFAULT)
+                val newPasswordHashed = Base64.encodeToString(MessageDigest.getInstance("SHA-256").digest(newPassword.toByteArray()), Base64.DEFAULT)
+                val response = LunchTimeApi.retrofitService.modifyUserPassword(userName, oldPasswordHashed, newPasswordHashed)
+                if (response.status){
+                    Toast.makeText(context, "修改密码成功!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "旧密码错误，修改密码失败!", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception){
                 e.printStackTrace()
