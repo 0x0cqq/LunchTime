@@ -33,7 +33,6 @@ fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (p
         MainScreens.Home, MainScreens.Message, MainScreens.My
     )
     val homepageViewModel: HomepageViewModel = viewModel()
-    val messageViewModel: MessageViewModel = viewModel()
     val myInfoPageViewModel: MyInfoPageViewModel = viewModel()
     val messageViewModel : MessageViewModel = viewModel()
     val chatPageViewModel : ChatPageViewModel = viewModel()
