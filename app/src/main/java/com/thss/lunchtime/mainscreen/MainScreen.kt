@@ -24,7 +24,7 @@ import com.thss.lunchtime.mainscreen.messagepage.Messagepage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (postId: Int) -> Unit, onOpenUserInfo: (userName: String) -> Unit, onOpenFollows: () -> Unit, onOpenFans: () -> Unit, onOpenSaved: () -> Unit, mainScreenViewModel: MainScreenViewModel) {
+fun MainScreen(onClickSearch: ()->Unit, onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (postId: Int) -> Unit, onOpenUserInfo: (userName: String) -> Unit, onOpenFollows: () -> Unit, onOpenFans: () -> Unit, onOpenSaved: () -> Unit, mainScreenViewModel: MainScreenViewModel) {
     val mainScreenNavController = rememberNavController()
     // 脚手架，上面下面的栏和
     val navigationBarItems = listOf(
@@ -100,6 +100,7 @@ fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (p
                     onClickNewPost = onNewPost,
                     homepageViewModel = homepageViewModel,
                     onOpenUserInfo = onOpenUserInfo,
+                    onClickSearch = onClickSearch,
                 )
             }
             composable(MainScreens.Message.route) {
@@ -125,5 +126,5 @@ fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (p
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen({}, {}, {_ -> }, {}, {}, {}, {}, MainScreenViewModel())
+    MainScreen({}, {}, {}, {_ -> }, {}, {}, {}, {}, MainScreenViewModel())
 }

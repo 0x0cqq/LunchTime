@@ -46,7 +46,7 @@ import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun Homepage(onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () -> Unit, onOpenUserInfo: (userName: String) -> Unit,homepageViewModel: HomepageViewModel) {
+fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () -> Unit, onOpenUserInfo: (userName: String) -> Unit,homepageViewModel: HomepageViewModel) {
     val uiState = homepageViewModel.uiState.collectAsState()
     val tabs = listOf(HomepageTabs.byTime, HomepageTabs.byPopularity, HomepageTabs.byComment)
     val context = LocalContext.current
@@ -63,7 +63,7 @@ fun Homepage(onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () 
     Scaffold(
         topBar = {
             Column {
-                HomePageTopBar()
+                HomePageTopBar(onClickSearch)
                 ScrollableTabRow(
                     selectedTabIndex = uiState.value.selectedIndex,
                     modifier = Modifier.align(Alignment.Start)
@@ -114,7 +114,7 @@ fun Homepage(onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () 
 
 
 @Composable
-fun HomePageTopBar() {
+fun HomePageTopBar(onClickSearch: () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     var selectedMenuIndex by rememberSaveable { mutableStateOf(0) }
     val dropDownMenuItems = listOf("All", "My Following", "Divider", "Tag1", "Tag2")
@@ -156,7 +156,7 @@ fun HomePageTopBar() {
                 }
             }
         }
-        IconButton(onClick = { /* TODO */}) {
+        IconButton(onClick = onClickSearch) {
             Icon(Icons.Outlined.Search, contentDescription = "Search")
         }
     }
