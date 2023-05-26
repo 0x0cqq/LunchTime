@@ -2,35 +2,25 @@ package com.thss.lunchtime
 
 import android.net.Uri
 import androidx.compose.runtime.*
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.ModeComment
-import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
-import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageContent
 import java.text.SimpleDateFormat
 import java.util.Date
 
-data class noticeData(
+data class NoticeData(
     val noticerAvatar: Uri = Uri.EMPTY,
     val noticerID: String = "User_default",
     val noticeDate: Date = Date(),
@@ -42,7 +32,7 @@ data class noticeData(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun noticePreviewCard(msg: noticeData, onClickNotice: () -> Unit)
+fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
 {
     Card(
         modifier = Modifier
@@ -100,7 +90,7 @@ fun noticePreviewCard(msg: noticeData, onClickNotice: () -> Unit)
 
                             Text(
                                 text = text,
-                                fontSize = 11.sp
+                                style = if (msg.noticeType ==  3) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.labelSmall
                             )
 
                         }
@@ -156,8 +146,8 @@ fun noticePreviewCard(msg: noticeData, onClickNotice: () -> Unit)
 @Preview
 @Composable
 fun NoticeComment() {
-    noticePreviewCard(
-        msg = noticeData(noticeType = 1, reply = "你说得对"),
+    NoticePreviewCard(
+        msg = NoticeData(noticeType = 1, reply = "你说得对"),
         onClickNotice = {}
     )
 }
@@ -165,8 +155,8 @@ fun NoticeComment() {
 @Preview
 @Composable
 fun NoticeLike() {
-    noticePreviewCard(
-        msg = noticeData(
+    NoticePreviewCard(
+        msg = NoticeData(
             noticeType = 2,
             refData = "http://82.156.30.206:8000/media/postImage/1684160879_0.jpeg"),
         onClickNotice = {}
@@ -177,8 +167,8 @@ fun NoticeLike() {
 @Preview
 @Composable
 fun NoticeChat() {
-    noticePreviewCard(
-        msg = noticeData(noticeType = 3, reply = "你说得对"),
+    NoticePreviewCard(
+        msg = NoticeData(noticeType = 3, reply = "你说得对"),
         onClickNotice = {}
     )
 

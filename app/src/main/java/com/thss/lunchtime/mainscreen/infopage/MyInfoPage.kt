@@ -62,6 +62,7 @@ fun MyInfoPage(onOpenInfoEdit: () -> Unit, onOpenFollowingList : () -> Unit, onO
                 onClickFans = onOpenFansList,
                 onClickFollows = onOpenFollowingList,
                 onClickSaved = onOpenSavedList,
+                onClickChat = {}
             )
         }
 

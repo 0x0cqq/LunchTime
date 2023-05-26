@@ -7,7 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.network.toNoticeData
-import com.thss.lunchtime.noticeData
+import com.thss.lunchtime.NoticeData
+import com.thss.lunchtime.network.toChatData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -32,20 +33,55 @@ class MessageViewModel : ViewModel() {
             }
             val userData = context.userPreferencesStore
             try{
-                val response = LunchTimeApi.retrofitService.getNotice(userData.data.first().userName, uiState.value.selectedIndex + 1)
-                if (response.status) {
-                    _uiState.update { state ->
-                        val updateNoticeList = response.noticeList.map{ notice -> notice.toNoticeData(uiState.value.selectedIndex)}
-                        val newNoticeDataLists = mutableListOf<List<noticeData>>()
-                        for (i in uiState.value.NoticeDataLists.indices){
-                            if (i == uiState.value.selectedIndex){
-                                newNoticeDataLists.add(updateNoticeList)
+                if(uiState.value.selectedIndex < 2) {
+                    val response = LunchTimeApi.retrofitService.getNotice(
+                        userData.data.first().userName,
+                        uiState.value.selectedIndex + 1
+                    )
+                    if (response.status) {
+                        _uiState.update { state ->
+                            val updateNoticeList =
+                                response.noticeList.map { notice -> notice.toNoticeData(uiState.value.selectedIndex) }
+                            val newNoticeDataLists = mutableListOf<List<NoticeData>>()
+                            for (i in uiState.value.noticeDataLists.indices) {
+                                if (i == uiState.value.selectedIndex) {
+                                    newNoticeDataLists.add(updateNoticeList)
+                                } else {
+                                    newNoticeDataLists.add(uiState.value.noticeDataLists[i])
+                                }
                             }
-                            else{
-                                newNoticeDataLists.add(uiState.value.NoticeDataLists[i])
-                            }
+                            state.copy(noticeDataLists = newNoticeDataLists)
                         }
-                        state.copy( NoticeDataLists = newNoticeDataLists)
+                    } else {
+                        Toast.makeText(context, "获取通知失败", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else {
+                    // 聊天
+                    val response = LunchTimeApi.retrofitService.getChatList(userData.data.first().userName)
+                    if (response.status) {
+                        _uiState.update { state ->
+                            val updateChatList = response.chatList.map { chat -> chat.toChatData() }.map {
+                                NoticeData(
+                                    it.userAvatar,
+                                    it.userName,
+                                    it.time,
+                                    3,
+                                    it.message,
+                                )
+                            }
+                            val newNoticeDataLists = mutableListOf<List<NoticeData>>()
+                            for (i in uiState.value.noticeDataLists.indices) {
+                                if (i == uiState.value.selectedIndex) {
+                                    newNoticeDataLists.add(updateChatList)
+                                } else {
+                                    newNoticeDataLists.add(uiState.value.noticeDataLists[i])
+                                }
+                            }
+                            state.copy(noticeDataLists = newNoticeDataLists)
+                        }
+                    } else {
+                        Toast.makeText(context, "获取聊天失败", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e : IOException){

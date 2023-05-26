@@ -18,6 +18,10 @@ import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
 private const val BASE_WS_URL = "ws://82.156.30.206:8000/ws"
+private const val SCHEMA = "ws"
+private const val HOST = "82.156.30.206"
+private const val PORT = 8000
+
 
 class LunchTimeChatService(private val senderName: String, private val receiverName: String) {
     private val client = HttpClient(OkHttp) {
@@ -35,7 +39,7 @@ class LunchTimeChatService(private val senderName: String, private val receiverN
         if (webSocketSession == null) {
             Log.d("LunchTime Chat", "Connect to $BASE_WS_URL/chat/, params: $senderName, $receiverName")
             webSocketSession = client.webSocketSession {
-                url("$BASE_WS_URL/chat/") {
+                url(SCHEMA,HOST, PORT, "ws/chat/") {
                     parameters.append("sender_name", senderName)
                     parameters.append("receiver_name", receiverName)
                 }

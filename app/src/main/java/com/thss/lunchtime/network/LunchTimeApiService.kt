@@ -100,6 +100,9 @@ interface LunchTimeApiService {
 
     @GET("/api/attention_list")
     suspend fun getAttentionList(@Query("user_name") name: String, @Query("type") type: Int): ResponseWithUserList
+
+    @GET("/api/chats")
+    suspend fun getChatList(@Query("user_name") name: String): ResponseWithChatList
 }
 
 object LunchTimeApi {

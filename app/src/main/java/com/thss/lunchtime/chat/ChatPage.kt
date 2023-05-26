@@ -33,9 +33,8 @@ fun ChatPage(oppoSiteUserName: String, onBack: () -> Unit, chatPageViewModel: Ch
     val context = LocalContext.current
     val userData = context.userPreferencesStore
     LaunchedEffect(Unit) {
-
         chatPageViewModel.connect(userData.data.first().userName, oppoSiteUserName)
-        chatPageViewModel.getOppositeUserInfo(oppoSiteUserName)
+        chatPageViewModel.getOppositeUserInfo(context, oppoSiteUserName)
     }
     Scaffold(
         topBar = {

@@ -1,12 +1,17 @@
 package com.thss.lunchtime.chat
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.thss.lunchtime.data.userPreferencesStore
+import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.network.LunchTimeChatService
 import com.thss.lunchtime.network.toChatData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class ChatPageViewModel: ViewModel() {
@@ -20,8 +25,24 @@ class ChatPageViewModel: ViewModel() {
         _uiState.value = _uiState.value.copy(inputValue = value)
     }
 
-    fun getOppositeUserInfo(oppoSiteUserName: String) {
-        // TODO: with /api/user_info
+    fun getOppositeUserInfo(context: Context, oppoSiteUserName: String) {
+        val userData = context.userPreferencesStore
+        viewModelScope.launch {
+            try {
+                val response = LunchTimeApi.retrofitService.getUserInfo(userData.data.first().userName, oppoSiteUserName)
+                if (response.status) {
+                    _uiState.value = _uiState.value.copy(
+                        oppositeUserName = response.userInfo.userName,
+                    )
+                } else {
+                    Log.d("LunchTime Chat", "Get opposite user info failed")
+                    Toast.makeText(context, "无法获取用户信息", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     fun connect(senderName: String, receiverName: String) {

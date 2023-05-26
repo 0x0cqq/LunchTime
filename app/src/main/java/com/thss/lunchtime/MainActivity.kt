@@ -24,6 +24,8 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.thss.lunchtime.chat.ChatPage
+import com.thss.lunchtime.chat.ChatPageViewModel
 import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.info.OtherInfoPageViewModel
 import com.thss.lunchtime.listpages.BlockListPage
@@ -282,6 +284,9 @@ fun Application(modifier: Modifier = Modifier) {
         }
         composable("main") {
             MainScreen(
+                onOpenChat = { name ->
+                    applicationNavController.navigate("chat/$name")
+                },
                 onOpenInfoEdit = {
                     applicationNavController.navigate("editProfile")
                 },
@@ -366,13 +371,17 @@ fun Application(modifier: Modifier = Modifier) {
         composable("otherInfoPage/{userName}"){ backStackEntry ->
             val userName : String = backStackEntry.arguments?.getString("userName")!!
             OtherInfoPage(
+                onClickBack = { applicationNavController.popBackStack() },
                 otherInfoPageViewModel = otherInfoPageViewModel,
                 userName = userName,
                 onClickPost = { postId ->
                     applicationNavController.navigate("post/$postId") },
                 onClickFans = { applicationNavController.navigate("fansList/$userName") },
                 onClickFollows = { applicationNavController.navigate("followingList/$userName") },
-                onClickSaved = { applicationNavController.navigate("starPostList/$userName") }
+                onClickSaved = { applicationNavController.navigate("starPostList/$userName") },
+                onClickChat = { name ->
+                    applicationNavController.navigate("chat/$name")
+                }
             )
         }
         composable("myInfoPage"){
@@ -396,6 +405,17 @@ fun Application(modifier: Modifier = Modifier) {
                 }
                 },
                 myInfoPageViewModel = myInfoPageViewModel,
+            )
+        }
+        composable("chat/{userName}") { backStackEntry ->
+            val chatViewModel : ChatPageViewModel = viewModel()
+            val userName : String = backStackEntry.arguments?.getString("userName")!!
+            ChatPage(
+                onBack = {
+                    applicationNavController.popBackStack()
+                },
+                oppoSiteUserName = userName,
+                chatPageViewModel = chatViewModel
             )
         }
         composable("blockList/{userName}"){ backStackEntry ->
