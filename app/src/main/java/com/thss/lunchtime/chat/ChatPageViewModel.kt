@@ -20,19 +20,23 @@ class ChatPageViewModel: ViewModel() {
         _uiState.value = _uiState.value.copy(inputValue = value)
     }
 
-    fun connect(senderID: Int, receiverID: Int) {
+    fun getOppositeUserInfo(oppoSiteUserName: String) {
+        // TODO: with /api/user_info
+    }
+
+    fun connect(senderName: String, receiverName: String) {
         // close previous connection
         viewModelScope.launch {
             if (chatService != null) {
                 chatService!!.close()
             }
-            chatService = LunchTimeChatService(senderID, receiverID)
+            chatService = LunchTimeChatService(senderName, receiverName)
             // open a new one
             chatService!!.connect { chatResponse ->
                 when(chatResponse.type) {
                     "message" -> {
                         _uiState.value = _uiState.value.copy(
-                            messageList = (uiState.value.messageList + chatResponse.message!!.toChatData())
+                            messageList = listOf(chatResponse.message!!.toChatData()) + uiState.value.messageList
                         )
                     }
                     "history" -> {

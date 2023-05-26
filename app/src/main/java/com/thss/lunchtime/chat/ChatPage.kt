@@ -16,25 +16,32 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.thss.lunchtime.data.userPreferencesStore
+import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatPage(onBack: () -> Unit, chatPageViewModel: ChatPageViewModel) {
+fun ChatPage(oppoSiteUserName: String, onBack: () -> Unit, chatPageViewModel: ChatPageViewModel) {
     val uiState = chatPageViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val userData = context.userPreferencesStore
     LaunchedEffect(Unit) {
-        chatPageViewModel.connect(123, 456)
+
+        chatPageViewModel.connect(userData.data.first().userName, oppoSiteUserName)
+        chatPageViewModel.getOppositeUserInfo(oppoSiteUserName)
     }
     Scaffold(
         topBar = {
             SmallTopAppBar(
                 title = {
-                    Text(text = uiState.value.userName)
+                    Text(text = uiState.value.oppositeUserName)
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -105,7 +112,7 @@ fun ChatPage(onBack: () -> Unit, chatPageViewModel: ChatPageViewModel) {
             reverseLayout = true
         ) {
             items(uiState.value.messageList) { message ->
-                if (message.userID == uiState.value.userID) {
+                if (message.userName == uiState.value.oppositeUserName) {
                     // Opposite chat bubble
                     ChatBubbleOpposite(message)
                 } else {
@@ -156,8 +163,8 @@ fun ChatMessageBody(message: ChatData) {
 @Composable
 fun ChatBubbleMine(message: ChatData) {
     Row(
-        verticalAlignment = Alignment.Top,
-        modifier = Modifier.padding(start = 70.dp, end = 10.dp)
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.padding(10.dp).fillMaxWidth()
     ) {
         ChatMessageBody(message)
         Spacer(modifier = Modifier.width(8.dp))
@@ -169,8 +176,8 @@ fun ChatBubbleMine(message: ChatData) {
 @Composable
 fun ChatBubbleOpposite(message: ChatData) {
     Row(
-        verticalAlignment = Alignment.Top,
-        modifier = Modifier.padding(end = 70.dp, start = 10.dp)
+        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier.padding(10.dp).fillMaxWidth()
     ) {
         ChatMessageAvatar(message.userAvatar)
         Spacer(modifier = Modifier.width(8.dp))
@@ -183,7 +190,7 @@ fun ChatBubbleOpposite(message: ChatData) {
 @Preview
 @Composable
 fun ChatPreview() {
-    ChatPage({}, ChatPageViewModel())
+    ChatPage("123456", {}, ChatPageViewModel())
 }
 
 @Preview
