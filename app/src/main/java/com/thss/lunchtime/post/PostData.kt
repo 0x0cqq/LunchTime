@@ -4,7 +4,7 @@ import android.net.Uri
 import java.util.Date
 
 data class PostData(
-    val publisherAvatar: String = "User_default",
+    val publisherAvatar: Uri = Uri.EMPTY,
     val publisherID: String = "User_default",
     val publishDate: Date = Date(),
     val postID: Int = 0,

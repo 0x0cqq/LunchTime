@@ -47,3 +47,19 @@ data class ResponseWithResult (
     val message: String = "",
     val result: Int
 )
+
+@Serializable
+data class ResponseWithUserInfo(
+    val status: Boolean = false,
+    val message: String = "",
+    @SerialName("user_info")
+    val userInfo: UserInfo
+)
+
+@Serializable
+data class ResponseWithUserList (
+    val status: Boolean = false,
+    val message: String = "",
+    @SerialName("user_list")
+    val userList: List<UserInfo> = listOf()
+)

@@ -24,6 +24,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
+import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -42,7 +44,7 @@ data class PostType(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostMainBody(msg: PostData, type: PostType)
+fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit)
 {
     Column (modifier = Modifier.padding(bottom = 5.dp)) {
         Row(
@@ -51,20 +53,32 @@ fun PostMainBody(msg: PostData, type: PostType)
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 16.dp)
+                .clickable{
+                    onClickTopBar()
+                }
         ) {
             Row (
                 modifier = Modifier.padding(all = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.touxaingnvhai),
-                    contentDescription = "heading",
+                AsyncImage(
+                    model = msg.publisherAvatar,
+                    contentDescription = "Avatar",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        // Set image size to 40dp
-                        .size(40.dp)
                         // Clip image to shaped as a circle
-                        .clip(CircleShape)
+                        .size(40.dp)
+                        .clip(CircleShape),
                 )
+//                Image(
+//                    painter = painterResource(id = R.drawable.touxaingnvhai),
+//                    contentDescription = "heading",
+//                    modifier = Modifier
+//                        // Set image size to 40dp
+//                        .size(40.dp)
+//                        // Clip image to shaped as a circle
+//                        .clip(CircleShape)
+//                )
                 // Add a horizontal space between the image and the column
                 Spacer(modifier = Modifier.width(8.dp))
 
@@ -259,6 +273,7 @@ fun PostBodyPreview() {
             Type = 3,
             graphResources = listOf()
         ),
-        type = PostType(Detailed = true)
+        type = PostType(Detailed = true),
+        onClickTopBar = {}
     )
 }

@@ -1,13 +1,12 @@
-package com.thss.lunchtime.mainscreen.infopage
+package com.thss.lunchtime.listpages
 
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.thss.lunchtime.component.InfoData
 import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.network.LunchTimeApi
-import com.thss.lunchtime.network.toInfoData
+import com.thss.lunchtime.network.Post
 import com.thss.lunchtime.network.toPostData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,48 +15,28 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-class MyInfoPageViewModel: ViewModel() {
-    private val _uiState = MutableStateFlow(MyInfoPageState(InfoData(), listOf()))
+class StarPostListViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(StarPostListState())
     val uiState = _uiState.asStateFlow()
 
-    fun refresh(context: Context) {
-        val userData = context.userPreferencesStore
+    fun refresh(context: Context, userName: String){
         viewModelScope.launch {
-            val userName = userData.data.first().userName
+            val userData = context.userPreferencesStore
             try{
-                val response = LunchTimeApi.retrofitService.getUserInfo(
-                    name = userName,
-                    target_name = userName
-                )
-                if (response.status) {
-                    val info = response.userInfo.toInfoData()
-                    _uiState.update { state ->
-                        state.copy(
-                            infoData = info.copy(ID = userName)
-                        )
-                    }
-                }
-            } catch (e: Exception){
-                e.printStackTrace()
-                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
-            }
-
-            try {
-                val response = LunchTimeApi.retrofitService.getPostList(
-                    name = userName,
-                    type = 0,
+                val response = LunchTimeApi.retrofitService.getPostListSaved(
+                    name = userData.data.first().userName,
                     targetName = userName
                 )
-                if (response.status) {
+                if (response.status){
                     _uiState.update { state ->
                         state.copy(
-                            postList = response.posts.map { it.toPostData() }
+                            postDataList = response.posts.map { post : Post ->
+                                post.toPostData()
+                            }
                         )
                     }
-                } else {
-                    Toast.makeText(context, "获取个人信息失败, ${response.message}", Toast.LENGTH_SHORT).show()
                 }
-            } catch (e: Exception) {
+            } catch (e : IOException) {
                 e.printStackTrace()
                 Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
             }
@@ -73,7 +52,7 @@ class MyInfoPageViewModel: ViewModel() {
                     postID)
                 if (response.status){
                     // update likeCount and isLiked
-                    val newPostDataList = uiState.value.postList.map{ postData ->
+                    val newPostDataList = uiState.value.postDataList.map{ postData ->
                         if(postData.postID == postID){
                             if(response.result == 1){
                                 postData.copy(likeCount = postData.likeCount + 1, isLiked = true)
@@ -87,7 +66,7 @@ class MyInfoPageViewModel: ViewModel() {
                         }
                     }
                     _uiState.update{state ->
-                        state.copy(postList = newPostDataList)
+                        state.copy(postDataList = newPostDataList)
                     }
                 } else {
                     Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
@@ -108,7 +87,7 @@ class MyInfoPageViewModel: ViewModel() {
                     postID)
                 if (response.status){
                     // update starCount and isStared
-                    val newPostDataList = uiState.value.postList.map{ postData ->
+                    val newPostDataList = uiState.value.postDataList.map{ postData ->
                         if(postData.postID == postID){
                             if(response.result == 1){
                                 postData.copy(starCount = postData.starCount + 1, isStared = true)
@@ -122,7 +101,7 @@ class MyInfoPageViewModel: ViewModel() {
                         }
                     }
                     _uiState.update{state ->
-                        state.copy(postList = newPostDataList)
+                        state.copy(postDataList = newPostDataList)
                     }
                 } else {
                     Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()

@@ -1,7 +1,9 @@
 package com.thss.lunchtime
 
+import android.net.Uri
 import androidx.compose.runtime.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,7 +31,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 data class noticeData(
-    val noticerAvatar: String = "User_default",
+    val noticerAvatar: Uri = Uri.EMPTY,
     val noticerID: String = "User_default",
     val noticeDate: Date = Date(),
     val noticeType: Int = -1,
@@ -40,12 +42,13 @@ data class noticeData(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun noticePreviewCard(msg: noticeData)
+fun noticePreviewCard(msg: noticeData, onClickNotice: () -> Unit)
 {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(5.dp)
+            .clickable { onClickNotice() }
     ) {
         Row (
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -60,15 +63,24 @@ fun noticePreviewCard(msg: noticeData)
                         .fillMaxWidth()
                 ) {
                     Row {
-                        Image(
-                            painter = painterResource(id = R.drawable.touxaingnvhai),
-                            contentDescription = "heading",
+                        AsyncImage(
+                            model = msg.noticerAvatar,
+                            contentDescription = "Avatar",
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                // Set image size to 40dp
-                                .size(40.dp)
                                 // Clip image to shaped as a circle
-                                .clip(CircleShape)
+                                .size(40.dp)
+                                .clip(CircleShape),
                         )
+//                        Image(
+//                            painter = painterResource(id = R.drawable.touxaingnvhai),
+//                            contentDescription = "heading",
+//                            modifier = Modifier
+//                                // Set image size to 40dp
+//                                .size(40.dp)
+//                                // Clip image to shaped as a circle
+//                                .clip(CircleShape)
+//                        )
 
                         Spacer(modifier = Modifier.width(4.dp))
 
@@ -144,18 +156,20 @@ fun noticePreviewCard(msg: noticeData)
 @Preview
 @Composable
 fun NoticeComment() {
-    noticePreviewCard(msg =
-    noticeData(noticeType = 1, reply = "你说得对")
+    noticePreviewCard(
+        msg = noticeData(noticeType = 1, reply = "你说得对"),
+        onClickNotice = {}
     )
 }
 
 @Preview
 @Composable
 fun NoticeLike() {
-    noticePreviewCard(msg =
-        noticeData(
+    noticePreviewCard(
+        msg = noticeData(
             noticeType = 2,
-            refData = "http://82.156.30.206:8000/media/postImage/1684160879_0.jpeg")
+            refData = "http://82.156.30.206:8000/media/postImage/1684160879_0.jpeg"),
+        onClickNotice = {}
     )
 
 }
@@ -163,7 +177,9 @@ fun NoticeLike() {
 @Preview
 @Composable
 fun NoticeChat() {
-    noticePreviewCard(msg =
-    noticeData(noticeType = 3, reply = "你说得对")
+    noticePreviewCard(
+        msg = noticeData(noticeType = 3, reply = "你说得对"),
+        onClickNotice = {}
     )
+
 }

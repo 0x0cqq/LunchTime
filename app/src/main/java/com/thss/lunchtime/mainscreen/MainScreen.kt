@@ -26,13 +26,14 @@ import com.thss.lunchtime.mainscreen.messagepage.Messagepage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (postId: Int) -> Unit, mainScreenViewModel: MainScreenViewModel) {
+fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (postId: Int) -> Unit, onOpenUserInfo: (userName: String) -> Unit, onOpenFollows: () -> Unit, onOpenFans: () -> Unit, onOpenSaved: () -> Unit, mainScreenViewModel: MainScreenViewModel) {
     val mainScreenNavController = rememberNavController()
     // 脚手架，上面下面的栏和
     val navigationBarItems = listOf(
         MainScreens.Home, MainScreens.Message, MainScreens.My
     )
     val homepageViewModel: HomepageViewModel = viewModel()
+    val messageViewModel: MessageViewModel = viewModel()
     val myInfoPageViewModel: MyInfoPageViewModel = viewModel()
     val messageViewModel : MessageViewModel = viewModel()
     val chatPageViewModel : ChatPageViewModel = viewModel()
@@ -101,17 +102,25 @@ fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (p
                 Homepage(
                     onClickPostPreviewCard = onOpenPost,
                     onClickNewPost = onNewPost,
-                    homepageViewModel = homepageViewModel
+                    homepageViewModel = homepageViewModel,
+                    onOpenUserInfo = onOpenUserInfo,
                 )
             }
             composable(MainScreens.Message.route) {
-                Messagepage(messageViewModel)
 //                ChatPage("hello", {}, chatPageViewModel)
+                Messagepage(
+                    onClickPostNotice = onOpenPost,
+                    messageViewModel = messageViewModel
+                )
             }
             composable(MainScreens.My.route) {
                 MyInfoPage(
                     onOpenInfoEdit = onOpenInfoEdit,
-                    myInfoPageViewModel = myInfoPageViewModel
+                    myInfoPageViewModel = myInfoPageViewModel,
+                    onClickPost = onOpenPost,
+                    onOpenFollowingList = onOpenFollows,
+                    onOpenFansList = onOpenFans,
+                    onOpenSavedList = onOpenSaved
                 )
             }
         }
@@ -121,5 +130,5 @@ fun MainScreen(onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (p
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen({}, {}, {_ -> }, MainScreenViewModel())
+    MainScreen({}, {}, {_ -> }, {}, {}, {}, {}, MainScreenViewModel())
 }

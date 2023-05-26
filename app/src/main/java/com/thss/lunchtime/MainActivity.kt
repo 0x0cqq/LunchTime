@@ -25,10 +25,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.data.userPreferencesStore
+import com.thss.lunchtime.info.OtherInfoPageViewModel
+import com.thss.lunchtime.listpages.BlockListPage
+import com.thss.lunchtime.listpages.FansListPage
+import com.thss.lunchtime.listpages.FollowingListPage
+import com.thss.lunchtime.listpages.StarPostListPage
 import com.thss.lunchtime.mainscreen.MainScreen
 import com.thss.lunchtime.mainscreen.MainScreenViewModel
 import com.thss.lunchtime.mainscreen.infopage.InfoEditPage
 import com.thss.lunchtime.mainscreen.infopage.InfoEditViewModel
+import com.thss.lunchtime.mainscreen.infopage.MyInfoPage
+import com.thss.lunchtime.mainscreen.infopage.MyInfoPageViewModel
 import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.newpost.NewPostPage
 import com.thss.lunchtime.newpost.NewPostViewModel
@@ -79,6 +86,8 @@ fun Application(modifier: Modifier = Modifier) {
     val mainScreenViewModel : MainScreenViewModel = viewModel()
     val newPostViewModel : NewPostViewModel = viewModel()
     val infoEditViewModel : InfoEditViewModel = viewModel()
+    val otherInfoPageViewModel : OtherInfoPageViewModel = viewModel()
+    val myInfoPageViewModel : MyInfoPageViewModel = viewModel()
     val applicationNavController = rememberNavController()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -282,6 +291,32 @@ fun Application(modifier: Modifier = Modifier) {
                 onNewPost = {
                     applicationNavController.navigate("newpost")
                 },
+                onOpenUserInfo = { targetUserName ->
+                    scope.launch {
+                        val myUserName = userData.data.first().userName
+                        if (myUserName == targetUserName){
+                            applicationNavController.navigate("myInfoPage")
+                        }
+                        else{
+                            applicationNavController.navigate("otherInfoPage/$targetUserName")
+                        }
+                    }
+                },
+                onOpenFans = { scope.launch{
+                    val userName = userData.data.first().userName
+                    applicationNavController.navigate("fansList/$userName")
+                }
+                },
+                onOpenFollows = {scope.launch {
+                    val userName = userData.data.first().userName
+                    applicationNavController.navigate("followingList/$userName")
+                }
+                },
+                onOpenSaved = { scope.launch{
+                    val userName = userData.data.first().userName
+                    applicationNavController.navigate("starPostList/$userName")
+                }
+                },
                 mainScreenViewModel = mainScreenViewModel
             )
         }
@@ -291,6 +326,17 @@ fun Application(modifier: Modifier = Modifier) {
             PostDetailPage(
                 onBack = {
                     applicationNavController.popBackStack()
+                },
+                onOpenUserInfo = { targetUserName ->
+                    scope.launch {
+                        val myUserName = userData.data.first().userName
+                        if (myUserName == targetUserName){
+                            applicationNavController.navigate("myInfoPage")
+                        }
+                        else{
+                            applicationNavController.navigate("otherInfoPage/$targetUserName")
+                        }
+                    }
                 },
                 postID = postId,
                 postDetailViewModel = postDetailViewModel
@@ -310,8 +356,90 @@ fun Application(modifier: Modifier = Modifier) {
                         applicationNavController.navigate("login")
                     }
                 },
+                onOpenBlockList = { scope.launch{
+                    val userName = userData.data.first().userName
+                    applicationNavController.navigate("blockList/$userName")
+                } },
                 infoEditViewModel = infoEditViewModel
             )
+        }
+        composable("otherInfoPage/{userName}"){ backStackEntry ->
+            val userName : String = backStackEntry.arguments?.getString("userName")!!
+            OtherInfoPage(
+                otherInfoPageViewModel = otherInfoPageViewModel,
+                userName = userName,
+                onClickPost = { postId ->
+                    applicationNavController.navigate("post/$postId") },
+                onClickFans = { applicationNavController.navigate("fansList/$userName") },
+                onClickFollows = { applicationNavController.navigate("followingList/$userName") },
+                onClickSaved = { applicationNavController.navigate("starPostList/$userName") }
+            )
+        }
+        composable("myInfoPage"){
+            MyInfoPage(
+                onOpenInfoEdit = { applicationNavController.navigate("editProfile") },
+                onClickPost = { postId ->
+                    applicationNavController.navigate("post/$postId") },
+                onOpenFansList = { scope.launch{
+                        val userName = userData.data.first().userName
+                        applicationNavController.navigate("fansList/$userName")
+                    }
+                },
+                onOpenFollowingList = {scope.launch {
+                        val userName = userData.data.first().userName
+                        applicationNavController.navigate("followingList/$userName")
+                    }
+                },
+                onOpenSavedList = {scope.launch {
+                    val userName = userData.data.first().userName
+                    applicationNavController.navigate("starPostList/$userName")
+                }
+                },
+                myInfoPageViewModel = myInfoPageViewModel,
+            )
+        }
+        composable("blockList/{userName}"){ backStackEntry ->
+            val userName : String = backStackEntry.arguments?.getString("userName")!!
+            BlockListPage(
+                onBack = { applicationNavController.popBackStack() },
+                userName = userName,
+                onClickUserInfo = { targetUserName -> applicationNavController.navigate("otherInfoPage/$targetUserName") }
+            )
+        }
+        composable("followingList/{userName}"){backStackEntry ->
+            val userName : String = backStackEntry.arguments?.getString("userName")!!
+            FollowingListPage(
+                onBack = { applicationNavController.popBackStack() },
+                userName = userName,
+                onClickUserInfo = { targetUserName -> applicationNavController.navigate("otherInfoPage/$targetUserName") }
+            )
+        }
+        composable("fansList/{userName}"){backStackEntry ->
+            val userName : String = backStackEntry.arguments?.getString("userName")!!
+            FansListPage(
+                onBack = { applicationNavController.popBackStack() },
+                userName = userName,
+                onClickUserInfo = { targetUserName -> applicationNavController.navigate("otherInfoPage/$targetUserName") }
+            )
+        }
+        composable("starPostList/{userName}"){backStackEntry ->
+            val userName : String = backStackEntry.arguments?.getString("userName")!!
+            StarPostListPage(
+                onBack = { applicationNavController.popBackStack() },
+                onOpenUserInfo = { targetUserName ->
+                    scope.launch {
+                        val myUserName = userData.data.first().userName
+                        if (myUserName == targetUserName){
+                            applicationNavController.navigate("myInfoPage")
+                        }
+                        else{
+                            applicationNavController.navigate("otherInfoPage/$targetUserName")
+                        }
+                    } },
+                onOpenPost = {postId ->
+                    applicationNavController.navigate("post/$postId")
+                },
+                userName = userName)
         }
     }
 }

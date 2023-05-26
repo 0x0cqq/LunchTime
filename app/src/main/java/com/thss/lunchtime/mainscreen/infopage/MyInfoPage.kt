@@ -1,5 +1,6 @@
 package com.thss.lunchtime.mainscreen.infopage
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,7 +24,7 @@ import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MyInfoPage(onOpenInfoEdit: () -> Unit, myInfoPageViewModel: MyInfoPageViewModel) {
+fun MyInfoPage(onOpenInfoEdit: () -> Unit, onOpenFollowingList : () -> Unit, onOpenFansList: () -> Unit, onOpenSavedList: () -> Unit,onClickPost: (postId: Int) -> Unit, myInfoPageViewModel: MyInfoPageViewModel) {
     val uiState = myInfoPageViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
@@ -58,6 +59,9 @@ fun MyInfoPage(onOpenInfoEdit: () -> Unit, myInfoPageViewModel: MyInfoPageViewMo
             InfoComp(
                 msg = uiState.value.infoData,
                 type = InfoType.Self,
+                onClickFans = onOpenFansList,
+                onClickFollows = onOpenFollowingList,
+                onClickSaved = onOpenSavedList,
             )
         }
 
@@ -73,10 +77,16 @@ fun MyInfoPage(onOpenInfoEdit: () -> Unit, myInfoPageViewModel: MyInfoPageViewMo
             Icon(Icons.Rounded.Sort, contentDescription = null, Modifier.size(18.dp))
         }
 
-        LazyColumn(modifier = Modifier.fillMaxSize()
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
         ) {
             items(uiState.value.postList) { postData ->
-                PostReviewCard({}, {}, msg = postData)
+                PostReviewCard(
+                    onClickLike = {myInfoPageViewModel.onClickLike(context, postData.postID)},
+                    onClickStar = {myInfoPageViewModel.onClickStar(context, postData.postID)},
+                    onClickTopBar = {},
+                    msg = postData,
+                    modifier = Modifier.clickable { onClickPost(postData.postID) })
             }
         }
     } 
@@ -95,5 +105,11 @@ val postArray = listOf(
 @Preview
 @Composable
 fun MyInfoPagePreview() {
-    MyInfoPage(onOpenInfoEdit = {}, MyInfoPageViewModel())
+    MyInfoPage(
+        onOpenInfoEdit = {},
+        onClickPost = {},
+        onOpenFansList = {},
+        onOpenFollowingList = {},
+        onOpenSavedList = {},
+        myInfoPageViewModel = MyInfoPageViewModel())
 }

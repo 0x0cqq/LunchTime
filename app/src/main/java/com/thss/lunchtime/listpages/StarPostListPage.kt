@@ -1,5 +1,6 @@
 package com.thss.lunchtime.listpages
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,9 +12,11 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.component.InfoData
 import com.thss.lunchtime.component.InfoPreviewComp
 import com.thss.lunchtime.mainscreen.infopage.postArray
@@ -22,17 +25,18 @@ import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun StarListPage(postList: List<PostData>) {
+fun StarPostListPage(onBack: ()->Unit, onOpenUserInfo: (userName: String) -> Unit, onOpenPost:(postId: Int)->Unit, userName: String, starPostListViewModel: StarPostListViewModel = viewModel()) {
     val context = LocalContext.current
+    val uiState = starPostListViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-
+        starPostListViewModel.refresh(context, userName)
     }
     Scaffold(
         topBar = {
             SmallTopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = onBack ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back"
@@ -55,8 +59,13 @@ fun StarListPage(postList: List<PostData>) {
         ) {
             LazyColumn(modifier = Modifier.fillMaxSize()
             ) {
-                items(postList) { postData ->
-                    PostReviewCard({}, {}, msg = postData)
+                items(uiState.value.postDataList) { postData ->
+                    PostReviewCard(
+                        onClickLike = { starPostListViewModel.onClickLike(context, postData.postID) },
+                        onClickStar = { starPostListViewModel.onClickStar(context, postData.postID) },
+                        onClickTopBar = { onOpenUserInfo(postData.publisherID) },
+                        msg = postData,
+                        modifier = Modifier.clickable { onOpenPost(postData.postID) })
                 }
             }
         }
@@ -67,5 +76,5 @@ fun StarListPage(postList: List<PostData>) {
 @Preview
 @Composable
 fun StarListPreview() {
-    StarListPage(postList = postArray)
+    StarPostListPage(onBack = {}, onOpenUserInfo = {}, userName = "", onOpenPost = {},)
 }
