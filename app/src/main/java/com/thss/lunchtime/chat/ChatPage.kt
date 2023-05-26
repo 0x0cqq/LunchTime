@@ -1,7 +1,6 @@
 package com.thss.lunchtime.chat
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,44 +10,41 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.thss.lunchtime.LikeBtn
-import com.thss.lunchtime.R
-import com.thss.lunchtime.StarBtn
-import com.thss.lunchtime.component.CommentComp
-import com.thss.lunchtime.component.PostMainBody
-import com.thss.lunchtime.component.PostType
-import com.thss.lunchtime.post.PostDetailViewModel
+import coil.compose.AsyncImage
+import com.thss.lunchtime.data.userPreferencesStore
+import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatPage()
-{
-    var inputText = remember {
-        mutableStateOf("")
+fun ChatPage(oppoSiteUserName: String, onBack: () -> Unit, chatPageViewModel: ChatPageViewModel) {
+    val uiState = chatPageViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val userData = context.userPreferencesStore
+    LaunchedEffect(Unit) {
+
+        chatPageViewModel.connect(userData.data.first().userName, oppoSiteUserName)
+        chatPageViewModel.getOppositeUserInfo(oppoSiteUserName)
     }
     Scaffold(
         topBar = {
             SmallTopAppBar(
                 title = {
-                    Text(text = "用户名XXXX")
+                    Text(text = uiState.value.oppositeUserName)
                 },
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = onBack) {
                         Icon(imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = "back")
                     }
@@ -67,8 +63,8 @@ fun ChatPage()
                 // 自定义TextField
                 Box(modifier = Modifier.fillMaxWidth(1f)) {
                     BasicTextField(
-                        value = inputText.value,
-                        onValueChange = { inputText.value = it },
+                        value = uiState.value.inputValue,
+                        onValueChange = { chatPageViewModel.updateInputValue(it) },
                         modifier = Modifier
                             .background(
                                 color = MaterialTheme.colorScheme.secondaryContainer,
@@ -92,7 +88,9 @@ fun ChatPage()
                                     innerTextField()
                                 }
                                 IconButton(
-                                    onClick = {  }
+                                    onClick = {
+                                        chatPageViewModel.send(uiState.value.inputValue)
+                                    }
                                 ) {
                                     Icon(
                                         Icons.Filled.Send,
@@ -107,92 +105,83 @@ fun ChatPage()
             }
         },
     ) { paddingValues ->
-        Column(modifier = Modifier
+        LazyColumn(
+            modifier = Modifier
             .fillMaxWidth()
-            .padding(paddingValues)
+            .padding(paddingValues),
+            reverseLayout = true
         ) {
-
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ChatBubble_u() {
-    Row(
-        verticalAlignment = Alignment.Top,
-        modifier = Modifier.padding(end = 70.dp, start = 10.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.touxaingnvhai),
-            contentDescription = "heading",
-            modifier = Modifier
-                // Set image size to 40dp
-                .size(40.dp)
-                // Clip image to shaped as a circle
-                .clip(CircleShape)
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Card() {
-            Column(modifier = Modifier.padding(horizontal = 15.dp)) {
-                Row() {
-                    Text(
-                        text = "这是聊天内容\n这是聊天内容\n这是聊天内容",
-                        fontSize = 16.sp
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Text(
-                        text = SimpleDateFormat("HH:mm", Locale.CHINESE).format(Date()),
-                        fontSize = 12.sp
-                    )
+            items(uiState.value.messageList) { message ->
+                if (message.userName == uiState.value.oppositeUserName) {
+                    // Opposite chat bubble
+                    ChatBubbleOpposite(message)
+                } else {
+                    ChatBubbleMine(message)
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun ChatBubble_i() {
-    Row(
-        verticalAlignment = Alignment.Top,
-        modifier = Modifier.padding(start = 70.dp, end = 10.dp)
-    ) {
-        Card() {
-            Column(modifier = Modifier.padding(horizontal = 15.dp)) {
-                Row() {
-                    Text(
-                        text = "这是聊天内容\n这是聊天内容\n这是聊天内容",
-                        fontSize = 16.sp
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Text(
-                        text = SimpleDateFormat("HH:mm", Locale.CHINESE).format(Date()),
-                        fontSize = 12.sp
-                    )
-                }
+fun ChatMessageAvatar(uri: Uri) {
+    AsyncImage(
+        uri,
+        contentDescription = "heading",
+        modifier = Modifier
+            // Set image size to 40dp
+            .size(40.dp)
+            // Clip image to shaped as a circle
+            .clip(CircleShape)
+    )
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun ChatMessageBody(message: ChatData) {
+    Card() {
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)) {
+            Row() {
+                Text(
+                    text = message.message,
+                    fontSize = 16.sp
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.End
+            ) {
+                Text(
+                    text = SimpleDateFormat("HH:mm", Locale.CHINESE).format(message.time),
+                    fontSize = 12.sp
+                )
             }
         }
+    }
+}
 
+@Composable
+fun ChatBubbleMine(message: ChatData) {
+    Row(
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.padding(10.dp).fillMaxWidth()
+    ) {
+        ChatMessageBody(message)
         Spacer(modifier = Modifier.width(8.dp))
+        ChatMessageAvatar(message.userAvatar)
+    }
+}
 
-        Image(
-            painter = painterResource(id = R.drawable.touxaingnvhai),
-            contentDescription = "heading",
-            modifier = Modifier
-                // Set image size to 40dp
-                .size(40.dp)
-                // Clip image to shaped as a circle
-                .clip(CircleShape)
-        )
+
+@Composable
+fun ChatBubbleOpposite(message: ChatData) {
+    Row(
+        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier.padding(10.dp).fillMaxWidth()
+    ) {
+        ChatMessageAvatar(message.userAvatar)
+        Spacer(modifier = Modifier.width(8.dp))
+        ChatMessageBody(message)
     }
 }
 
@@ -201,17 +190,17 @@ fun ChatBubble_i() {
 @Preview
 @Composable
 fun ChatPreview() {
-    ChatPage()
+    ChatPage("123456", {}, ChatPageViewModel())
 }
 
 @Preview
 @Composable
-fun ChatBubblePreview() {
-    ChatBubble_u()
+fun ChatBubbleMinePreview() {
+    ChatBubbleMine(ChatData())
 }
 
 @Preview
 @Composable
-fun ChatBubbleiPreview() {
-    ChatBubble_i()
+fun ChatBubbleOppositePreview() {
+    ChatBubbleOpposite(ChatData())
 }

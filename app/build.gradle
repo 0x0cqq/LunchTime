@@ -49,8 +49,14 @@ android {
 }
 
 dependencies {
+    // Ktor for WebSocket
+    implementation "io.ktor:ktor-client-core:$ktor_version"
+    implementation "io.ktor:ktor-client-okhttp:$ktor_version"
+    implementation "io.ktor:ktor-client-websockets:$ktor_version"
+    implementation "io.ktor:ktor-serialization-kotlinx-json:$ktor_version"
+
     // coil for image loading
-    implementation("io.coil-kt:coil-compose:2.3.0")
+    implementation "io.coil-kt:coil-compose:2.3.0"
     // Store, Proto Datastore
     implementation  "androidx.datastore:datastore:1.0.0"
     // Starting from Protobuf 3.8.0, use the lite runtime library
