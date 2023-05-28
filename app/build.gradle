@@ -49,6 +49,7 @@ android {
 }
 
 dependencies {
+    implementation project(":parvenu")
     // Ktor for WebSocket
     implementation "io.ktor:ktor-client-core:$ktor_version"
     implementation "io.ktor:ktor-client-okhttp:$ktor_version"

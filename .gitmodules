@@ -1,0 +1,3 @@
+[submodule "parvenu"]
+	path = parvenu
+	url = git@github.com:ChenQiqian/parvenu.git

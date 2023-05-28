@@ -21,3 +21,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "LunchTime"
 include ':app'
+include ':parvenu'
+include ':parvenu-sample'
+project(':parvenu').projectDir = new File('parvenu/parvenu')
+project(':parvenu-sample').projectDir = new File('parvenu/app')
