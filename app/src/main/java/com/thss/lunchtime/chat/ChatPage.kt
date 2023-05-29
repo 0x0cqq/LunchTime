@@ -38,7 +38,7 @@ fun ChatPage(oppoSiteUserName: String, onBack: () -> Unit, chatPageViewModel: Ch
     }
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = uiState.value.oppositeUserName)
                 },

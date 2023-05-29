@@ -36,7 +36,7 @@ fun OtherInfoPage(onClickChat: (userName: String) -> Unit, onClickBack: () -> Un
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = uiState.value.infoData.ID + " 的主页")
                 },

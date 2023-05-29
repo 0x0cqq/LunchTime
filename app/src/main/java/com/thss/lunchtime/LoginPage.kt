@@ -33,7 +33,6 @@ import com.thss.lunchtime.data.userPreferencesStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LoginPage(onAlreadyLogin: () -> Unit, onClickLogin : (username: String, password: String) -> Unit,
@@ -84,6 +83,7 @@ fun LoginTitle(modifier: Modifier = Modifier) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginPanel(onClickLogin : (username: String, password: String) -> Unit,
               onClickSignup: () -> Unit) {

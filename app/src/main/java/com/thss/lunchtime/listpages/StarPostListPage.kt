@@ -17,10 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.thss.lunchtime.component.InfoData
-import com.thss.lunchtime.component.InfoPreviewComp
-import com.thss.lunchtime.mainscreen.infopage.postArray
-import com.thss.lunchtime.post.PostData
 import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
@@ -34,7 +30,7 @@ fun StarPostListPage(onBack: ()->Unit, onOpenUserInfo: (userName: String) -> Uni
     }
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBack ) {
                         Icon(

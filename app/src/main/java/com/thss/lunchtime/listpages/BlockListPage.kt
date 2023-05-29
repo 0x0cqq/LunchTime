@@ -31,7 +31,7 @@ fun BlockListPage(onBack : ()->Unit, onClickUserInfo : (userName: String) -> Uni
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 navigationIcon = {
                     IconButton( onClick = onBack ) {
                         Icon(

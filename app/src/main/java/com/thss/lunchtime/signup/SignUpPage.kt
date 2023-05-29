@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OutlineTextFieldWithErrorView(
     value: String,
@@ -143,7 +144,7 @@ fun SignUpPage(
     Scaffold (
         modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp),
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Outlined.ArrowBack, "Back")

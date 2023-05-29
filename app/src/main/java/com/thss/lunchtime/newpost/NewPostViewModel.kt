@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import me.onebone.parvenu.ParvenuEditorValue
 
 class NewPostViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(NewPostData())
@@ -20,6 +21,12 @@ class NewPostViewModel : ViewModel() {
             state.copy(content = value)
         }
     }
+    fun setRichContent(value: ParvenuEditorValue) {
+        _uiState.update { state ->
+            state.copy(richContent = value)
+        }
+    }
+
     fun removeImage(index: Int) {
         _uiState.update { state ->
             state.copy(selectedImgUris = state.selectedImgUris.filterIndexed { i, _ -> i != index })

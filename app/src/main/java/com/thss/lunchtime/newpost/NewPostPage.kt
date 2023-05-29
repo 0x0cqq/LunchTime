@@ -49,8 +49,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -59,12 +61,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.R
 import com.thss.lunchtime.common.LocationUtils
 import com.thss.lunchtime.component.Grid
+import me.onebone.parvenu.ParvenuEditor
+import me.onebone.parvenu.ParvenuSpanToggle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -286,6 +293,7 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modifier) {
     val uiState = newPostViewModel.uiState.collectAsState()
@@ -331,17 +339,77 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
             )
         }
         item {
-            TextField(
-                value = uiState.value.content,
-                onValueChange = { newPostViewModel.setContent(it) },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = {
-                    Text(
-                        "Content",
-                    ) },
-                keyboardActions = KeyboardActions {
-                    focusManager.moveFocus(FocusDirection.Next) },
-            )
+            ParvenuEditor(
+                value = uiState.value.richContent,
+                onValueChange = { newPostViewModel.setRichContent(it) },
+            ) { value, onValueChange ->
+                TextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {
+                        Text(
+                            "Content",
+                        )
+                    },
+                    keyboardActions = KeyboardActions {
+                        focusManager.moveFocus(FocusDirection.Next)
+                    },
+                )
+            }
+        }
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ParvenuSpanToggle(
+                    value = uiState.value.richContent,
+                    onValueChange = { newPostViewModel.setRichContent(it) },
+                    spanFactory = { SpanStyle(fontStyle = FontStyle.Italic) },
+                    spanEqualPredicate = { style ->
+                        style.fontStyle == FontStyle.Italic
+                    }
+                ) { enabled, onToggle ->
+                    Button(
+                        modifier = Modifier.alpha(if (enabled) 1f else 0.3f),
+                        onClick = { onToggle() }
+                    ) {
+                        Text(text = "italic")
+                    }
+                }
+
+                ParvenuSpanToggle(
+                    value = uiState.value.richContent,
+                    onValueChange = { newPostViewModel.setRichContent(it) },
+                    spanFactory = { SpanStyle(fontWeight = FontWeight.Bold) },
+                    spanEqualPredicate = { style ->
+                        style.fontWeight == FontWeight.Bold
+                    }
+                ) { enabled, onToggle ->
+                    Button(
+                        modifier = Modifier.alpha(if (enabled) 1f else 0.3f),
+                        onClick = { onToggle() }
+                    ) {
+                        Text(text = "bold")
+                    }
+                }
+                ParvenuSpanToggle(
+                    value = uiState.value.richContent,
+                    onValueChange = { newPostViewModel.setRichContent(it) },
+                    spanFactory = { SpanStyle(color = Color.Red) },
+                    spanEqualPredicate = { style ->
+                        style.color == Color.Red
+                    }
+                ) { enabled, onToggle ->
+                    Button(
+                        modifier = Modifier.alpha(if (enabled) 1f else 0.3f),
+                        onClick = { onToggle() }
+                    ) {
+                        Text(text = "red")
+                    }
+                }
+            }
         }
         item {
             NewPostPhotoGrid(
