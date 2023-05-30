@@ -27,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.chat.ChatPage
 import com.thss.lunchtime.chat.ChatPageViewModel
 import com.thss.lunchtime.data.userPreferencesStore
+import com.thss.lunchtime.info.OtherInfoPage
 import com.thss.lunchtime.info.OtherInfoPageViewModel
 import com.thss.lunchtime.listpages.BlockListPage
 import com.thss.lunchtime.listpages.FansListPage

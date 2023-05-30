@@ -1,4 +1,4 @@
-package com.thss.lunchtime
+package com.thss.lunchtime.info
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.component.InfoComp
 import com.thss.lunchtime.component.InfoType
-import com.thss.lunchtime.info.OtherInfoPageViewModel
 import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
