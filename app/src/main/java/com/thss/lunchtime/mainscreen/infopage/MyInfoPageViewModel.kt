@@ -46,7 +46,8 @@ class MyInfoPageViewModel: ViewModel() {
                 val response = LunchTimeApi.retrofitService.getPostList(
                     name = userName,
                     type = 0,
-                    targetName = userName
+                    targetName = userName,
+                    filter = 0
                 )
                 if (response.status) {
                     _uiState.update { state ->

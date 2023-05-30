@@ -63,7 +63,10 @@ fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> 
     Scaffold(
         topBar = {
             Column {
-                HomePageTopBar(onClickSearch)
+                HomePageTopBar(
+                    onSwitchDropDownMenu = { index: Int ->
+                        homepageViewModel.onSwitchDropDownMenu(context, index) },
+                    onClickSearch = onClickSearch)
                 ScrollableTabRow(
                     selectedTabIndex = uiState.value.selectedIndex,
                     modifier = Modifier.align(Alignment.Start)
@@ -114,7 +117,7 @@ fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> 
 
 
 @Composable
-fun HomePageTopBar(onClickSearch: () -> Unit) {
+fun HomePageTopBar(onSwitchDropDownMenu: (index: Int) -> Unit, onClickSearch: () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     var selectedMenuIndex by rememberSaveable { mutableStateOf(0) }
     val dropDownMenuItems = listOf("All", "My Following", "Divider", "Tag1", "Tag2")
@@ -149,7 +152,10 @@ fun HomePageTopBar(onClickSearch: () -> Unit) {
                     } else {
                         DropdownMenuItem(
                             text = { Text(name) },
-                            onClick = { /* TODO */ selectedMenuIndex = index; expanded = false },
+                            onClick = {
+                                selectedMenuIndex = index
+                                expanded = false
+                                onSwitchDropDownMenu(selectedMenuIndex) },
                             modifier = Modifier.wrapContentHeight()
                         )
                     }
