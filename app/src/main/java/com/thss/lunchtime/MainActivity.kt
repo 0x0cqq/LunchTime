@@ -309,6 +309,7 @@ fun Application(modifier: Modifier = Modifier) {
             MainScreen(
                 onClickSearch = {
                     applicationNavController.navigate("search")
+                },
                 onOpenChat = { name ->
                     applicationNavController.navigate("chat/$name")
                 },

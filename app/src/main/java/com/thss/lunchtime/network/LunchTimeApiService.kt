@@ -93,6 +93,10 @@ interface LunchTimeApiService {
     @POST("/api/modify_user_password")
     suspend fun modifyUserPassword(@Field("user_name") name: String, @Field("old_password") old_password: String, @Field("new_password") new_password: String): Response
 
+    @Multipart
+    @POST("api/modify_user_image")
+    suspend fun modifyUserImage(@Part("user_name") name: RequestBody, @Part image: List<MultipartBody.Part>): Response
+
     @FormUrlEncoded
     @POST("/api/attention")
     suspend fun FollowUser(@Field("user_name") name: String, @Field("target_user_name") targetName: String): ResponseWithResult

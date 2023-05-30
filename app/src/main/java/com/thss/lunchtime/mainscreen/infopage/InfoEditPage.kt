@@ -1,7 +1,12 @@
 package com.thss.lunchtime.mainscreen.infopage
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -15,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +32,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.thss.lunchtime.component.InfoData
+import com.thss.lunchtime.data.userPreferencesStore
+import kotlinx.coroutines.flow.first
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 
 
 // 除了注销，其他（修改密码blabla）的应该都可以在这里再开一个 navigation 解决？
@@ -34,6 +47,25 @@ import com.thss.lunchtime.component.InfoData
 fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, onOpenBlockList: () -> Unit, infoEditViewModel: InfoEditViewModel) {
     val infoData = infoEditViewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if(uri != null) {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val imageBitmap = BitmapFactory.decodeStream(inputStream).asImageBitmap()
+            val stream = ByteArrayOutputStream()
+            imageBitmap.asAndroidBitmap()
+                .compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            val requestBody = stream.toByteArray()
+                .toRequestBody(
+                    "image/*".toMediaType()
+                )
+            val image = listOf(MultipartBody.Part.createFormData(
+                "image",
+                "uploaded.jpeg",
+                requestBody
+            ))
+            infoEditViewModel.modifyUserImage(context,image)
+        }
+    }
 
     LaunchedEffect(Unit) {
         infoEditViewModel.refresh(context)
@@ -74,7 +106,13 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, onOpenBlockList: () -
             val newPasswordHidden = remember { mutableStateOf(true) }
 
 
-            ImageChange(infoData.value.Avatar)
+            ImageChange(
+                avatar = infoData.value.Avatar,
+                onNewImage = {
+                    launcher.launch (
+                        PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                })
             SimpleInfoChange(onOpenBlockList ,infoData.value, infoEditViewModel, context)
 
             Spacer(modifier = Modifier.height(50.dp))
@@ -206,7 +244,7 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, onOpenBlockList: () -
 }
 
 @Composable
-fun ImageChange(avatar: Uri) {
+fun ImageChange(avatar: Uri, onNewImage: ()->Unit) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.Bottom,
@@ -232,7 +270,7 @@ fun ImageChange(avatar: Uri) {
                 .clip(CircleShape)
                 .size(45.dp),
             colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White),
-            onClick = { /*TODO*/ }) {
+            onClick = { onNewImage() }) {
             Icon(
                 Icons.Default.PhotoCamera,
                 contentDescription = null,
