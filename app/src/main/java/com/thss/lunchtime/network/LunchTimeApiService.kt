@@ -47,10 +47,13 @@ interface LunchTimeApiService {
     suspend fun getPostDetail(@Query("user_name") name : String, @Query("post_id") postID: Int) : ResponseWithPostDetail
 
     @GET("/api/posts")
-    suspend fun getPostList(@Query("user_name") name : String, @Query("type") type: Int, @Query("target_user_name") targetName: String = "") : ResponseWithPostList
+    suspend fun getPostList(@Query("user_name") name : String, @Query("type") type: Int, @Query("target_user_name") targetName: String = "", @Query("filter")filter: Int) : ResponseWithPostList
 
     @GET("/api/posts_saved")
     suspend fun getPostListSaved(@Query("user_name") name : String,  @Query("target_user_name") targetName: String = "") : ResponseWithPostList
+
+    @GET("/api/search_post")
+    suspend fun getPostListSearched(@Query("user_name") name: String, @Query("field") field: String, @Query("keyword") keyword: String): ResponseWithPostList
 
     // see https://stackoverflow.com/questions/39866676/retrofit-uploading-multiple-images-to-a-single-key
     @Multipart

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun SearchTextField() {
+fun SearchTextField(onClickSearch: (keyword: String)-> Unit) {
     var searchText by remember {
         mutableStateOf("")
     }
@@ -55,7 +55,7 @@ fun SearchTextField() {
                         innerTextField()
                     }
                    IconButton(
-                        onClick = {}
+                        onClick = { onClickSearch(searchText) }
                     ) {
                         androidx.compose.material3.Icon(
                             Icons.Filled.Search,
@@ -70,10 +70,10 @@ fun SearchTextField() {
 }
 
 @Composable
-fun SearchPageTopBar() {
+fun SearchPageTopBar(onClickSearch: (index: Int, keyword: String) -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     var selectedMenuIndex by rememberSaveable { mutableStateOf(0) }
-    val dropDownMenuItems = listOf("综合", "用户", "帖子", "Tag")
+    val dropDownMenuItems = listOf("综合", "用户", "帖子", "标题", "Tag")
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -122,12 +122,12 @@ fun SearchPageTopBar() {
             }
         }
 
-        SearchTextField()
+        SearchTextField( onClickSearch = { text -> onClickSearch(selectedMenuIndex, text)} )
     }
 }
 
 @Preview
 @Composable
 fun SearchPreview(){
-    SearchPageTopBar()
+    SearchPageTopBar({index: Int, text:String -> })
 }

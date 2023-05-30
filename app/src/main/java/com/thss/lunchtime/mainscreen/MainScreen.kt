@@ -25,7 +25,8 @@ import com.thss.lunchtime.mainscreen.messagepage.Messagepage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onOpenChat: (oppositeUserName: String) -> Unit,
+fun MainScreen(onClickSearch: ()->Unit,
+               onOpenChat: (oppositeUserName: String) -> Unit,
                onOpenInfoEdit: () -> Unit,
                onNewPost: () -> Unit,
                onOpenPost: (postId: Int) -> Unit,
@@ -109,6 +110,7 @@ fun MainScreen(onOpenChat: (oppositeUserName: String) -> Unit,
                     onClickNewPost = onNewPost,
                     homepageViewModel = homepageViewModel,
                     onOpenUserInfo = onOpenUserInfo,
+                    onClickSearch = onClickSearch,
                 )
             }
             composable(MainScreens.Message.route) {
@@ -135,5 +137,5 @@ fun MainScreen(onOpenChat: (oppositeUserName: String) -> Unit,
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen({}, {}, {}, {}, {}, {}, {}, {}, MainScreenViewModel())
+    MainScreen({}, {}, {}, {}, {_ -> }, {}, {}, {}, {}, MainScreenViewModel())
 }
