@@ -44,6 +44,8 @@ import com.thss.lunchtime.newpost.NewPostPage
 import com.thss.lunchtime.newpost.NewPostViewModel
 import com.thss.lunchtime.post.PostDetailPage
 import com.thss.lunchtime.post.PostDetailViewModel
+import com.thss.lunchtime.search.SearchPage
+import com.thss.lunchtime.search.SearchPageViewModel
 import com.thss.lunchtime.signup.SignUpPage
 import com.thss.lunchtime.signup.SignUpViewModel
 import com.thss.lunchtime.ui.theme.LunchTimeTheme
@@ -91,6 +93,7 @@ fun Application(modifier: Modifier = Modifier) {
     val infoEditViewModel : InfoEditViewModel = viewModel()
     val otherInfoPageViewModel : OtherInfoPageViewModel = viewModel()
     val myInfoPageViewModel : MyInfoPageViewModel = viewModel()
+    val searchPageViewModel : SearchPageViewModel = viewModel()
     val applicationNavController = rememberNavController()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -283,8 +286,30 @@ fun Application(modifier: Modifier = Modifier) {
                 newPostViewModel
             )
         }
+        composable("search"){
+            SearchPage(
+                onClickPostPreviewCard = { postId ->
+                    applicationNavController.navigate("post/$postId")
+                },
+                onOpenUserInfo = { targetUserName ->
+                    scope.launch {
+                        val myUserName = userData.data.first().userName
+                        if (myUserName == targetUserName){
+                            applicationNavController.navigate("myInfoPage")
+                        }
+                        else{
+                            applicationNavController.navigate("otherInfoPage/$targetUserName")
+                        }
+                    }
+
+                },
+                searchPageViewModel = searchPageViewModel
+            )
+        }
         composable("main") {
             MainScreen(
+                onClickSearch = {
+                    applicationNavController.navigate("search")
                 onOpenChat = { name ->
                     applicationNavController.navigate("chat/$name")
                 },
