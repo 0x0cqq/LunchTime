@@ -63,3 +63,11 @@ data class ResponseWithUserList (
     @SerialName("user_list")
     val userList: List<UserInfo> = listOf()
 )
+
+@Serializable
+data class ResponseWithChatList(
+    val status: Boolean = false,
+    val message: String = "",
+    @SerialName("chat_list")
+    val chatList: List<ChatMessage> = listOf()
+)

@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PersonOff
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -20,16 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.component.InfoComp
-import com.thss.lunchtime.component.InfoData
 import com.thss.lunchtime.component.InfoType
 import com.thss.lunchtime.info.OtherInfoPageViewModel
-import com.thss.lunchtime.mainscreen.infopage.postArray
-import com.thss.lunchtime.post.PostData
 import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun OtherInfoPage(onClickPost: (postId: Int) -> Unit, onClickFans : () -> Unit, onClickFollows : () -> Unit, onClickSaved: () -> Unit, otherInfoPageViewModel: OtherInfoPageViewModel = viewModel(), userName: String) {
+fun OtherInfoPage(onClickChat: (userName: String) -> Unit, onClickBack: () -> Unit, onClickPost: (postId: Int) -> Unit, onClickFans : () -> Unit, onClickFollows : () -> Unit, onClickSaved: () -> Unit, otherInfoPageViewModel: OtherInfoPageViewModel = viewModel(), userName: String) {
     val uiState = otherInfoPageViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
@@ -39,9 +36,15 @@ fun OtherInfoPage(onClickPost: (postId: Int) -> Unit, onClickFans : () -> Unit, 
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = uiState.value.infoData.ID + " 的主页")
+                },
+                navigationIcon = {
+                    IconButton(onClick = onClickBack) {
+                        Icon(imageVector = Icons.Default.ArrowBack,
+                            contentDescription = null)
+                    }
                 },
                 actions = {
                     IconButton(onClick = {otherInfoPageViewModel.onClickBlock(context)}) {
@@ -67,7 +70,10 @@ fun OtherInfoPage(onClickPost: (postId: Int) -> Unit, onClickFans : () -> Unit, 
                 onClickFollows = onClickFollows,
                 onClickFans = onClickFans,
                 onClickSaved = onClickSaved,
-                onClickRelation = {otherInfoPageViewModel.onClickRelation(context)}
+                onClickRelation = {otherInfoPageViewModel.onClickRelation(context)},
+                onClickChat = {
+                    onClickChat(uiState.value.infoData.ID)
+                }
             )
         }
 
@@ -103,5 +109,5 @@ fun OtherInfoPage(onClickPost: (postId: Int) -> Unit, onClickFans : () -> Unit, 
 @Preview
 @Composable
 fun OtherInfoPagePreview() {
-    OtherInfoPage({}, {}, {}, {}, OtherInfoPageViewModel(),"Other User")
+    OtherInfoPage({}, {}, {}, {}, {}, {}, OtherInfoPageViewModel(),"Other User")
 }

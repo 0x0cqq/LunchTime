@@ -40,7 +40,7 @@ fun PostDetailPage(onBack: () -> Unit, onOpenUserInfo: (userName: String) -> Uni
     }
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = "动态详情")
                 },

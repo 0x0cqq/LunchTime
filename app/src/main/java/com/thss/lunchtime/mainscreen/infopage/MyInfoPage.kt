@@ -34,7 +34,7 @@ fun MyInfoPage(onOpenInfoEdit: () -> Unit, onOpenFollowingList : () -> Unit, onO
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = "我的主页")
                 },
@@ -62,6 +62,7 @@ fun MyInfoPage(onOpenInfoEdit: () -> Unit, onOpenFollowingList : () -> Unit, onO
                 onClickFans = onOpenFansList,
                 onClickFollows = onOpenFollowingList,
                 onClickSaved = onOpenSavedList,
+                onClickChat = {}
             )
         }
 

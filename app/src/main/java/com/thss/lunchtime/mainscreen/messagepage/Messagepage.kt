@@ -1,6 +1,5 @@
 package com.thss.lunchtime.mainscreen.messagepage
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,19 +14,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.thss.lunchtime.noticeData
-import com.thss.lunchtime.noticePreviewCard
+import com.thss.lunchtime.NoticeData
+import com.thss.lunchtime.NoticePreviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun Messagepage(onClickPostNotice: (postId: Int) -> Unit , messageViewModel: MessageViewModel = viewModel()) {
+fun Messagepage(onClickChat: (oppositeUserName: String) -> Unit, onClickPostNotice: (postId: Int) -> Unit , messageViewModel: MessageViewModel = viewModel()) {
     val uiState = messageViewModel.uiState.collectAsState()
     val tabs = listOf(MessageTabs.Comment, MessageTabs.Like, MessageTabs.Chat)
     val context = LocalContext.current
@@ -67,11 +64,12 @@ fun Messagepage(onClickPostNotice: (postId: Int) -> Unit , messageViewModel: Mes
             .padding(innerPadding)
             .pullRefresh(state) ) {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                val noticeDataList: List<noticeData> =
-                    uiState.value.NoticeDataLists[uiState.value.selectedIndex]
-                if (uiState.value.selectedIndex < 2){
+                val noticeDataList: List<NoticeData> =
+                    uiState.value.noticeDataLists[uiState.value.selectedIndex]
+                if (uiState.value.selectedIndex < 2) {
+                    // 评论或者点赞
                     items(noticeDataList) { noticeData ->
-                        noticePreviewCard(
+                        NoticePreviewCard(
                             msg = noticeData,
                             onClickNotice = {onClickPostNotice(noticeData.postId)}
                         )
@@ -79,9 +77,9 @@ fun Messagepage(onClickPostNotice: (postId: Int) -> Unit , messageViewModel: Mes
                 }
                 else{
                     items(noticeDataList) { noticeData ->
-                        noticePreviewCard(
+                        NoticePreviewCard(
                             msg = noticeData,
-                            onClickNotice = {}
+                            onClickNotice = { onClickChat(noticeData.noticerID) }
                         )
                     }
                 }

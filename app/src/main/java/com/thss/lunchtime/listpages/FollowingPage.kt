@@ -13,17 +13,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.component.InfoData
 import com.thss.lunchtime.component.InfoPreviewComp
-import com.thss.lunchtime.mainscreen.infopage.ImageChange
-import com.thss.lunchtime.mainscreen.infopage.InfoEditPage
-import com.thss.lunchtime.mainscreen.infopage.InfoEditViewModel
-import com.thss.lunchtime.mainscreen.infopage.SimpleInfoChange
-import com.thss.lunchtime.post.PostData
-import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +28,7 @@ fun FollowingListPage(onBack: () -> Unit, onClickUserInfo:(userName: String) -> 
     }
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(

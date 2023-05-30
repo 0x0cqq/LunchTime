@@ -13,6 +13,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.thss.lunchtime.chat.ChatPageViewModel
 import com.thss.lunchtime.common.NoRippleInteractionSource
 import com.thss.lunchtime.mainscreen.infopage.MyInfoPage
 import com.thss.lunchtime.mainscreen.homepage.Homepage
@@ -24,15 +25,24 @@ import com.thss.lunchtime.mainscreen.messagepage.Messagepage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onClickSearch: ()->Unit, onOpenInfoEdit: () -> Unit, onNewPost: () -> Unit, onOpenPost: (postId: Int) -> Unit, onOpenUserInfo: (userName: String) -> Unit, onOpenFollows: () -> Unit, onOpenFans: () -> Unit, onOpenSaved: () -> Unit, mainScreenViewModel: MainScreenViewModel) {
+fun MainScreen(onClickSearch: ()->Unit,
+               onOpenChat: (oppositeUserName: String) -> Unit,
+               onOpenInfoEdit: () -> Unit,
+               onNewPost: () -> Unit,
+               onOpenPost: (postId: Int) -> Unit,
+               onOpenUserInfo: (userName: String) -> Unit,
+               onOpenFollows: () -> Unit,
+               onOpenFans: () -> Unit,
+               onOpenSaved: () -> Unit,
+               mainScreenViewModel: MainScreenViewModel) {
     val mainScreenNavController = rememberNavController()
     // 脚手架，上面下面的栏和
     val navigationBarItems = listOf(
         MainScreens.Home, MainScreens.Message, MainScreens.My
     )
     val homepageViewModel: HomepageViewModel = viewModel()
-    val messageViewModel: MessageViewModel = viewModel()
     val myInfoPageViewModel: MyInfoPageViewModel = viewModel()
+    val messageViewModel : MessageViewModel = viewModel()
 
     LaunchedEffect(Unit) {
         val index = mainScreenViewModel.selectItem
@@ -105,6 +115,7 @@ fun MainScreen(onClickSearch: ()->Unit, onOpenInfoEdit: () -> Unit, onNewPost: (
             }
             composable(MainScreens.Message.route) {
                 Messagepage(
+                    onClickChat = onOpenChat,
                     onClickPostNotice = onOpenPost,
                     messageViewModel = messageViewModel
                 )
@@ -126,5 +137,5 @@ fun MainScreen(onClickSearch: ()->Unit, onOpenInfoEdit: () -> Unit, onNewPost: (
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen({}, {}, {}, {_ -> }, {}, {}, {}, {}, MainScreenViewModel())
+    MainScreen({}, {}, {}, {}, {_ -> }, {}, {}, {}, {}, MainScreenViewModel())
 }
