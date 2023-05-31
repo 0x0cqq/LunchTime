@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.rounded.HowToReg
@@ -145,7 +146,8 @@ fun InfoPreviewComp(msg: InfoData, modifier: Modifier = Modifier)
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(5.dp)
+            .padding(5.dp),
+        shape = RoundedCornerShape(0.dp)
     ) {
         Row (
             horizontalArrangement = Arrangement.SpaceBetween,

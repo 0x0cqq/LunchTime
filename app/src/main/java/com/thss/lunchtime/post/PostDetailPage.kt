@@ -182,7 +182,7 @@ fun PostDetailPage(onBack: () -> Unit, onOpenUserInfo: (userName: String) -> Uni
 }
 
 fun sharePost(context: Context, post: PostData) {
-    val res = "@" + post.postID + "发表了新内容：\n" + post.content + "..."
+    val res = "@" + post.postID + " 发表了帖子：\n" + "【" + post.tag + "-" + post.title + "】\n" + post.content + "\n快来LunchTime看看吧~"
     val intent = Intent().apply {
         action = Intent.ACTION_SEND
         putExtra(Intent.EXTRA_TEXT, res)

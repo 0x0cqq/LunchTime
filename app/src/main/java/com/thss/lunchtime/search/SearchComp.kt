@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -39,10 +40,12 @@ fun SearchTextField(onClickSearch: (keyword: String)-> Unit) {
                     color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(25)
                 )
-                .height(40.dp),
+                .height(40.dp)
+                .padding(start = 10.dp),
             textStyle = MaterialTheme.typography.bodyMedium.copy(
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             ),
+            singleLine = true,
             decorationBox = { innerTextField ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -115,7 +118,7 @@ fun SearchPageTopBar(onClickSearch: (index: Int, keyword: String) -> Unit) {
                         androidx.compose.material3.DropdownMenuItem(
                             text = { androidx.compose.material3.Text(name) },
                             onClick = { /* TODO */ selectedMenuIndex = index; expanded = false },
-                            modifier = Modifier.wrapContentHeight()
+                            modifier = Modifier.wrapContentHeight(),
                         )
                     }
                 }

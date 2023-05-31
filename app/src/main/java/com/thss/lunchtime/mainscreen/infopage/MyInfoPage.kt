@@ -52,19 +52,15 @@ fun MyInfoPage(onOpenInfoEdit: () -> Unit, onOpenFollowingList : () -> Unit, onO
             .fillMaxWidth()
             .padding(paddingValues)
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            InfoComp(
-                msg = uiState.value.infoData,
-                type = InfoType.Self,
-                onClickFans = onOpenFansList,
-                onClickFollows = onOpenFollowingList,
-                onClickSaved = onOpenSavedList,
-                onClickChat = {}
-            )
-        }
+
+        InfoComp(
+            msg = uiState.value.infoData,
+            type = InfoType.Self,
+            onClickFans = onOpenFansList,
+            onClickFollows = onOpenFollowingList,
+            onClickSaved = onOpenSavedList,
+            onClickChat = {}
+        )
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -73,9 +69,7 @@ fun MyInfoPage(onOpenInfoEdit: () -> Unit, onOpenFollowingList : () -> Unit, onO
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp)
         ) {
-            Text(text = "我的动态", fontSize = 14.sp)
-
-            Icon(Icons.Rounded.Sort, contentDescription = null, Modifier.size(18.dp))
+            Text(text = "我的动态", fontSize = 16.sp)
         }
 
         LazyColumn(

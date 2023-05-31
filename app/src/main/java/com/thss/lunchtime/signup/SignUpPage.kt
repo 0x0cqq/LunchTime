@@ -152,7 +152,7 @@ fun SignUpPage(
                 },
                 title = {
                     Text(
-                        "Sign Up"
+                        "注册"
                     )
                 },
             )
@@ -170,7 +170,7 @@ fun SignUpPage(
                 OutlineTextFieldWithErrorView(
                     value = uiState.name,
                     onValueChange = { viewModel.inputUsername(it) },
-                    label = { Text("Username") },
+                    label = { Text("用户名") },
                     modifier = Modifier
                         .fillMaxWidth(),
                     leadingIcon = {
@@ -189,7 +189,7 @@ fun SignUpPage(
                 OutlineTextFieldWithErrorView(
                     value = uiState.password,
                     onValueChange = { viewModel.inputPassword(it) },
-                    label = { Text("Password") },
+                    label = { Text("密码") },
                     visualTransformation =
                     if (passwordVisible) VisualTransformation.None
                     else PasswordVisualTransformation(),
@@ -224,7 +224,7 @@ fun SignUpPage(
                 OutlineTextFieldWithErrorView(
                     value = uiState.confirmPassword,
                     onValueChange = { viewModel.inputConfirmPassword(it) },
-                    label = { Text("Confirm Password") },
+                    label = { Text("确认密码") },
                     visualTransformation =
                     if (confirmPasswordVisible) VisualTransformation.None
                     else PasswordVisualTransformation(),
@@ -261,7 +261,7 @@ fun SignUpPage(
                 OutlineTextFieldWithErrorView(
                     value = uiState.email,
                     onValueChange = { viewModel.inputEmail(it) },
-                    label = { Text("Email") },
+                    label = { Text("邮箱") },
                     modifier = Modifier
                         .fillMaxWidth(),
                     leadingIcon = {
@@ -281,7 +281,7 @@ fun SignUpPage(
                 OutlineTextFieldWithErrorView(
                     value = uiState.emailValidationCode,
                     onValueChange = { viewModel.inputEmailValidationCode(it) },
-                    label = { Text("Email Validation Code") },
+                    label = { Text("邮箱验证码") },
                     modifier = Modifier
                         .fillMaxWidth(),
                     leadingIcon = {
@@ -295,7 +295,7 @@ fun SignUpPage(
                             modifier = Modifier.padding(end = 5.dp),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text("Send")
+                            Text("发送")
                         }
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -317,7 +317,7 @@ fun SignUpPage(
                     enabled = viewModel.isEnabledRegisterButton.value
                 ) {
                     Text(
-                        "Sign Up"
+                        "注册"
                     )
                 }
             }
