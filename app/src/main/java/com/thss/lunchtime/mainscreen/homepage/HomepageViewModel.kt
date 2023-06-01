@@ -27,6 +27,8 @@ class HomepageViewModel : ViewModel() {
             state.copy(selectedIndex = index)
         }
     }
+
+
     fun onClickLike(context: Context, postID: Int){
         viewModelScope.launch {
             val userData = context.userPreferencesStore
@@ -105,8 +107,9 @@ class HomepageViewModel : ViewModel() {
             val userData = context.userPreferencesStore
             try{
                 val response = LunchTimeApi.retrofitService.getPostList(
-                    userData.data.first().userName,
-                    uiState.value.selectedIndex
+                    name = userData.data.first().userName,
+                    type = uiState.value.selectedIndex,
+                    filter = uiState.value.dropMenuIndex
                 )
                 if (response.status) { // valid response
                     _uiState.update { state ->
@@ -129,8 +132,12 @@ class HomepageViewModel : ViewModel() {
             }
         }
     }
-
-
+    fun onSwitchDropDownMenu(context: Context, index: Int){
+        _uiState.update { state ->
+            state.copy( dropMenuIndex = index)
+        }
+        this.refresh(context)
+    }
     fun addRandomPost() {
         _uiState.update { state ->
             state.copy(postDataList = state.postDataList + PostData(title = "test", content = Random.nextInt().toString()))

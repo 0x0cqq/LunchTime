@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -23,7 +24,7 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun SearchTextField() {
+fun SearchTextField(onClickSearch: (keyword: String)-> Unit) {
     var searchText by remember {
         mutableStateOf("")
     }
@@ -39,10 +40,12 @@ fun SearchTextField() {
                     color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(25)
                 )
-                .height(40.dp),
+                .height(40.dp)
+                .padding(start = 10.dp),
             textStyle = MaterialTheme.typography.bodyMedium.copy(
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             ),
+            singleLine = true,
             decorationBox = { innerTextField ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -55,7 +58,7 @@ fun SearchTextField() {
                         innerTextField()
                     }
                    IconButton(
-                        onClick = {}
+                        onClick = { onClickSearch(searchText) }
                     ) {
                         androidx.compose.material3.Icon(
                             Icons.Filled.Search,
@@ -70,10 +73,10 @@ fun SearchTextField() {
 }
 
 @Composable
-fun SearchPageTopBar() {
+fun SearchPageTopBar(onClickSearch: (index: Int, keyword: String) -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     var selectedMenuIndex by rememberSaveable { mutableStateOf(0) }
-    val dropDownMenuItems = listOf("综合", "用户", "帖子", "Tag")
+    val dropDownMenuItems = listOf("综合", "用户", "帖子", "标题", "Tag")
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -115,19 +118,19 @@ fun SearchPageTopBar() {
                         androidx.compose.material3.DropdownMenuItem(
                             text = { androidx.compose.material3.Text(name) },
                             onClick = { /* TODO */ selectedMenuIndex = index; expanded = false },
-                            modifier = Modifier.wrapContentHeight()
+                            modifier = Modifier.wrapContentHeight(),
                         )
                     }
                 }
             }
         }
 
-        SearchTextField()
+        SearchTextField( onClickSearch = { text -> onClickSearch(selectedMenuIndex, text)} )
     }
 }
 
 @Preview
 @Composable
 fun SearchPreview(){
-    SearchPageTopBar()
+    SearchPageTopBar({index: Int, text:String -> })
 }

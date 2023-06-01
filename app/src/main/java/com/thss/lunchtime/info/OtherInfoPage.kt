@@ -1,9 +1,10 @@
-package com.thss.lunchtime
+package com.thss.lunchtime.info
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PersonOff
@@ -21,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.component.InfoComp
 import com.thss.lunchtime.component.InfoType
-import com.thss.lunchtime.info.OtherInfoPageViewModel
 import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
@@ -60,22 +60,18 @@ fun OtherInfoPage(onClickChat: (userName: String) -> Unit, onClickBack: () -> Un
             .fillMaxWidth()
             .padding(paddingValues)
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            InfoComp(
-                msg = uiState.value.infoData,
-                type = InfoType.Others,
-                onClickFollows = onClickFollows,
-                onClickFans = onClickFans,
-                onClickSaved = onClickSaved,
-                onClickRelation = {otherInfoPageViewModel.onClickRelation(context)},
-                onClickChat = {
-                    onClickChat(uiState.value.infoData.ID)
-                }
-            )
-        }
+
+        InfoComp(
+            msg = uiState.value.infoData,
+            type = InfoType.Others,
+            onClickFollows = onClickFollows,
+            onClickFans = onClickFans,
+            onClickSaved = onClickSaved,
+            onClickRelation = {otherInfoPageViewModel.onClickRelation(context)},
+            onClickChat = {
+                onClickChat(uiState.value.infoData.ID)
+            }
+        )
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -84,9 +80,7 @@ fun OtherInfoPage(onClickChat: (userName: String) -> Unit, onClickBack: () -> Un
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp)
         ) {
-            Text(text = "TA的动态", fontSize = 14.sp)
-
-            Icon(Icons.Rounded.Sort, contentDescription = null, Modifier.size(18.dp))
+            Text(text = "TA的动态", fontSize = 16.sp)
         }
 
         LazyColumn(modifier = Modifier.fillMaxSize()
