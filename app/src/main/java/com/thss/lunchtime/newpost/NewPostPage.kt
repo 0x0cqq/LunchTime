@@ -44,6 +44,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,32 +61,40 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.thss.lunchtime.R
 import com.thss.lunchtime.common.LocationUtils
 import com.thss.lunchtime.component.Grid
+import com.thss.lunchtime.data.userPreferencesStore
+import kotlinx.coroutines.flow.first
 import me.onebone.parvenu.ParvenuEditor
 import me.onebone.parvenu.ParvenuSpanToggle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
-fun NewPostPage(onClickBack: () -> Unit = {}, onClickSend : ( newPostData : NewPostData) -> Unit = { _ -> }, newPostViewModel: NewPostViewModel = viewModel()) {
+fun NewPostPage(onClickBack: () -> Unit = {},
+                onClickSend : ( newPostData : NewPostData) -> Unit = { _ -> },
+                newPostViewModel: NewPostViewModel = viewModel()) {
     val uiState = newPostViewModel.uiState.collectAsState()
-
+    val context = LocalContext.current
+    val userData = context.userPreferencesStore
+    LaunchedEffect(Unit) {
+        newPostViewModel.initData(context, userData.data.first().userName)
+    }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Image(
-                        painter = painterResource(id = R.drawable.touxaingnvhai),
-                        contentDescription = "heading",
+                    AsyncImage(
+                        uiState.value.avatarUri,
+                        contentDescription = "avatar",
                         modifier = Modifier
                             .size(40.dp)
                             // Clip image to shaped as a circle
@@ -392,6 +401,21 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
                         onClick = { onToggle() }
                     ) {
                         Text(text = "bold")
+                    }
+                }
+                ParvenuSpanToggle(
+                    value = uiState.value.richContent,
+                    onValueChange = { newPostViewModel.setRichContent(it) },
+                    spanFactory = { SpanStyle(color = Color.Red) },
+                    spanEqualPredicate = { style ->
+                        style.color == Color.Red
+                    }
+                ) { enabled, onToggle ->
+                    Button(
+                        modifier = Modifier.alpha(if (enabled) 1f else 0.3f),
+                        onClick = { onToggle() }
+                    ) {
+                        Text(text = "red")
                     }
                 }
                 ParvenuSpanToggle(
