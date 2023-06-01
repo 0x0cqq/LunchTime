@@ -1,6 +1,7 @@
 package com.thss.lunchtime.component
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.*
@@ -35,12 +36,19 @@ import com.thss.lunchtime.R
 import com.thss.lunchtime.StarBtn
 import com.thss.lunchtime.post.PostData
 import com.thss.lunchtime.ui.theme.Purple40
+import kotlinx.serialization.json.Json
+import me.onebone.parvenu.ParvenuEditor
+import me.onebone.parvenu.ParvenuEditorValue
+import me.onebone.parvenu.ParvenuString
+import me.onebone.parvenu.toAnnotatedString
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 data class PostType(
     val Detailed: Boolean = false
 )
+
+private val json = Json { ignoreUnknownKeys = true }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -144,8 +152,14 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit)
 
             // content
             Box(modifier = Modifier.animateContentSize(animationSpec = tween(durationMillis = 100) )) {
+                val content : ParvenuString = try {
+                    json.decodeFromString(msg.content)
+                } catch (e: Exception) {
+                    Log.d("PostMainBody", "json decode error: ${e.message}")
+                    ParvenuString(msg.content)
+                }
                 Text(
-                    text = msg.content,
+                    text = content.toAnnotatedString(),
                     maxLines = if (expandContent.value) 100 else 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clickable { expandContent.value = !expandContent.value }

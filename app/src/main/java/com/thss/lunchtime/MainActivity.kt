@@ -49,6 +49,8 @@ import com.thss.lunchtime.ui.theme.LunchTimeTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import me.onebone.parvenu.ParvenuString
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -95,6 +97,7 @@ fun Application(modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     val userData = context.userPreferencesStore
 
+    val json = Json { ignoreUnknownKeys = true }
     NavHost(
         navController = applicationNavController,
         startDestination = "login",
@@ -248,10 +251,11 @@ fun Application(modifier: Modifier = Modifier) {
 
                             val userName = userData.data.first().userName
                             Log.d("LunchTime", "Current Username:$userName")
+                            val richContentString = json.encodeToString(ParvenuString.serializer(), state.richContent.parvenuString)
                             val response = LunchTimeApi.retrofitService.post(
                                 userName.toRequestBody("text/plain".toMediaType()),
                                 state.title.toRequestBody("text/plain".toMediaType()),
-                                state.content.toRequestBody("text/plain".toMediaType()),
+                                richContentString.toRequestBody("text/plain".toMediaType()),
                                 state.location.toRequestBody("text/plain".toMediaType()),
                                 state.tag.toRequestBody("text/plain".toMediaType()),
                                 images
