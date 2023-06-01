@@ -1,5 +1,7 @@
 package com.thss.lunchtime.post
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -51,7 +53,7 @@ fun PostDetailPage(onBack: () -> Unit, onOpenUserInfo: (userName: String) -> Uni
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* TODO */ }) {
+                    IconButton(onClick = { sharePost(context, postDetailData.value.postData) }) {
                         Icon(imageVector = Icons.Default.Share,
                             contentDescription = null)
                     }
@@ -177,6 +179,17 @@ fun PostDetailPage(onBack: () -> Unit, onOpenUserInfo: (userName: String) -> Uni
             }
         }
     }
+}
+
+fun sharePost(context: Context, post: PostData) {
+    val res = "@" + post.postID + " 发表了帖子：\n" + "【" + post.tag + "-" + post.title + "】\n" + post.content + "\n快来LunchTime看看吧~"
+    val intent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, res)
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(intent, "分享到")
+    context.startActivity(shareIntent)
 }
 
 

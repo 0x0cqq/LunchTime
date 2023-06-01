@@ -97,7 +97,7 @@ fun MessagePageTopBar() {
             .fillMaxWidth()
     ) {
         Text(
-            "Notification",
+            "通知",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(vertical = 16.dp),

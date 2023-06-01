@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -88,7 +89,6 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, onOpenBlockList: () -
         }
     ) { paddingValues -> Column(
         modifier = Modifier
-            .fillMaxWidth()
             .padding(paddingValues)
     ) {
         Column (
@@ -252,32 +252,35 @@ fun ImageChange(avatar: Uri, onNewImage: ()->Unit) {
             .fillMaxWidth()
             .padding(20.dp)
     ) {
-        AsyncImage(
-            model = avatar,
-            contentDescription = "Avatar",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                // Clip image to shaped as a circle
-                .size(200.dp)
-                .clip(CircleShape)
-                .clickable {/* TODO */ },
-            alignment = Alignment.Center
-        )
-
-        IconButton(
-            modifier = Modifier
-                .offset((-57).dp, (-3).dp)
-                .clip(CircleShape)
-                .size(45.dp),
-            colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White),
-            onClick = { onNewImage() }) {
-            Icon(
-                Icons.Default.PhotoCamera,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.size(30.dp)
+        Box() {
+            AsyncImage(
+                model = avatar,
+                contentDescription = "Avatar",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    // Clip image to shaped as a circle
+                    .size(200.dp)
+                    .clip(CircleShape)
+                    .clickable {/* TODO */ },
+                alignment = Alignment.Center
             )
+
+            IconButton(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(50.dp)
+                    .align(Alignment.BottomEnd)
+                    .background(color = MaterialTheme.colorScheme.secondaryContainer),
+                onClick = { onNewImage() }) {
+                Icon(
+                    Icons.Default.PhotoCamera,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
         }
+
     }
 }
 
@@ -294,7 +297,7 @@ fun SimpleInfoChange(onOpenBlockList : () -> Unit, myinfo: InfoData, infoEditVie
         Row (modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 15.dp)
             .fillMaxWidth()) {
-            Text(text = "Username", modifier = Modifier.width(130.dp), fontSize = 20.sp, color = Color.Gray)
+            Text(text = "用户名", modifier = Modifier.width(130.dp), fontSize = 20.sp, color = Color.Gray)
             Text(
                 text = myinfo.ID,
                 fontSize = 20.sp,
@@ -365,7 +368,7 @@ fun SimpleInfoChange(onOpenBlockList : () -> Unit, myinfo: InfoData, infoEditVie
                 fontSize = 18.sp,
                 modifier = Modifier.clickable{
                     openIntroDialog.value = !openIntroDialog.value
-                }
+                }.fillMaxWidth(1f)
             )
         }
 

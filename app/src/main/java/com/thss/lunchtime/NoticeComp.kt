@@ -62,15 +62,6 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                                 .size(40.dp)
                                 .clip(CircleShape),
                         )
-//                        Image(
-//                            painter = painterResource(id = R.drawable.touxaingnvhai),
-//                            contentDescription = "heading",
-//                            modifier = Modifier
-//                                // Set image size to 40dp
-//                                .size(40.dp)
-//                                // Clip image to shaped as a circle
-//                                .clip(CircleShape)
-//                        )
 
                         Spacer(modifier = Modifier.width(4.dp))
 
@@ -90,7 +81,7 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
 
                             Text(
                                 text = text,
-                                style = if (msg.noticeType ==  3) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.labelSmall
+                                style = if (msg.noticeType ==  3) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall
                             )
 
                         }
@@ -126,17 +117,7 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                         .height(IntrinsicSize.Min),
                     alignment = Alignment.Center
                 )
-//                Image(
-//                    painter = painterResource(id = msg.refData.graphResources[0]),
-//                    contentDescription = "heading",
-//                    modifier = Modifier
-//                        // Clip image to shaped as a circle
-//                        .size(60.dp)
-//                        .clip(RoundedCornerShape(8.dp))
-//                        .padding(start = 8.dp)
-//                        .aspectRatio(1F)
-//                        .height(IntrinsicSize.Min)
-//                )
+
             }
         }
     }

@@ -261,7 +261,7 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
             icon = Icons.Outlined.MyLocation,
             text =
                 if (uiState.value.isLocationUsed) uiState.value.location
-                else "Add Location",
+                else "定位",
             onClick = {
                 locationPermissionRequest.launch(arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -279,7 +279,7 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
             icon = Icons.Outlined.Tag,
             text =
                 if (uiState.value.isTagUsed) uiState.value.tag
-                else "Add tag",
+                else "TAG",
             onClick = {
 //                newPostViewModel.setTag("HIHIHI tag")
                 openDialog.value = true
@@ -331,7 +331,7 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 placeholder = {
-                    Text("Title",
+                    Text("标题",
                         style = MaterialTheme.typography.headlineSmall,
                     ) },
                 keyboardActions = KeyboardActions {
@@ -349,7 +349,7 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = {
                         Text(
-                            "Content",
+                            "内容",
                         )
                     },
                     keyboardActions = KeyboardActions {

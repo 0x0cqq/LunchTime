@@ -76,7 +76,7 @@ fun LoginPage(onAlreadyLogin: () -> Unit, onClickLogin : (username: String, pass
 @Composable
 fun LoginTitle(modifier: Modifier = Modifier) {
     Image(
-        painter = painterResource(id = R.drawable.title),
+        painter = painterResource(id = R.drawable.forumicon),
         contentDescription = "Title Image",
         modifier = modifier.fillMaxWidth(0.5f)
     )
@@ -99,7 +99,7 @@ fun LoginPanel(onClickLogin : (username: String, password: String) -> Unit,
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
+            label = { Text("用户名") },
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxWidth(),
@@ -115,7 +115,7 @@ fun LoginPanel(onClickLogin : (username: String, password: String) -> Unit,
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text("密码") },
             visualTransformation =
                 if (passwordVisible) VisualTransformation.None
                 else PasswordVisualTransformation(),
@@ -152,7 +152,7 @@ fun LoginPanel(onClickLogin : (username: String, password: String) -> Unit,
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.padding(10.dp)
                     .weight(1f)) {
-                Text("Log In")
+                Text("登录")
             }
 
             OutlinedButton(
@@ -161,7 +161,7 @@ fun LoginPanel(onClickLogin : (username: String, password: String) -> Unit,
                 modifier = Modifier
                     .padding(10.dp)
                     .weight(1f)) {
-                Text("Sign Up", textDecoration = TextDecoration.Underline)
+                Text("注册", textDecoration = TextDecoration.Underline)
             }
         }
     }
