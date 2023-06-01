@@ -2,12 +2,16 @@ package com.thss.lunchtime.newpost
 
 import android.Manifest
 import android.graphics.BitmapFactory
+import android.location.Location
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +27,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -38,11 +44,14 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -66,15 +75,19 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.thss.lunchtime.R
+import com.thss.lunchtime.common.LocationInfo
 import com.thss.lunchtime.common.LocationUtils
 import com.thss.lunchtime.component.Grid
 import com.thss.lunchtime.data.userPreferencesStore
 import kotlinx.coroutines.flow.first
 import me.onebone.parvenu.ParvenuEditor
 import me.onebone.parvenu.ParvenuSpanToggle
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,7 +135,12 @@ fun NewPostPage(onClickBack: () -> Unit = {},
                             contentDescription = "Send",
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             )
         },
         bottomBar = {
@@ -202,53 +220,122 @@ fun IconCardPreview() {
 @Composable
 fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    val openLocationDialog = remember { mutableStateOf(false) }
+    val locationAddressList = remember { mutableStateOf(listOf<LocationInfo>()) }
+    if (openLocationDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                openLocationDialog.value = false
+            },
+            dismissButton = {
+                Button(
+                    onClick = { openLocationDialog.value = false }
+                ) {
+                    Text("取消")
+                }
+            },
+            confirmButton = {},
+            title = { Text("请选择一个位置") },
+            text = {
+                LazyColumn(
+                    modifier = Modifier.height(200.dp)
+                ) {
+                    items(locationAddressList.value) { addressInfo ->
+                        ListItem(
+                            headlineText = { Text(addressInfo.name) },
+                            modifier = Modifier.fillMaxWidth().clickable {
+                                newPostViewModel.setLocation(addressInfo.name)
+                                openLocationDialog.value = false
+                            },
+                            trailingContent = {
+                                Text("距您 ${addressInfo.distance.roundToInt()} 米")
+                            }
+                        )
+                    }
+                }
+            }
+        )
+    }
     val locationPermissionRequest = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         when {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                 // Fine location access granted.
-                newPostViewModel.setLocation(LocationUtils.getCurrentLocation(context)!!.latitude.toInt().toString()
-                    + " "
-                    + LocationUtils.getCurrentLocation(context)!!.longitude.toInt().toString())
+                LocationUtils.getGeoFromLocation(context) { currentLocation, addressList ->
+                    // get location list
+                    if(currentLocation != null) {
+                        val tmpDistance = FloatArray(3)
+                        val distanceList = arrayOf(0.0)
+                        for (address in addressList) {
+                            Location.distanceBetween(currentLocation.latitude, currentLocation.longitude,
+                                address.latitude, address.longitude,
+                                tmpDistance
+                            )
+                            distanceList.plus(distanceList[0])
+                        }
+                        locationAddressList.value = addressList.map { address ->
+                            val featureName = if(address.featureName != null) {
+                                address.subLocality + address.featureName
+                            } else if(address.subThoroughfare != null) {
+                                address.locality + address.subLocality + address.thoroughfare + address.subThoroughfare
+                            } else if (address.subLocality != null) {
+                                address.locality + address.subLocality
+                            } else if(address.subAdminArea != null) {
+                                address.adminArea + address.subAdminArea
+                            } else if(address.countryName != null) {
+                                address.countryName
+                            } else {
+                                "${String.format("%.2f", address.latitude)}, ${String.format("%.2f", address.latitude)}"
+                            }
+                            LocationInfo(
+                                featureName,
+                                distanceList[addressList.indexOf(address)]
+                            )
+                        }
+                        // open the dialog
+                        openLocationDialog.value = true
+                    }
+                }
             }
             permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                 // Only approximate location access granted.
+                Toast.makeText(context, "请授予精确位置", Toast.LENGTH_SHORT).show()
             } else -> {
                 // No location access granted.
-
+                Toast.makeText(context, "未授予位置权限", Toast.LENGTH_SHORT).show()
             }
         }
     }
     val uiState = newPostViewModel.uiState.collectAsState()
-    val openDialog = remember { mutableStateOf(false) }
+    val openTagDialog = remember { mutableStateOf(false) }
 
     // dialog
-    if (openDialog.value) {
+    if (openTagDialog.value) {
         AlertDialog(
             onDismissRequest = {
-                openDialog.value = false
+                openTagDialog.value = false
             },
             dismissButton = {
                 TextButton(
                     onClick = {
-                        openDialog.value = false
+                        openTagDialog.value = false
                     }
                 ) {
-                    Text("Dismiss")
+                    Text("取消")
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        openDialog.value = false
+                        openTagDialog.value = false
                     }
                 ) {
-                    Text("Confirm")
+                    Text("确定")
                 }
             },
             title = {
-                Text("Choose a tag")
+                Text("选择一个标签")
             },
             text = {
                 TextField(
@@ -262,43 +349,52 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
         )
     }
 
-    Box(
-        modifier = modifier.fillMaxWidth().height(50.dp).padding(horizontal = 12.dp)
+    LazyRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(horizontal = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+
     ) {
         // location card
-        IconCard(
-            icon = Icons.Outlined.MyLocation,
-            text =
+        item {
+            IconCard(
+                icon = Icons.Outlined.MyLocation,
+                text =
                 if (uiState.value.isLocationUsed) uiState.value.location
-                else "定位",
-            onClick = {
-                locationPermissionRequest.launch(arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)
-                )
-            },
-            modifier = Modifier.align(Alignment.CenterStart),
-            isUsed = uiState.value.isLocationUsed,
-            onClear = {
-                newPostViewModel.setLocation("")
-            },
-        )
+                else "点击添加定位",
+                onClick = {
+                    locationPermissionRequest.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                },
+                isUsed = uiState.value.isLocationUsed,
+                onClear = {
+                    newPostViewModel.setLocation("")
+                },
+            )
+        }
         // tag card
-        IconCard(
-            icon = Icons.Outlined.Tag,
-            text =
+        item {
+            IconCard(
+                icon = Icons.Outlined.Tag,
+                text =
                 if (uiState.value.isTagUsed) uiState.value.tag
-                else "TAG",
-            onClick = {
-//                newPostViewModel.setTag("HIHIHI tag")
-                openDialog.value = true
-            },
-            modifier = Modifier.align(Alignment.CenterEnd),
-            isUsed = uiState.value.isTagUsed,
-            onClear = {
-                newPostViewModel.setTag("")
-            }
-        )
+                else "点击添加标签",
+                onClick = {
+                    openTagDialog.value = true
+                },
+                isUsed = uiState.value.isTagUsed,
+                onClear = {
+                    newPostViewModel.setTag("")
+                }
+            )
+        }
     }
 }
 
@@ -330,21 +426,32 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
             }
         }
     LazyColumn(
-            modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         item {
             TextField(
                 value = uiState.value.title,
-                textStyle = MaterialTheme.typography.headlineSmall,
+                textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                 onValueChange = { newPostViewModel.setTitle(it) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 placeholder = {
-                    Text("标题",
-                        style = MaterialTheme.typography.headlineSmall,
+                    // default color, but with higher alpha
+                    Text("输入标题",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     ) },
                 keyboardActions = KeyboardActions {
-                        focusManager.moveFocus(FocusDirection.Next) },
+                    focusManager.moveFocus(FocusDirection.Next)
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                ),
             )
         }
         item {
@@ -355,15 +462,22 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
                 TextField(
                     value = value,
                     onValueChange = onValueChange,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().border(BorderStroke(0.dp, Color.Transparent)),
                     placeholder = {
                         Text(
-                            "内容",
+                            "内容...",
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
                     },
                     keyboardActions = KeyboardActions {
                         focusManager.moveFocus(FocusDirection.Next)
                     },
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                    ),
                 )
             }
         }
