@@ -3,6 +3,7 @@ package com.thss.lunchtime.mainscreen.infopage
 import android.content.Context
 import android.util.Base64
 import android.widget.Toast
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thss.lunchtime.component.InfoData
@@ -14,6 +15,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.security.MessageDigest
 
 class InfoEditViewModel: ViewModel() {
@@ -115,5 +119,30 @@ class InfoEditViewModel: ViewModel() {
                 Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    fun modifyUserImage(context: Context, image: List<MultipartBody.Part>){
+        val userData = context.userPreferencesStore
+        viewModelScope.launch {
+            val userName = userData.data.first().userName
+            try{
+                val response = LunchTimeApi.retrofitService.modifyUserImage(
+                    name = userName.toRequestBody("text/plain".toMediaType()),
+                    image = image
+                )
+                if (response.status){
+                    refresh(context)
+                    Toast.makeText(context, "修改头像成功!", Toast.LENGTH_SHORT).show()
+                } else{
+                    Toast.makeText(context, "修改头像失败!", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception){
+                e.printStackTrace()
+                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+
+
+        }
+
     }
 }
