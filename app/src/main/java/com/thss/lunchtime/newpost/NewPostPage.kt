@@ -76,6 +76,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.R
 import com.thss.lunchtime.common.LocationUtils
 import com.thss.lunchtime.component.Grid
+import kotlinx.serialization.descriptors.PrimitiveKind
 import me.onebone.parvenu.ParvenuEditor
 import me.onebone.parvenu.ParvenuSpanToggle
 import java.io.File
@@ -498,6 +499,7 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
                 },
                 mostImages = mostImages,
                 images = uiState.value.selectedImgUris,
+                isVideo = uiState.value.isVideo,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -512,9 +514,10 @@ fun NewPostPhotoGrid(
     onClose : (Int) -> Unit,
     images: List<ImageBitmap>,
     mostImages : Int,
+    isVideo : Boolean,
     modifier: Modifier = Modifier) {
     // TODO: change this theme detector with CompositionLocalProvider to improve the performance
-    val imagesWithAddButton = if (images.size < mostImages) {
+    val imagesWithAddButton = if (images.size < mostImages && !isVideo) {
         images + listOf(
             ImageBitmap.imageResource(
                 if (isSystemInDarkTheme()) R.drawable.add_photo_dark
@@ -537,7 +540,7 @@ fun NewPostPhotoGrid(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.aspectRatio(1F).clickable {
                     if (index == imagesWithAddButton.size - 1) {
-                        if (images.size == mostImages) {
+                        if (images.size == mostImages || isVideo) {
                             onOpenImage(index)
                         } else {
                             onNewImage()
@@ -548,7 +551,7 @@ fun NewPostPhotoGrid(
                 },
                 alignment = Alignment.Center
             )
-            if (images.size == mostImages || index != imagesWithAddButton.size - 1) {
+            if (images.size == mostImages || index != imagesWithAddButton.size - 1 || isVideo) {
                 IconButton(
                     onClick = {
                         onClose(index)

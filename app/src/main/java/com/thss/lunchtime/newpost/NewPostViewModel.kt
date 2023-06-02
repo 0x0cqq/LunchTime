@@ -31,7 +31,10 @@ class NewPostViewModel : ViewModel() {
 
     fun removeImage(index: Int) {
         _uiState.update { state ->
-            state.copy(selectedImgUris = state.selectedImgUris.filterIndexed { i, _ -> i != index })
+            state.copy(
+                selectedImgUris = state.selectedImgUris.filterIndexed { i, _ -> i != index },
+                isVideo = false
+            )
         }
     }
     fun appendImages(value: List<ImageBitmap>) {
