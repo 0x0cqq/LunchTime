@@ -61,7 +61,7 @@ interface LunchTimeApiService {
     suspend fun post(@Part("user_name") userName: RequestBody,
                      @Part("title") title: RequestBody, @Part("content") content: RequestBody,
                      @Part("location") location: RequestBody, @Part("tag") tag: RequestBody,
-                     @Part images: List<MultipartBody.Part>): ResponseWithPostID
+                     @Part images: List<MultipartBody.Part>, @Part videos: List<MultipartBody.Part>): ResponseWithPostID
 
     @FormUrlEncoded
     @POST("/api/love_post")

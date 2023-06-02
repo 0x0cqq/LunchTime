@@ -55,6 +55,10 @@ data class Post (
     val commentCount: Int = 0,
     @SerialName("picture")
     val pictureURLs : List<String> = listOf(),
+    @SerialName("video")
+    val videoURLs : List<String> = listOf(),
+    @SerialName("is_video")
+    val isVideo: Boolean = false
 )
 
 fun Post.toPostData() : PostData {

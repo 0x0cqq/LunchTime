@@ -1,8 +1,14 @@
 package com.thss.lunchtime.newpost
 
 import android.Manifest
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaRecorder.VideoEncoder
 import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
+import android.util.Size
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -72,6 +78,9 @@ import com.thss.lunchtime.common.LocationUtils
 import com.thss.lunchtime.component.Grid
 import me.onebone.parvenu.ParvenuEditor
 import me.onebone.parvenu.ParvenuSpanToggle
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -305,12 +314,68 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
             rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 if(uri != null) {
                     val inputStream = context.contentResolver.openInputStream(uri)
-                    newPostViewModel.appendImages( listOf(
-                        BitmapFactory.decodeStream(inputStream).asImageBitmap()
-                    ))
+                    newPostViewModel.appendImages(
+                        listOf(
+                            BitmapFactory.decodeStream(inputStream).asImageBitmap()
+                        )
+                    )
                 }
             }
-        } else {
+        } else if (uiState.value.selectedImgUris.isEmpty()){
+            rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) {uri ->
+                if (uri != null){
+                    val contentType = context.contentResolver.getType(uri)
+                    if (contentType?.startsWith("image/") == true) {
+                        // 处理图片
+                        val inputStream = context.contentResolver.openInputStream(uri)
+                        newPostViewModel.appendImages(
+                            listOf(
+                                BitmapFactory.decodeStream(inputStream).asImageBitmap()
+                            )
+                        )
+                    } else if (contentType?.startsWith("video/") == true){
+                        // 处理视频
+                        val inputStream = context.contentResolver.openInputStream(uri)
+                        var fileOutputStream: FileOutputStream? = null
+                        // 获得缩略图
+                        val thumbnail: Bitmap = context.contentResolver.loadThumbnail(uri, Size(640,480), null)
+                        newPostViewModel.appendImages(
+                            listOf(thumbnail.asImageBitmap())
+                        )
+                        // 保存视频流
+                        // 从uri得到文件
+                        Log.d("Video", "start getting file from uri")
+                        try{
+                            // 获得文件名
+                            var videoName: String = "";
+                            val cursor = context.contentResolver.query(uri, null, null, null, null)
+                            cursor?.let {
+                                if (it.moveToFirst()) {
+                                    videoName = it.getString(it.getColumnIndexOrThrow("_display_name"))
+                                    cursor.close()
+                                }
+                            }
+                            // 获得文件路径
+                            val videoDir = File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES), "Videos")
+                            if (!videoDir.exists()) {
+                                videoDir.mkdirs()
+                            }
+                            // 写入File
+                            val videoFile = File(videoDir, videoName)
+                            fileOutputStream = FileOutputStream(videoFile)
+                            inputStream?.copyTo(fileOutputStream)
+                            // 添加到video列表
+                            newPostViewModel.appendVideos(listOf(videoFile))
+                        } catch (e: IOException){
+                            e.printStackTrace()
+                        }
+                        // 设置 isVideoFlag
+                        newPostViewModel.setVideoFlag(true)
+                    }
+                }
+            }
+        }
+        else {
             rememberLauncherForActivityResult(
                 ActivityResultContracts.PickMultipleVisualMedia(mostImages - uiState.value.selectedImgUris.size)
             ) { uris: List<Uri> ->
@@ -414,9 +479,16 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
         item {
             NewPostPhotoGrid(
                 onNewImage = {
-                    launcher.launch (
-                        PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
+                    if (uiState.value.selectedImgUris.isEmpty()){
+                        launcher.launch (
+                            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo)
+                        )
+                    }
+                    else{
+                        launcher.launch (
+                            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    }
                 },
                 onOpenImage = { index ->
                     // TODO: image preview page

@@ -3,6 +3,7 @@ package com.thss.lunchtime
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
@@ -54,8 +55,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import me.onebone.parvenu.ParvenuString
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
@@ -253,6 +257,15 @@ fun Application(modifier: Modifier = Modifier) {
                                 )
                             }
 
+                            val videos = state.selectedVideoUris.mapIndexed { index, it ->
+                                val requestBody = it.asRequestBody("video/*".toMediaType())
+                                MultipartBody.Part.createFormData(
+                                    "video",
+                                    it.name,
+                                    requestBody
+                                )
+                            }
+
                             val userName = userData.data.first().userName
                             Log.d("LunchTime", "Current Username:$userName")
                             val richContentString = json.encodeToString(ParvenuString.serializer(), state.richContent.parvenuString)
@@ -262,7 +275,8 @@ fun Application(modifier: Modifier = Modifier) {
                                 richContentString.toRequestBody("text/plain".toMediaType()),
                                 state.location.toRequestBody("text/plain".toMediaType()),
                                 state.tag.toRequestBody("text/plain".toMediaType()),
-                                images
+                                images,
+                                videos
                             )
 
                             val message = if( response.status ){
