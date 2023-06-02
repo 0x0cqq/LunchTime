@@ -31,7 +31,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.MyLocation
@@ -50,7 +49,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,10 +57,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -70,13 +66,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.thss.lunchtime.R
@@ -85,8 +76,6 @@ import com.thss.lunchtime.common.LocationUtils
 import com.thss.lunchtime.component.Grid
 import com.thss.lunchtime.data.userPreferencesStore
 import kotlinx.coroutines.flow.first
-import me.onebone.parvenu.ParvenuEditor
-import me.onebone.parvenu.ParvenuSpanToggle
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -222,6 +211,7 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
     val context = LocalContext.current
     val openLocationDialog = remember { mutableStateOf(false) }
     val locationAddressList = remember { mutableStateOf(listOf<LocationInfo>()) }
+    // location dialog
     if (openLocationDialog.value) {
         AlertDialog(
             onDismissRequest = {
@@ -310,7 +300,7 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
     val uiState = newPostViewModel.uiState.collectAsState()
     val openTagDialog = remember { mutableStateOf(false) }
 
-    // dialog
+    // tagdialog
     if (openTagDialog.value) {
         AlertDialog(
             onDismissRequest = {
@@ -403,6 +393,7 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
 fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modifier) {
     val uiState = newPostViewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
+
     val context = LocalContext.current
     val mostImages = 9
     val launcher =
@@ -429,125 +420,10 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
         modifier = modifier.fillMaxSize()
     ) {
         item {
-            TextField(
-                value = uiState.value.title,
-                textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                onValueChange = { newPostViewModel.setTitle(it) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                placeholder = {
-                    // default color, but with higher alpha
-                    Text("输入标题",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                    ) },
-                keyboardActions = KeyboardActions {
-                    focusManager.moveFocus(FocusDirection.Next)
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                ),
+            NewPostTitleContent(
+                newPostViewModel,
+                focusManager
             )
-        }
-        item {
-            ParvenuEditor(
-                value = uiState.value.richContent,
-                onValueChange = { newPostViewModel.setRichContent(it) },
-            ) { value, onValueChange ->
-                TextField(
-                    value = value,
-                    onValueChange = onValueChange,
-                    modifier = Modifier.fillMaxWidth().border(BorderStroke(0.dp, Color.Transparent)),
-                    placeholder = {
-                        Text(
-                            "内容...",
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                        )
-                    },
-                    keyboardActions = KeyboardActions {
-                        focusManager.moveFocus(FocusDirection.Next)
-                    },
-                    colors = TextFieldDefaults.textFieldColors(
-                        textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                    ),
-                )
-            }
-        }
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ParvenuSpanToggle(
-                    value = uiState.value.richContent,
-                    onValueChange = { newPostViewModel.setRichContent(it) },
-                    spanFactory = { SpanStyle(fontStyle = FontStyle.Italic) },
-                    spanEqualPredicate = { style ->
-                        style.fontStyle == FontStyle.Italic
-                    }
-                ) { enabled, onToggle ->
-                    Button(
-                        modifier = Modifier.alpha(if (enabled) 1f else 0.3f),
-                        onClick = { onToggle() }
-                    ) {
-                        Text(text = "italic")
-                    }
-                }
-
-                ParvenuSpanToggle(
-                    value = uiState.value.richContent,
-                    onValueChange = { newPostViewModel.setRichContent(it) },
-                    spanFactory = { SpanStyle(fontWeight = FontWeight.Bold) },
-                    spanEqualPredicate = { style ->
-                        style.fontWeight == FontWeight.Bold
-                    }
-                ) { enabled, onToggle ->
-                    Button(
-                        modifier = Modifier.alpha(if (enabled) 1f else 0.3f),
-                        onClick = { onToggle() }
-                    ) {
-                        Text(text = "bold")
-                    }
-                }
-                ParvenuSpanToggle(
-                    value = uiState.value.richContent,
-                    onValueChange = { newPostViewModel.setRichContent(it) },
-                    spanFactory = { SpanStyle(color = Color.Red) },
-                    spanEqualPredicate = { style ->
-                        style.color == Color.Red
-                    }
-                ) { enabled, onToggle ->
-                    Button(
-                        modifier = Modifier.alpha(if (enabled) 1f else 0.3f),
-                        onClick = { onToggle() }
-                    ) {
-                        Text(text = "red")
-                    }
-                }
-                ParvenuSpanToggle(
-                    value = uiState.value.richContent,
-                    onValueChange = { newPostViewModel.setRichContent(it) },
-                    spanFactory = { SpanStyle(color = Color.Red) },
-                    spanEqualPredicate = { style ->
-                        style.color == Color.Red
-                    }
-                ) { enabled, onToggle ->
-                    Button(
-                        modifier = Modifier.alpha(if (enabled) 1f else 0.3f),
-                        onClick = { onToggle() }
-                    ) {
-                        Text(text = "red")
-                    }
-                }
-            }
         }
         item {
             NewPostPhotoGrid(
