@@ -389,6 +389,10 @@ fun Application(modifier: Modifier = Modifier) {
                 onBack = {
                     applicationNavController.popBackStack()
                 },
+                onOpenVideo = { uriString ->
+                    val modifiedUrl = uriString.replace("/", "!")
+                    applicationNavController.navigate("videoPage/$modifiedUrl")
+                },
                 onOpenUserInfo = { targetUserName ->
                     scope.launch {
                         val myUserName = userData.data.first().userName

@@ -160,43 +160,42 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
                         maxLines = if (expandContent.value) 100 else 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.clickable { expandContent.value = !expandContent.value }
+                            .fillMaxWidth()
                     )
                 }
             }
         }
-    }
-
-    // image show
-    AsyncPostPhotoGrid(
-        imageUris = msg.graphResources,
-        videoUris = msg.videoResources,
-        columnCount = 3,
-        isVideo = msg.isVideo,
-        openImage = onClickVideo,
-    )
-
-    // location Tag
-    if(type.Detailed && msg.location.isNotEmpty()) {
-        Card(
-            shape = RoundedCornerShape(50),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-            modifier = Modifier.padding(start = 12.dp)
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+        // image show
+        AsyncPostPhotoGrid(
+            imageUris = msg.graphResources,
+            videoUris = msg.videoResources,
+            columnCount = 3,
+            isVideo = msg.isVideo,
+            openImage = onClickVideo,
+        )
+        // location Tag
+        if(type.Detailed && msg.location.isNotEmpty()) {
+            Card(
+                shape = RoundedCornerShape(50),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+                modifier = Modifier.padding(start = 12.dp)
             ) {
-                Icon(
-                    Icons.Rounded.LocationOn,
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = msg.location,
-                    fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
+                Row(
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                ) {
+                    Icon(
+                        Icons.Rounded.LocationOn,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = msg.location,
+                        fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
             }
         }
     }
