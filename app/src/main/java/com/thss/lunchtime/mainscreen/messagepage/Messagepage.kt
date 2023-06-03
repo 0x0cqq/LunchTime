@@ -73,6 +73,9 @@ fun Messagepage(onClickChat: (oppositeUserName: String) -> Unit, onClickPostNoti
                             msg = noticeData,
                             onClickNotice = {onClickPostNotice(noticeData.postId)}
                         )
+                        Divider(
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                        )
                     }
                 }
                 else{
@@ -80,6 +83,9 @@ fun Messagepage(onClickChat: (oppositeUserName: String) -> Unit, onClickPostNoti
                         NoticePreviewCard(
                             msg = noticeData,
                             onClickNotice = { onClickChat(noticeData.noticerID) }
+                        )
+                        Divider(
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                         )
                     }
                 }
