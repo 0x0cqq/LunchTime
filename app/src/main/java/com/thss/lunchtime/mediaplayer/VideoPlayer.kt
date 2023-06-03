@@ -19,8 +19,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.halilibo.composetube.ui.MinimizeLayoutValue
-import com.halilibo.composetube.ui.rememberMinimizeLayoutState
 import com.halilibo.composevideoplayer.VideoPlayer
 import com.halilibo.composevideoplayer.VideoPlayerSource
 import com.halilibo.composevideoplayer.rememberVideoPlayerController
@@ -30,9 +28,6 @@ import com.halilibo.composevideoplayer.rememberVideoPlayerController
 fun VideoPlayPage(url: String, onBack: () -> Unit) {
     val videoPlayerController = rememberVideoPlayerController()
 
-    val minimizeLayoutState = rememberMinimizeLayoutState(MinimizeLayoutValue.Expanded)
-    val isFullyMaximized = minimizeLayoutState.currentValue == MinimizeLayoutValue.Expanded &&
-            minimizeLayoutState.targetValue != MinimizeLayoutValue.Minimized
 
     LaunchedEffect(url) {
         videoPlayerController.setSource(VideoPlayerSource.Network(url))
@@ -42,7 +37,7 @@ fun VideoPlayPage(url: String, onBack: () -> Unit) {
         videoPlayerController = videoPlayerController,
         backgroundColor = Color.Transparent,
         modifier = Modifier.fillMaxWidth(),
-        controlsEnabled = isFullyMaximized
+        controlsEnabled = true,
     )
 }
 
