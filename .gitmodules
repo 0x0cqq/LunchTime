@@ -1,6 +1,6 @@
 [submodule "parvenu"]
 	path = parvenu
-	url = https://github.com/ChenQiqian/parvenu.git
+	url = git@github.com:ChenQiqian/parvenu.git
 [submodule "ComposeVideoPlayer"]
 	path = ComposeVideoPlayer
 	url = git@github.com:ChenQiqian/ComposeVideoPlayer.git
