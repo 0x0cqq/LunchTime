@@ -47,6 +47,7 @@ fun CommentComp(msg: CommentData, onClickTopBar: () -> Unit)
                 Row (
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
+                        .padding(bottom = 8.dp)
                 ) {
                     Row (
                         modifier = Modifier.clickable { onClickTopBar() }
@@ -60,22 +61,14 @@ fun CommentComp(msg: CommentData, onClickTopBar: () -> Unit)
                                 .size(40.dp)
                                 .clip(CircleShape),
                         )
-//                        Image(
-//                            painter = painterResource(id = R.drawable.touxaingnvhai),
-//                            contentDescription = "heading",
-//                            modifier = Modifier
-//                                // Set image size to 40dp
-//                                .size(40.dp)
-//                                // Clip image to shaped as a circle
-//                                .clip(CircleShape)
-//                        )
 
-                        Spacer(modifier = Modifier.width(4.dp))
+
+                        Spacer(modifier = Modifier.width(8.dp))
 
                         Column {
                             Text(
                                 text = msg.commentID,
-                                fontSize = 15.sp
+                                fontSize = 17.sp
                             )
 
                             Text(

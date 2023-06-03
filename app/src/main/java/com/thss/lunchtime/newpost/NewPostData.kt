@@ -14,6 +14,7 @@ data class NewPostData(
     val location: String = "",
     val isLocationUsed : Boolean = false,
     val tag: String = "",
+    val avatarUri: Uri = Uri.EMPTY,
     val isTagUsed : Boolean = false,
     val selectedImgUris: List<ImageBitmap> = listOf(),
     val selectedVideoUris: List<File> = listOf(),
@@ -26,5 +27,5 @@ data class NewPostData(
             ),
     selection = TextRange.Zero,
     composition = null
-    ),
+    )
 )

@@ -241,6 +241,13 @@ fun Application(modifier: Modifier = Modifier) {
                 onClickSend = { state ->
                     scope.launch {
                         try {
+                            if (state.title.isEmpty()) {
+                                Toast.makeText(
+                                    context, "标题不能为空",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@launch
+                            }
                             val images = state.selectedImgUris.mapIndexed { index, it ->
                                 val stream = ByteArrayOutputStream()
                                 it.asAndroidBitmap()
@@ -289,6 +296,7 @@ fun Application(modifier: Modifier = Modifier) {
                             ).show()
                             delay(1000)
                             if( response.status ) {
+                                newPostViewModel.clear()
                                 applicationNavController.navigate("main")
                             }
                         } catch ( e : Exception) {

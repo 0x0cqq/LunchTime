@@ -49,7 +49,7 @@ import com.thss.lunchtime.post.PostReviewCard
 @Composable
 fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () -> Unit, onOpenUserInfo: (userName: String) -> Unit, onClickVideo: (url: String) -> Unit, homepageViewModel: HomepageViewModel) {
     val uiState = homepageViewModel.uiState.collectAsState()
-    val tabs = listOf(HomepageTabs.byTime, HomepageTabs.byPopularity, HomepageTabs.byComment)
+    val tabs = listOf(HomepageTabs.byTime, HomepageTabs.byLike, HomepageTabs.byComment)
     val context = LocalContext.current
 
     val state = rememberPullRefreshState(refreshing = uiState.value.isRefreshing, onRefresh = {
@@ -68,18 +68,20 @@ fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> 
                     onSwitchDropDownMenu = { index: Int ->
                         homepageViewModel.onSwitchDropDownMenu(context, index) },
                     onClickSearch = onClickSearch)
-                ScrollableTabRow(
-                    selectedTabIndex = uiState.value.selectedIndex,
-                    modifier = Modifier.align(Alignment.Start)
-                ) {
-                    tabs.forEachIndexed { index, homepageTabs ->
-                        Tab(
-                            selected = uiState.value.selectedIndex == index,
-                            onClick = { homepageViewModel.selectTab(index) },
-                            text = {
-                                Text(homepageTabs.name)
-                            }
-                        )
+                if (uiState.value.dropMenuIndex != 1) {
+                    ScrollableTabRow(
+                        selectedTabIndex = uiState.value.selectedIndex,
+                        modifier = Modifier.align(Alignment.Start)
+                    ) {
+                        tabs.forEachIndexed { index, homepageTabs ->
+                            Tab(
+                                selected = uiState.value.selectedIndex == index,
+                                onClick = { homepageViewModel.selectTab(index) },
+                                text = {
+                                    Text(homepageTabs.name)
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -123,7 +125,7 @@ fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> 
 fun HomePageTopBar(onSwitchDropDownMenu: (index: Int) -> Unit, onClickSearch: () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     var selectedMenuIndex by rememberSaveable { mutableStateOf(0) }
-    val dropDownMenuItems = listOf("综合", "我的关注", "Divider", "Tag1", "Tag2")
+    val dropDownMenuItems = listOf("综合", "热度", "我的关注", "Divider", "Tag1", "Tag2")
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier

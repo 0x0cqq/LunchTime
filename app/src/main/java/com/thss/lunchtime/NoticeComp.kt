@@ -34,10 +34,9 @@ data class NoticeData(
 @Composable
 fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
 {
-    Card(
+    Box (
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp)
             .clickable { onClickNotice() }
     ) {
         Row (
@@ -63,7 +62,7 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                                 .clip(CircleShape),
                         )
 
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
                         Column {
                             Text(
