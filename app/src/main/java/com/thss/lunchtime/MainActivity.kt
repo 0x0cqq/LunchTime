@@ -3,7 +3,6 @@ package com.thss.lunchtime
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
@@ -20,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
@@ -40,6 +40,7 @@ import com.thss.lunchtime.mainscreen.infopage.InfoEditPage
 import com.thss.lunchtime.mainscreen.infopage.InfoEditViewModel
 import com.thss.lunchtime.mainscreen.infopage.MyInfoPage
 import com.thss.lunchtime.mainscreen.infopage.MyInfoPageViewModel
+import com.thss.lunchtime.mediaplayer.VideoPlayPage
 import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.newpost.NewPostPage
 import com.thss.lunchtime.newpost.NewPostViewModel
@@ -55,10 +56,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import me.onebone.parvenu.ParvenuString
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -335,11 +334,11 @@ fun Application(modifier: Modifier = Modifier) {
                 onOpenInfoEdit = {
                     applicationNavController.navigate("editProfile")
                 },
-                onOpenPost = { postId ->
-                    applicationNavController.navigate("post/$postId")
-                },
                 onNewPost = {
                     applicationNavController.navigate("newpost")
+                },
+                onOpenPost = { postId ->
+                    applicationNavController.navigate("post/$postId")
                 },
                 onOpenUserInfo = { targetUserName ->
                     scope.launch {
@@ -352,14 +351,14 @@ fun Application(modifier: Modifier = Modifier) {
                         }
                     }
                 },
-                onOpenFans = { scope.launch{
-                    val userName = userData.data.first().userName
-                    applicationNavController.navigate("fansList/$userName")
-                }
-                },
                 onOpenFollows = {scope.launch {
                     val userName = userData.data.first().userName
                     applicationNavController.navigate("followingList/$userName")
+                }
+                },
+                onOpenFans = { scope.launch{
+                    val userName = userData.data.first().userName
+                    applicationNavController.navigate("fansList/$userName")
                 }
                 },
                 onOpenSaved = { scope.launch{
@@ -367,6 +366,11 @@ fun Application(modifier: Modifier = Modifier) {
                     applicationNavController.navigate("starPostList/$userName")
                 }
                 },
+                onClickVideo = { url ->
+                    val modifiedUrl = url.replace("/", "!")
+                    applicationNavController.navigate("videoPage/$modifiedUrl")
+                }
+                ,
                 mainScreenViewModel = mainScreenViewModel
             )
         }
@@ -505,6 +509,14 @@ fun Application(modifier: Modifier = Modifier) {
                     applicationNavController.navigate("post/$postId")
                 },
                 userName = userName)
+        }
+        composable("videoPage/{url}"){backStackEntry ->
+            val url : String = backStackEntry.arguments?.getString("url")!!
+            Log.d("Video", "url is $url")
+            val modifiedUrl = url.replace("!","/")
+            Log.d("Video", "modified url is $modifiedUrl")
+            val uri = modifiedUrl.toUri()
+            VideoPlayPage(uri = uri)
         }
     }
 }

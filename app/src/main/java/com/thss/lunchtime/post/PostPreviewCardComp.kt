@@ -1,5 +1,6 @@
 package com.thss.lunchtime.post
 
+import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -15,7 +16,7 @@ import com.thss.lunchtime.component.PostType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostReviewCard(onClickLike: () -> Unit, onClickStar: () -> Unit, onClickTopBar: () -> Unit, msg: PostData,  modifier: Modifier = Modifier)
+fun PostReviewCard(onClickLike: () -> Unit, onClickStar: () -> Unit, onClickTopBar: () -> Unit, msg: PostData, onClickVideo: (url: String) -> Unit = {}, modifier: Modifier = Modifier)
 {
     Card(
 //        colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -23,7 +24,7 @@ fun PostReviewCard(onClickLike: () -> Unit, onClickStar: () -> Unit, onClickTopB
         .fillMaxWidth()
         .padding(5.dp)
     ) {
-        PostMainBody(msg = msg, type = PostType(false), onClickTopBar = onClickTopBar)
+        PostMainBody(msg = msg, type = PostType(false), onClickTopBar = onClickTopBar, onClickVideo = onClickVideo)
         LikeStarComment(onClickLike = onClickLike, onClickStar = onClickStar, msg = msg)
     }
 }
@@ -35,6 +36,7 @@ fun PostPreviewCardPreview() {
         onClickLike = {},
         onClickStar = {},
         onClickTopBar = {},
+        onClickVideo = {},
         msg = PostData(
             Type = 3,
             graphResources = listOf(
@@ -43,6 +45,7 @@ fun PostPreviewCardPreview() {
                 "https://www.shanghai.gov.cn/assets2020/img/zjsh1.jpg".toUri(),
                 "https://www.shanghai.gov.cn/assets2020/img/zjsh1.jpg".toUri(),
             )
-        )
+        ),
+
     )
 }

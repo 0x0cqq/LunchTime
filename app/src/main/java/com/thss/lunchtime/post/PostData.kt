@@ -19,5 +19,7 @@ data class PostData(
     val tag: String = "Tag",
     val location: String = "Location",
     val graphResources : List<Uri> = listOf(),
+    val videoResources : List<Uri> = listOf(),
+    val isVideo: Boolean = false,
     val publisherStatus: Int = 2,
 )

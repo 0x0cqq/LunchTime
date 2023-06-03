@@ -1,6 +1,7 @@
 package com.thss.lunchtime.mainscreen
 
 
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -13,7 +14,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.thss.lunchtime.chat.ChatPageViewModel
 import com.thss.lunchtime.common.NoRippleInteractionSource
 import com.thss.lunchtime.mainscreen.infopage.MyInfoPage
 import com.thss.lunchtime.mainscreen.homepage.Homepage
@@ -34,6 +34,7 @@ fun MainScreen(onClickSearch: ()->Unit,
                onOpenFollows: () -> Unit,
                onOpenFans: () -> Unit,
                onOpenSaved: () -> Unit,
+               onClickVideo: (url: String) -> Unit,
                mainScreenViewModel: MainScreenViewModel) {
     val mainScreenNavController = rememberNavController()
     // 脚手架，上面下面的栏和
@@ -111,6 +112,7 @@ fun MainScreen(onClickSearch: ()->Unit,
                     homepageViewModel = homepageViewModel,
                     onOpenUserInfo = onOpenUserInfo,
                     onClickSearch = onClickSearch,
+                    onClickVideo = onClickVideo
                 )
             }
             composable(MainScreens.Message.route) {
@@ -137,5 +139,5 @@ fun MainScreen(onClickSearch: ()->Unit,
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen({}, {}, {}, {}, {_ -> }, {}, {}, {}, {}, MainScreenViewModel())
+    MainScreen({}, {}, {}, {}, { _ -> }, {}, {}, {}, {}, {}, MainScreenViewModel())
 }

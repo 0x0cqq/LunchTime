@@ -37,6 +37,7 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.outlined.Tag
+import androidx.compose.material.icons.rounded.PlayCircleFilled
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -566,6 +567,17 @@ fun NewPostPhotoGrid(
                     Icon(
                         imageVector = Icons.Outlined.Close,
                         contentDescription = "Remove",
+                    )
+                }
+                if (isVideo){
+                    Icon(
+                        imageVector = Icons.Rounded.PlayCircleFilled,
+                        contentDescription = "Play",
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5F))
+                            .align(Alignment.Center)
                     )
                 }
             }

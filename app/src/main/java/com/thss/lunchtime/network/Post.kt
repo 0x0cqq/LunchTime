@@ -76,6 +76,8 @@ fun Post.toPostData() : PostData {
         starCount = starCount,
         isStared = isStared,
         commentCount = commentCount,
-        graphResources = pictureURLs.map{ it.toUri() }
+        graphResources = pictureURLs.map{ it.toUri() },
+        videoResources = videoURLs.map{ it.toUri() },
+        isVideo = isVideo
     )
 }
