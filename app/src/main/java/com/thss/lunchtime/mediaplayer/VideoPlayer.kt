@@ -32,13 +32,18 @@ fun VideoPlayPage(url: String, onBack: () -> Unit) {
     LaunchedEffect(url) {
         videoPlayerController.setSource(VideoPlayerSource.Network(url))
     }
-
-    VideoPlayer(
-        videoPlayerController = videoPlayerController,
-        backgroundColor = Color.Transparent,
-        modifier = Modifier.fillMaxWidth(),
-        controlsEnabled = true,
-    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface),
+        contentAlignment = Alignment.Center
+    ) {
+        VideoPlayer(
+            videoPlayerController = videoPlayerController,
+            backgroundColor = Color.Transparent,
+            controlsEnabled = true,
+        )
+    }
 }
 
 @Composable
