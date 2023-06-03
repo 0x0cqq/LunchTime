@@ -515,8 +515,7 @@ fun Application(modifier: Modifier = Modifier) {
             Log.d("Video", "url is $url")
             val modifiedUrl = url.replace("!","/")
             Log.d("Video", "modified url is $modifiedUrl")
-            val uri = modifiedUrl.toUri()
-            VideoPlayPage(uri = uri)
+            VideoPlayPage(url = modifiedUrl, onBack = { applicationNavController.popBackStack() })
         }
     }
 }

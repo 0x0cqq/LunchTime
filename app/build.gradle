@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.10'
+    id 'kotlin-parcelize'
     id "com.google.protobuf" version "0.8.17"
 }
 
@@ -49,6 +50,8 @@ android {
 }
 
 dependencies {
+    implementation project(":composeVideoPlayer")
+    implementation project(":composeVideoPlayer-sample")
     implementation project(":parvenu")
     // Ktor for WebSocket
     implementation "io.ktor:ktor-client-core:$ktor_version"

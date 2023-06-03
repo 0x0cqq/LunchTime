@@ -23,5 +23,9 @@ rootProject.name = "LunchTime"
 include ':app'
 include ':parvenu'
 include ':parvenu-sample'
+include ':composeVideoPlayer'
+include ':composeVideoPlayer-sample'
 project(':parvenu').projectDir = new File('parvenu/parvenu')
 project(':parvenu-sample').projectDir = new File('parvenu/app')
+project(':composeVideoPlayer').projectDir = new File('ComposeVideoPlayer/composevideoplayer')
+project(':composeVideoPlayer-sample').projectDir = new File('ComposeVideoPlayer/app')
