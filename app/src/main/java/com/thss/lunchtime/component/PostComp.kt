@@ -164,40 +164,39 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
                 }
             }
         }
-        }
+    }
 
-        // image show
-        AsyncPostPhotoGrid(
-            imageUris = msg.graphResources,
-            videoUris = msg.videoResources,
-            columnCount = 3,
-            isVideo = msg.isVideo,
-            openImage = onClickVideo,
-        )
+    // image show
+    AsyncPostPhotoGrid(
+        imageUris = msg.graphResources,
+        videoUris = msg.videoResources,
+        columnCount = 3,
+        isVideo = msg.isVideo,
+        openImage = onClickVideo,
+    )
 
-        // location Tag
-        if(type.Detailed && msg.location.isNotEmpty()) {
-            Card(
-                shape = RoundedCornerShape(50),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-                modifier = Modifier.padding(start = 12.dp)
+    // location Tag
+    if(type.Detailed && msg.location.isNotEmpty()) {
+        Card(
+            shape = RoundedCornerShape(50),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+            modifier = Modifier.padding(start = 12.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
             ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
-                ) {
-                    Icon(
-                        Icons.Rounded.LocationOn,
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = msg.location,
-                        fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
+                Icon(
+                    Icons.Rounded.LocationOn,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = msg.location,
+                    fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     }
