@@ -143,7 +143,9 @@ fun PostDetailPage(onBack: () -> Unit, onOpenUserInfo: (userName: String) -> Uni
                 PostMainBody(
                     msg = postDetailData.value.postData,
                     type = PostType(Detailed = true),
-                    onClickTopBar = {onOpenUserInfo(postDetailData.value.postData.publisherID)})
+                    onClickTopBar = {onOpenUserInfo(postDetailData.value.postData.publisherID)},
+                    onClickVideo = {},
+                )
             }
 
             Row(

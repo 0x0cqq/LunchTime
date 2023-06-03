@@ -11,6 +11,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/ComposeVideoPlayer/app" />
+            <option value="$PROJECT_DIR$/ComposeVideoPlayer/composevideoplayer" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/parvenu/app" />
             <option value="$PROJECT_DIR$/parvenu/parvenu" />

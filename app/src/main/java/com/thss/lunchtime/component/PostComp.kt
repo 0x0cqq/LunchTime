@@ -6,6 +6,8 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,7 +48,7 @@ private val json = Json { ignoreUnknownKeys = true }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit)
+fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onClickVideo:(uri: String)->Unit)
 {
     Column (modifier = Modifier.padding(bottom = 5.dp)) {
         Row(
@@ -162,33 +164,39 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit)
                 }
             }
         }
+    }
 
-        // image show
-        AsyncPostPhotoGrid(imageUris = msg.graphResources, columnCount = 3)
+    // image show
+    AsyncPostPhotoGrid(
+        imageUris = msg.graphResources,
+        videoUris = msg.videoResources,
+        columnCount = 3,
+        isVideo = msg.isVideo,
+        openImage = onClickVideo,
+    )
 
-        // location Tag
-        if(type.Detailed && msg.location.isNotEmpty()) {
-            Card(
-                shape = RoundedCornerShape(50),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-                modifier = Modifier.padding(start = 12.dp)
+    // location Tag
+    if(type.Detailed && msg.location.isNotEmpty()) {
+        Card(
+            shape = RoundedCornerShape(50),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+            modifier = Modifier.padding(start = 12.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
             ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
-                ) {
-                    Icon(
-                        Icons.Rounded.LocationOn,
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = msg.location,
-                        fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
+                Icon(
+                    Icons.Rounded.LocationOn,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = msg.location,
+                    fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     }
@@ -250,27 +258,58 @@ fun <T> Grid(
 }
 
 @Composable
-fun AsyncPostPhotoGrid(columnCount: Int, imageUris: List<Uri>, modifier: Modifier = Modifier) {
+fun AsyncPostPhotoGrid(columnCount: Int, imageUris: List<Uri>, videoUris: List<Uri>, isVideo: Boolean, openImage: (url : String) -> Unit ,modifier: Modifier = Modifier) {
     Grid(
         data = imageUris,
         columnCount = columnCount,
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) { _, imageUri ->
-        SubcomposeAsyncImage(
-            model = imageUri,
-            contentDescription = "post image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.aspectRatio(1F),
-            alignment = Alignment.Center
-        ) {
-            val state = painter.state
-            if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
-                CircularProgressIndicator()
+        Box{
+            if(isVideo){
+                SubcomposeAsyncImage(
+                    model = imageUri,
+                    contentDescription = "post image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.
+                        aspectRatio(1F)
+                        .clickable { openImage(videoUris[0].toString()) },
+                    alignment = Alignment.Center
+                ) {
+                    val state = painter.state
+                    if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
+                        CircularProgressIndicator()
+                    } else {
+                        SubcomposeAsyncImageContent()
+                    }
+                }
+                Icon(
+                    imageVector = Icons.Rounded.PlayCircleFilled,
+                    contentDescription = "Play",
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5F))
+                        .align(Alignment.Center)
+                )
             } else {
-                SubcomposeAsyncImageContent()
+                SubcomposeAsyncImage(
+                    model = imageUri,
+                    contentDescription = "post image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.aspectRatio(1F),
+                    alignment = Alignment.Center
+                ) {
+                    val state = painter.state
+                    if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
+                        CircularProgressIndicator()
+                    } else {
+                        SubcomposeAsyncImageContent()
+                    }
+                }
             }
         }
+
     }
 }
 
@@ -284,6 +323,7 @@ fun PostBodyPreview() {
             graphResources = listOf()
         ),
         type = PostType(Detailed = true),
-        onClickTopBar = {}
+        onClickTopBar = {},
+        onClickVideo = {},
     )
 }

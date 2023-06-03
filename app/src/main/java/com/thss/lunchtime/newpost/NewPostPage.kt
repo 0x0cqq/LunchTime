@@ -1,10 +1,16 @@
 package com.thss.lunchtime.newpost
 
 import android.Manifest
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaRecorder.VideoEncoder
 import android.location.Location
 import android.net.Uri
 import android.widget.Toast
+import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
+import android.util.Size
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -36,6 +42,7 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.outlined.Tag
+import androidx.compose.material.icons.rounded.PlayCircleFilled
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -74,9 +81,13 @@ import com.thss.lunchtime.R
 import com.thss.lunchtime.common.LocationInfo
 import com.thss.lunchtime.common.LocationUtils
 import com.thss.lunchtime.component.Grid
+import kotlinx.serialization.descriptors.PrimitiveKind
 import com.thss.lunchtime.data.userPreferencesStore
 import kotlinx.coroutines.flow.first
 import kotlin.math.roundToInt
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -401,12 +412,68 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
             rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 if(uri != null) {
                     val inputStream = context.contentResolver.openInputStream(uri)
-                    newPostViewModel.appendImages( listOf(
-                        BitmapFactory.decodeStream(inputStream).asImageBitmap()
-                    ))
+                    newPostViewModel.appendImages(
+                        listOf(
+                            BitmapFactory.decodeStream(inputStream).asImageBitmap()
+                        )
+                    )
                 }
             }
-        } else {
+        } else if (uiState.value.selectedImgUris.isEmpty()){
+            rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) {uri ->
+                if (uri != null){
+                    val contentType = context.contentResolver.getType(uri)
+                    if (contentType?.startsWith("image/") == true) {
+                        // 处理图片
+                        val inputStream = context.contentResolver.openInputStream(uri)
+                        newPostViewModel.appendImages(
+                            listOf(
+                                BitmapFactory.decodeStream(inputStream).asImageBitmap()
+                            )
+                        )
+                    } else if (contentType?.startsWith("video/") == true){
+                        // 处理视频
+                        val inputStream = context.contentResolver.openInputStream(uri)
+                        var fileOutputStream: FileOutputStream? = null
+                        // 获得缩略图
+                        val thumbnail: Bitmap = context.contentResolver.loadThumbnail(uri, Size(640,480), null)
+                        newPostViewModel.appendImages(
+                            listOf(thumbnail.asImageBitmap())
+                        )
+                        // 保存视频流
+                        // 从uri得到文件
+                        Log.d("Video", "start getting file from uri")
+                        try{
+                            // 获得文件名
+                            var videoName: String = "";
+                            val cursor = context.contentResolver.query(uri, null, null, null, null)
+                            cursor?.let {
+                                if (it.moveToFirst()) {
+                                    videoName = it.getString(it.getColumnIndexOrThrow("_display_name"))
+                                    cursor.close()
+                                }
+                            }
+                            // 获得文件路径
+                            val videoDir = File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES), "Videos")
+                            if (!videoDir.exists()) {
+                                videoDir.mkdirs()
+                            }
+                            // 写入File
+                            val videoFile = File(videoDir, videoName)
+                            fileOutputStream = FileOutputStream(videoFile)
+                            inputStream?.copyTo(fileOutputStream)
+                            // 添加到video列表
+                            newPostViewModel.appendVideos(listOf(videoFile))
+                        } catch (e: IOException){
+                            e.printStackTrace()
+                        }
+                        // 设置 isVideoFlag
+                        newPostViewModel.setVideoFlag(true)
+                    }
+                }
+            }
+        }
+        else {
             rememberLauncherForActivityResult(
                 ActivityResultContracts.PickMultipleVisualMedia(mostImages - uiState.value.selectedImgUris.size)
             ) { uris: List<Uri> ->
@@ -428,9 +495,16 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
         item {
             NewPostPhotoGrid(
                 onNewImage = {
-                    launcher.launch (
-                        PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
+                    if (uiState.value.selectedImgUris.isEmpty()){
+                        launcher.launch (
+                            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo)
+                        )
+                    }
+                    else{
+                        launcher.launch (
+                            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    }
                 },
                 onOpenImage = { index ->
                     // TODO: image preview page
@@ -440,6 +514,7 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
                 },
                 mostImages = mostImages,
                 images = uiState.value.selectedImgUris,
+                isVideo = uiState.value.isVideo,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -454,9 +529,10 @@ fun NewPostPhotoGrid(
     onClose : (Int) -> Unit,
     images: List<ImageBitmap>,
     mostImages : Int,
+    isVideo : Boolean,
     modifier: Modifier = Modifier) {
     // TODO: change this theme detector with CompositionLocalProvider to improve the performance
-    val imagesWithAddButton = if (images.size < mostImages) {
+    val imagesWithAddButton = if (images.size < mostImages && !isVideo) {
         images + listOf(
             ImageBitmap.imageResource(
                 if (isSystemInDarkTheme()) R.drawable.add_photo_dark
@@ -479,7 +555,7 @@ fun NewPostPhotoGrid(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.aspectRatio(1F).clickable {
                     if (index == imagesWithAddButton.size - 1) {
-                        if (images.size == mostImages) {
+                        if (images.size == mostImages || isVideo) {
                             onOpenImage(index)
                         } else {
                             onNewImage()
@@ -490,7 +566,7 @@ fun NewPostPhotoGrid(
                 },
                 alignment = Alignment.Center
             )
-            if (images.size == mostImages || index != imagesWithAddButton.size - 1) {
+            if (images.size == mostImages || index != imagesWithAddButton.size - 1 || isVideo) {
                 IconButton(
                     onClick = {
                         onClose(index)
@@ -505,6 +581,17 @@ fun NewPostPhotoGrid(
                     Icon(
                         imageVector = Icons.Outlined.Close,
                         contentDescription = "Remove",
+                    )
+                }
+                if (isVideo){
+                    Icon(
+                        imageVector = Icons.Rounded.PlayCircleFilled,
+                        contentDescription = "Play",
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5F))
+                            .align(Alignment.Center)
                     )
                 }
             }

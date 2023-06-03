@@ -1,5 +1,6 @@
 package com.thss.lunchtime.mainscreen.homepage
 
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,7 +47,7 @@ import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () -> Unit, onOpenUserInfo: (userName: String) -> Unit,homepageViewModel: HomepageViewModel) {
+fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> Unit, onClickNewPost: () -> Unit, onOpenUserInfo: (userName: String) -> Unit, onClickVideo: (url: String) -> Unit, homepageViewModel: HomepageViewModel) {
     val uiState = homepageViewModel.uiState.collectAsState()
     val tabs = listOf(HomepageTabs.byTime, HomepageTabs.byLike, HomepageTabs.byComment)
     val context = LocalContext.current
@@ -109,7 +110,9 @@ fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> 
                         modifier = Modifier.clickable { 
                             onClickPostPreviewCard(postData.postID)
                         },
-                        msg = postData)
+                        msg = postData,
+                        onClickVideo = onClickVideo
+                    )
                 }
             }
             PullRefreshIndicator(uiState.value.isRefreshing, state, Modifier.align(Alignment.TopCenter))
