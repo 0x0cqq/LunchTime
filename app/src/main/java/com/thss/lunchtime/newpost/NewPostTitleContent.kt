@@ -331,7 +331,7 @@ fun NewPostTitleContent(newPostViewModel: NewPostViewModel, focusManager: FocusM
                 keyboardActions = KeyboardActions { focusManager.moveFocus(FocusDirection.Next) },
                 colors = TextFieldDefaults.textFieldColors(
                     textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                    containerColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                 ),

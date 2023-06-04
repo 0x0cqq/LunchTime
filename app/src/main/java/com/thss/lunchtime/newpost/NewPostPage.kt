@@ -20,21 +20,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -43,20 +34,7 @@ import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material.icons.rounded.PlayCircleFilled
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -73,6 +51,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -197,7 +176,9 @@ fun IconCard(
                 Icon(
                     Icons.Outlined.Close,
                     contentDescription = "Clear",
-                    modifier = Modifier.wrapContentHeight().clickable { onClear() }
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .clickable { onClear() }
                 )
             }
         }
@@ -244,10 +225,12 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
                     items(locationAddressList.value) { addressInfo ->
                         ListItem(
                             headlineText = { Text(addressInfo.name) },
-                            modifier = Modifier.fillMaxWidth().clickable {
-                                newPostViewModel.setLocation(addressInfo.name)
-                                openLocationDialog.value = false
-                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    newPostViewModel.setLocation(addressInfo.name)
+                                    openLocationDialog.value = false
+                                },
                             trailingContent = {
                                 Text("距您 ${addressInfo.distance.roundToInt()} 米")
                             }
@@ -311,7 +294,10 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
     val uiState = newPostViewModel.uiState.collectAsState()
     val openTagDialog = remember { mutableStateOf(false) }
 
-    // tagdialog
+    val radioOptions = listOf("无", "校园活动", "失物招领", "随便聊聊")
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+
+    // tag dialog
     if (openTagDialog.value) {
         AlertDialog(
             onDismissRequest = {
@@ -330,6 +316,12 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
                 Button(
                     onClick = {
                         openTagDialog.value = false
+                        if (selectedOption == "无") {
+                            uiState.value.isTagUsed = false
+                        } else {
+                            uiState.value.isTagUsed = true
+                            uiState.value.tag = selectedOption;
+                        }
                     }
                 ) {
                     Text("确定")
@@ -339,13 +331,32 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
                 Text("选择一个标签")
             },
             text = {
-                TextField(
-                    value = uiState.value.tag,
-                    onValueChange = {
-                        newPostViewModel.setTag(it)
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Column(Modifier.selectableGroup()) {
+                    radioOptions.forEach { text ->
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .selectable(
+                                    selected = (text == selectedOption),
+                                    onClick = { onOptionSelected(text) },
+                                    role = Role.RadioButton
+                                )
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = (text == selectedOption),
+                                onClick = null // null recommended for accessibility with screen readers
+                            )
+                            Text(
+                                text = text,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(start = 16.dp)
+                            )
+                        }
+                    }
+                }
             }
         )
     }
@@ -393,6 +404,7 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
                 isUsed = uiState.value.isTagUsed,
                 onClear = {
                     newPostViewModel.setTag("")
+                    onOptionSelected("无")
                 }
             )
         }
@@ -492,7 +504,9 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
                 focusManager
             )
         }
+
         item {
+            Spacer(modifier = Modifier.height(64.dp))
             NewPostPhotoGrid(
                 onNewImage = {
                     if (uiState.value.selectedImgUris.isEmpty()){
@@ -553,17 +567,19 @@ fun NewPostPhotoGrid(
                 bitmap = image,
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.aspectRatio(1F).clickable {
-                    if (index == imagesWithAddButton.size - 1) {
-                        if (images.size == mostImages || isVideo) {
-                            onOpenImage(index)
+                modifier = Modifier
+                    .aspectRatio(1F)
+                    .clickable {
+                        if (index == imagesWithAddButton.size - 1) {
+                            if (images.size == mostImages || isVideo) {
+                                onOpenImage(index)
+                            } else {
+                                onNewImage()
+                            }
                         } else {
-                            onNewImage()
+                            onOpenImage(index)
                         }
-                    } else {
-                        onOpenImage(index)
-                    }
-                },
+                    },
                 alignment = Alignment.Center
             )
             if (images.size == mostImages || index != imagesWithAddButton.size - 1 || isVideo) {

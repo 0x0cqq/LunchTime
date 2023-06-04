@@ -58,7 +58,7 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 // Clip image to shaped as a circle
-                                .size(40.dp)
+                                .size(42.dp)
                                 .clip(CircleShape),
                         )
 
@@ -80,7 +80,7 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
 
                             Text(
                                 text = text,
-                                style = if (msg.noticeType ==  3) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodyMedium
                             )
 
                         }
@@ -91,14 +91,6 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                     } else {
                         Text(text = SimpleDateFormat("MM-dd").format(msg.noticeDate))
                     }
-
-                }
-
-                if (msg.noticeType == 1 && msg.reply != "") {
-                    Text(
-                        text = msg.reply,
-                        Modifier.padding(8.dp, 8.dp, 8.dp, 0.dp)
-                    )
                 }
             }
 

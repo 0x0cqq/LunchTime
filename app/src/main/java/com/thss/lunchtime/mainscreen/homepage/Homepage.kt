@@ -125,7 +125,7 @@ fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> 
 fun HomePageTopBar(onSwitchDropDownMenu: (index: Int) -> Unit, onClickSearch: () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     var selectedMenuIndex by rememberSaveable { mutableStateOf(0) }
-    val dropDownMenuItems = listOf("综合", "热度", "我的关注", "Divider", "Tag1", "Tag2")
+    val dropDownMenuItems = listOf("综合", "热度", "我的关注", "Divider", "校园活动", "失物招领", "随便聊聊")
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier

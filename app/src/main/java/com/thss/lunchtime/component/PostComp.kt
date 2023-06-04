@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,8 +33,10 @@ import coil.compose.SubcomposeAsyncImageContent
 import com.thss.lunchtime.CommentBtn
 import com.thss.lunchtime.LikeBtn
 import com.thss.lunchtime.StarBtn
+import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.post.PostData
 import com.thss.lunchtime.ui.theme.Purple40
+import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import me.onebone.parvenu.ParvenuString
 import me.onebone.parvenu.toAnnotatedString
@@ -50,6 +53,14 @@ private val json = Json { ignoreUnknownKeys = true }
 @Composable
 fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onClickVideo:(uri: String)->Unit)
 {
+    val context = LocalContext.current
+    val userData = context.userPreferencesStore
+    val userName = remember {
+        mutableStateOf("")
+    }
+    LaunchedEffect(Unit) {
+        userName.value = userData.data.first().userName
+    }
     Column (modifier = Modifier.padding(bottom = 5.dp)) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -57,7 +68,7 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 16.dp)
-                .clickable{
+                .clickable {
                     onClickTopBar()
                 }
         ) {
@@ -74,15 +85,7 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
                         .size(40.dp)
                         .clip(CircleShape),
                 )
-//                Image(
-//                    painter = painterResource(id = R.drawable.touxaingnvhai),
-//                    contentDescription = "heading",
-//                    modifier = Modifier
-//                        // Set image size to 40dp
-//                        .size(40.dp)
-//                        // Clip image to shaped as a circle
-//                        .clip(CircleShape)
-//                )
+
                 // Add a horizontal space between the image and the column
                 Spacer(modifier = Modifier.width(8.dp))
 
@@ -94,7 +97,7 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
                 }
             }
 
-            if (type.Detailed) {
+            if (type.Detailed && msg.publisherID != userName.value) {
                 val icon = when (msg.publisherStatus) {
                     1 -> Icons.Rounded.PersonAdd
                     2 -> Icons.Rounded.HowToReg
@@ -109,10 +112,10 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
             Row (
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                val color = when (msg.Type) {
-                    1 -> Color.Blue
-                    2 -> Color.Red
-                    3 -> Color.Yellow
+                val color = when (msg.tag) {
+                    "校园活动" -> Color.Blue
+                    "失物招领" -> Color.Red
+                    "随便聊聊" -> Color.Yellow
                     else -> Color.Gray
                 }
 
@@ -159,7 +162,8 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
                         text = content.toAnnotatedString(),
                         maxLines = if (expandContent.value) 100 else 2,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clickable { expandContent.value = !expandContent.value }
+                        modifier = Modifier
+                            .clickable { expandContent.value = !expandContent.value }
                             .fillMaxWidth()
                     )
                 }
@@ -270,8 +274,8 @@ fun AsyncPostPhotoGrid(columnCount: Int, imageUris: List<Uri>, videoUris: List<U
                     model = imageUri,
                     contentDescription = "post image",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.
-                        aspectRatio(1F)
+                    modifier = Modifier
+                        .aspectRatio(1F)
                         .clickable { openImage(videoUris[0].toString()) },
                     alignment = Alignment.Center
                 ) {
