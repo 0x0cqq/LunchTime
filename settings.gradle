@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
-//includeBuild("androidx-compose-material3-pullrefresh") {
+//includeBuild("pullrefresh") {
 //    dependencySubstitution {
 //        substitute(module("me.omico.lux:lux-androidx-compose-material3-pullrefresh")).using(project(":library"))
 //    }

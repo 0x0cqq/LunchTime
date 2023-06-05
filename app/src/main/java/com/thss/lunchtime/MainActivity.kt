@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
@@ -120,7 +119,7 @@ fun Application(modifier: Modifier = Modifier) {
                     )
                     scope.launch {
                         val userName = userData.data.first().userName
-                        Toast.makeText(context, "Welcome Back, $userName" , Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "欢迎回来, $userName" , Toast.LENGTH_SHORT).show()
                     }
                 },
                 onClickLogin = { name, password ->

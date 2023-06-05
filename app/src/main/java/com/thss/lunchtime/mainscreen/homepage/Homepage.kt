@@ -1,6 +1,5 @@
 package com.thss.lunchtime.mainscreen.homepage
 
-import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -52,9 +52,12 @@ fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> 
     val tabs = listOf(HomepageTabs.byTime, HomepageTabs.byLike, HomepageTabs.byComment)
     val context = LocalContext.current
 
-    val state = rememberPullRefreshState(refreshing = uiState.value.isRefreshing, onRefresh = {
-        homepageViewModel.refresh(context)
-    })
+    val state = rememberPullRefreshState(
+        refreshing = uiState.value.isRefreshing,
+        onRefresh = {
+            homepageViewModel.refresh(context)
+        }
+    )
 
     // refresh on the launch
     LaunchedEffect(uiState.value.selectedIndex) {
@@ -67,7 +70,8 @@ fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> 
                 HomePageTopBar(
                     onSwitchDropDownMenu = { index: Int ->
                         homepageViewModel.onSwitchDropDownMenu(context, index) },
-                    onClickSearch = onClickSearch)
+                    onClickSearch = onClickSearch
+                )
                 if (uiState.value.dropMenuIndex != 1) {
                     ScrollableTabRow(
                         selectedTabIndex = uiState.value.selectedIndex,
@@ -115,7 +119,13 @@ fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> 
                     )
                 }
             }
-            PullRefreshIndicator(uiState.value.isRefreshing, state, Modifier.align(Alignment.TopCenter))
+                PullRefreshIndicator(
+                    uiState.value.isRefreshing,
+                    state,
+                    Modifier.align(Alignment.TopCenter),
+                    backgroundColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
         }
     }
 }
@@ -128,6 +138,7 @@ fun HomePageTopBar(onSwitchDropDownMenu: (index: Int) -> Unit, onClickSearch: ()
     val dropDownMenuItems = listOf("综合", "热度", "我的关注", "Divider", "校园活动", "失物招领", "随便聊聊")
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
     ) {
@@ -136,18 +147,18 @@ fun HomePageTopBar(onSwitchDropDownMenu: (index: Int) -> Unit, onClickSearch: ()
                 .wrapContentSize(Alignment.TopStart),
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clickable { expanded = !expanded }
+                    .padding(horizontal = 15.dp, vertical = 10.dp)
             ) {
                 Text(
-                    dropDownMenuItems[selectedMenuIndex],
-                    modifier = Modifier.padding(start = 15.dp)
+                    dropDownMenuItems[selectedMenuIndex]
                 )
-                IconButton(onClick = { expanded = true }) {
-                    if(expanded) {
-                        Icon(Icons.Default.ArrowLeft, contentDescription = "Shrink")
-                    } else {
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Expand More")
-                    }
+                if(expanded) {
+                    Icon(Icons.Default.ArrowLeft, contentDescription = "Shrink")
+                } else {
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = "Expand More")
                 }
             }
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
