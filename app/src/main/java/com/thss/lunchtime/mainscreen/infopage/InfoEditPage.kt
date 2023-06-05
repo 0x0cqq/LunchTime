@@ -10,6 +10,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -25,6 +27,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -104,6 +107,10 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, onOpenBlockList: () -
             }
             val originPasswordHidden = remember { mutableStateOf(true) }
             val newPasswordHidden = remember { mutableStateOf(true) }
+
+            val logoutDialog = remember {
+                mutableStateOf(false)
+            }
 
 
             ImageChange(
@@ -234,9 +241,37 @@ fun InfoEditPage(onBack: () -> Unit, onLogOut: () -> Unit, onOpenBlockList: () -
                     containerColor = MaterialTheme.colorScheme.errorContainer,
                     contentColor = MaterialTheme.colorScheme.error
                 ),
-                onClick = onLogOut
+                onClick = { logoutDialog.value = true }
             ) {
                 Text(text = "退出登录", fontSize = 18.sp)
+            }
+
+            // logout dialog
+            if (logoutDialog.value) {
+                AlertDialog(
+                    onDismissRequest = {
+                        logoutDialog.value = false
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                logoutDialog.value = false
+                            }
+                        ) {
+                            Text("取消")
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = onLogOut
+                        ) {
+                            Text("确定")
+                        }
+                    },
+                    title = {
+                        Text("确认登出")
+                    },
+                )
             }
         }
     }
@@ -366,9 +401,11 @@ fun SimpleInfoChange(onOpenBlockList : () -> Unit, myinfo: InfoData, infoEditVie
             Text(
                 text = myinfo.SelfIntro,
                 fontSize = 18.sp,
-                modifier = Modifier.clickable{
-                    openIntroDialog.value = !openIntroDialog.value
-                }.fillMaxWidth(1f)
+                modifier = Modifier
+                    .clickable {
+                        openIntroDialog.value = !openIntroDialog.value
+                    }
+                    .fillMaxWidth(1f)
             )
         }
 

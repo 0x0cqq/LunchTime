@@ -2,6 +2,7 @@ package com.thss.lunchtime.search
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.thss.lunchtime.post.PostReviewCard
@@ -26,6 +28,7 @@ fun SearchPage(onClickPostPreviewCard: (postID : Int) -> Unit, onOpenUserInfo: (
     val alreadySearched = remember { mutableStateOf(false) }
     val uiState = searchPageViewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
     Scaffold(
         topBar = { SearchPageTopBar(
@@ -39,7 +42,9 @@ fun SearchPage(onClickPostPreviewCard: (postID : Int) -> Unit, onOpenUserInfo: (
             })
         }
     ) { paddingValues ->
-        LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues).clickable(onClick = { focusManager.clearFocus() }, indication = null, interactionSource = remember {
+            MutableInteractionSource()
+        })) {
             items(uiState.value.postDataList) { postData ->
                 PostReviewCard(
                     onClickLike = { searchPageViewModel.onClickLike(context, postData.postID) },
