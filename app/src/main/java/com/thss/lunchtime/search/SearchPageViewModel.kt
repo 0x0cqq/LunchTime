@@ -18,6 +18,11 @@ class SearchPageViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(SearchPageState())
     val uiState = _uiState.asStateFlow()
 
+    fun refresh(context: Context){
+        _uiState.update { state ->
+            state.copy(postDataList = listOf()) }
+    }
+
     fun onClickSearch(context: Context, field: Int, keyword: String){
         viewModelScope.launch {
             val userData = context.userPreferencesStore

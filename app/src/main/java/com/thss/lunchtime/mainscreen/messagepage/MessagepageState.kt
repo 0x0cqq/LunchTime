@@ -1,6 +1,6 @@
 package com.thss.lunchtime.mainscreen.messagepage
 
-import com.thss.lunchtime.NoticeData
+import com.thss.lunchtime.component.NoticeData
 
 data class MessagepageState (
     // 0: comment, 1: like, 2: chat

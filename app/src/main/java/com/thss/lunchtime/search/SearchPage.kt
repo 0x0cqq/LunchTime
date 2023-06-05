@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -30,6 +27,10 @@ fun SearchPage(onClickPostPreviewCard: (postID : Int) -> Unit, onOpenUserInfo: (
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
+    LaunchedEffect(Unit){
+        searchPageViewModel.refresh(context)
+    }
+
     Scaffold(
         topBar = { SearchPageTopBar(
             onClickSearch = { field: Int, keyword: String ->
@@ -42,9 +43,14 @@ fun SearchPage(onClickPostPreviewCard: (postID : Int) -> Unit, onOpenUserInfo: (
             })
         }
     ) { paddingValues ->
-        LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues).clickable(onClick = { focusManager.clearFocus() }, indication = null, interactionSource = remember {
-            MutableInteractionSource()
-        })) {
+        LazyColumn(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .clickable(onClick = { focusManager.clearFocus() },
+                indication = null,
+                interactionSource = remember {
+                    MutableInteractionSource()
+                })) {
             items(uiState.value.postDataList) { postData ->
                 PostReviewCard(
                     onClickLike = { searchPageViewModel.onClickLike(context, postData.postID) },
@@ -58,7 +64,9 @@ fun SearchPage(onClickPostPreviewCard: (postID : Int) -> Unit, onOpenUserInfo: (
             }
             item {
                 if(alreadySearched.value && uiState.value.postDataList.isEmpty()){
-                    Text(text = "No result", modifier = Modifier.fillMaxWidth().padding(16.dp))
+                    Text(text = "No result", modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp))
                 }
             }
         }

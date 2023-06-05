@@ -1,7 +1,7 @@
 package com.thss.lunchtime.network
 
 import androidx.core.net.toUri
-import com.thss.lunchtime.NoticeData
+import com.thss.lunchtime.component.NoticeData
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.Date

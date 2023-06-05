@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.network.toNoticeData
-import com.thss.lunchtime.NoticeData
+import com.thss.lunchtime.component.NoticeData
 import com.thss.lunchtime.network.toChatData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
