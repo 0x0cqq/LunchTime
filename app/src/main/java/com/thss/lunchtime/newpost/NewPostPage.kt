@@ -3,21 +3,17 @@ package com.thss.lunchtime.newpost
 import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.MediaRecorder.VideoEncoder
 import android.location.Location
 import android.net.Uri
 import android.widget.Toast
 import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -40,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,7 +59,9 @@ import com.thss.lunchtime.common.LocationUtils
 import com.thss.lunchtime.component.Grid
 import kotlinx.serialization.descriptors.PrimitiveKind
 import com.thss.lunchtime.data.userPreferencesStore
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import java.io.File
 import java.io.FileOutputStream
@@ -77,6 +76,9 @@ fun NewPostPage(onClickBack: () -> Unit = {},
     val uiState = newPostViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val userData = context.userPreferencesStore
+    val isSendButtonDisabled = remember { mutableStateOf(false) }
+    val sendPostScope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         newPostViewModel.initData(context, userData.data.first().userName)
     }
@@ -105,8 +107,14 @@ fun NewPostPage(onClickBack: () -> Unit = {},
                 },
                 actions = {
                     IconButton(
+                        enabled = !isSendButtonDisabled.value,
                         onClick = {
                             onClickSend(uiState.value)
+                            isSendButtonDisabled.value = true
+                            sendPostScope.launch {
+                                delay(5000)
+                                isSendButtonDisabled.value = false
+                            }
                         },
                     ) {
                         Icon(
@@ -320,7 +328,7 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
                             uiState.value.isTagUsed = false
                         } else {
                             uiState.value.isTagUsed = true
-                            uiState.value.tag = selectedOption;
+                            uiState.value.tag = selectedOption
                         }
                     }
                 ) {
@@ -457,7 +465,7 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
                         Log.d("Video", "start getting file from uri")
                         try{
                             // 获得文件名
-                            var videoName: String = "";
+                            var videoName: String = ""
                             val cursor = context.contentResolver.query(uri, null, null, null, null)
                             cursor?.let {
                                 if (it.moveToFirst()) {
