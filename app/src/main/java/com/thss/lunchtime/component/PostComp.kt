@@ -149,6 +149,7 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
                 mutableStateOf(false)
             }
 
+
             // content
             Box(modifier = Modifier.animateContentSize(animationSpec = tween(durationMillis = 100) )) {
                 val content : ParvenuString = try {
@@ -157,14 +158,21 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
                     Log.d("PostMainBody", "json decode error: ${e.message}")
                     ParvenuString(msg.content)
                 }
+
+                val textClickModifier = if (type.Detailed) {
+                    Modifier.clickable { expandContent.value = !expandContent.value }.fillMaxWidth() }
+                else {
+                    Modifier.fillMaxWidth()
+                }
+
+                val textMaxLine = if (type.Detailed) 100 else 2
+
                 if(content.text.isNotEmpty()) {
                     Text(
                         text = content.toAnnotatedString(),
-                        maxLines = if (expandContent.value) 100 else 2,
+                        maxLines = textMaxLine,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .clickable { expandContent.value = !expandContent.value }
-                            .fillMaxWidth()
+                        modifier = textClickModifier
                     )
                 }
             }
