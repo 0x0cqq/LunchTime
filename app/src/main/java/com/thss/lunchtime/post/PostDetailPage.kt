@@ -37,7 +37,7 @@ import com.thss.lunchtime.component.PostType
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PostDetailPage(onBack: () -> Unit,
-                   onOpenVideo: (uri: String) -> Unit,
+                   onOpenMedia: (url: String, isVideo: Boolean) -> Unit,
                    onOpenUserInfo: (userName: String) -> Unit,
                    postID: Int,
                    postDetailViewModel: PostDetailViewModel)
@@ -163,7 +163,7 @@ fun PostDetailPage(onBack: () -> Unit,
                     msg = postDetailData.value.postData,
                     type = PostType(Detailed = true),
                     onClickTopBar = { onOpenUserInfo(postDetailData.value.postData.publisherID) },
-                    onClickVideo = onOpenVideo,
+                    onClickMedia = onOpenMedia,
                 )
             }
 
@@ -212,11 +212,3 @@ fun sharePost(context: Context, post: PostData) {
     val shareIntent = Intent.createChooser(intent, "分享到")
     context.startActivity(shareIntent)
 }
-
-
-
-//@Preview
-//@Composable
-//fun PostDetailCardPreview() {
-//    PostDetailPage(4, viewModel())
-//}

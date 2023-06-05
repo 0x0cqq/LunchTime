@@ -51,7 +51,7 @@ private val json = Json { ignoreUnknownKeys = true }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onClickVideo:(uri: String)->Unit)
+fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onClickMedia:(uri: String, isVideo: Boolean)->Unit)
 {
     val context = LocalContext.current
     val userData = context.userPreferencesStore
@@ -183,7 +183,7 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
             videoUris = msg.videoResources,
             columnCount = 3,
             isVideo = msg.isVideo,
-            openImage = onClickVideo,
+            openMedia = onClickMedia,
         )
         // location Tag
         if(type.Detailed && msg.location.isNotEmpty()) {
@@ -269,13 +269,13 @@ fun <T> Grid(
 }
 
 @Composable
-fun AsyncPostPhotoGrid(columnCount: Int, imageUris: List<Uri>, videoUris: List<Uri>, isVideo: Boolean, openImage: (url : String) -> Unit ,modifier: Modifier = Modifier) {
+fun AsyncPostPhotoGrid(columnCount: Int, imageUris: List<Uri>, videoUris: List<Uri>, isVideo: Boolean, openMedia: (url : String, isVideo: Boolean) -> Unit ,modifier: Modifier = Modifier) {
     Grid(
         data = imageUris,
         columnCount = columnCount,
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) { _, imageUri ->
+    ) { index, imageUri ->
         Box{
             if(isVideo){
                 SubcomposeAsyncImage(
@@ -284,7 +284,7 @@ fun AsyncPostPhotoGrid(columnCount: Int, imageUris: List<Uri>, videoUris: List<U
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .aspectRatio(1F)
-                        .clickable { openImage(videoUris[0].toString()) },
+                        .clickable { openMedia(videoUris[0].toString(), true) },
                     alignment = Alignment.Center
                 ) {
                     val state = painter.state
@@ -308,7 +308,9 @@ fun AsyncPostPhotoGrid(columnCount: Int, imageUris: List<Uri>, videoUris: List<U
                     model = imageUri,
                     contentDescription = "post image",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.aspectRatio(1F),
+                    modifier = Modifier
+                        .aspectRatio(1F)
+                        .clickable { openMedia(imageUris[index].toString(), false) },
                     alignment = Alignment.Center
                 ) {
                     val state = painter.state
@@ -335,6 +337,6 @@ fun PostBodyPreview() {
         ),
         type = PostType(Detailed = true),
         onClickTopBar = {},
-        onClickVideo = {},
+        onClickMedia = { _, _ -> }
     )
 }

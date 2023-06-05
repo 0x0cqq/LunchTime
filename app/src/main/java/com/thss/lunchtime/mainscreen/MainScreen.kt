@@ -34,7 +34,7 @@ fun MainScreen(onClickSearch: ()->Unit,
                onOpenFollows: () -> Unit,
                onOpenFans: () -> Unit,
                onOpenSaved: () -> Unit,
-               onClickVideo: (url: String) -> Unit,
+               onClickMedia: (url: String, isVideo: Boolean) -> Unit,
                mainScreenViewModel: MainScreenViewModel) {
     val mainScreenNavController = rememberNavController()
     // 脚手架，上面下面的栏和
@@ -112,7 +112,7 @@ fun MainScreen(onClickSearch: ()->Unit,
                     homepageViewModel = homepageViewModel,
                     onOpenUserInfo = onOpenUserInfo,
                     onClickSearch = onClickSearch,
-                    onClickVideo = onClickVideo
+                    onClickMedia = onClickMedia
                 )
             }
             composable(MainScreens.Message.route) {
@@ -139,5 +139,5 @@ fun MainScreen(onClickSearch: ()->Unit,
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen({}, {}, {}, {}, { _ -> }, {}, {}, {}, {}, {}, MainScreenViewModel())
+    MainScreen({}, {}, {}, {}, { _ -> }, {}, {}, {}, {}, {_,_->}, MainScreenViewModel())
 }

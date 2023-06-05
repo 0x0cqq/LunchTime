@@ -40,6 +40,7 @@ import com.thss.lunchtime.mainscreen.infopage.InfoEditPage
 import com.thss.lunchtime.mainscreen.infopage.InfoEditViewModel
 import com.thss.lunchtime.mainscreen.infopage.MyInfoPage
 import com.thss.lunchtime.mainscreen.infopage.MyInfoPageViewModel
+import com.thss.lunchtime.mediaplayer.ImagePlayPage
 import com.thss.lunchtime.mediaplayer.VideoPlayPage
 import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.newpost.NewPostPage
@@ -374,9 +375,13 @@ fun Application(modifier: Modifier = Modifier) {
                     applicationNavController.navigate("starPostList/$userName")
                 }
                 },
-                onClickVideo = { url ->
+                onClickMedia = { url, isVideo ->
                     val modifiedUrl = url.replace("/", "!")
-                    applicationNavController.navigate("videoPage/$modifiedUrl")
+                    if(isVideo){
+                        applicationNavController.navigate("videoPage/$modifiedUrl")
+                    } else{
+                        applicationNavController.navigate("imagePage/$modifiedUrl")
+                    }
                 }
                 ,
                 mainScreenViewModel = mainScreenViewModel
@@ -389,9 +394,13 @@ fun Application(modifier: Modifier = Modifier) {
                 onBack = {
                     applicationNavController.popBackStack()
                 },
-                onOpenVideo = { uriString ->
-                    val modifiedUrl = uriString.replace("/", "!")
-                    applicationNavController.navigate("videoPage/$modifiedUrl")
+                onOpenMedia = {  url, isVideo ->
+                    val modifiedUrl = url.replace("/", "!")
+                    if(isVideo){
+                        applicationNavController.navigate("videoPage/$modifiedUrl")
+                    } else{
+                        applicationNavController.navigate("imagePage/$modifiedUrl")
+                    }
                 },
                 onOpenUserInfo = { targetUserName ->
                     scope.launch {
@@ -524,10 +533,13 @@ fun Application(modifier: Modifier = Modifier) {
         }
         composable("videoPage/{url}"){backStackEntry ->
             val url : String = backStackEntry.arguments?.getString("url")!!
-            Log.d("Video", "url is $url")
             val modifiedUrl = url.replace("!","/")
-            Log.d("Video", "modified url is $modifiedUrl")
             VideoPlayPage(url = modifiedUrl, onBack = { applicationNavController.popBackStack() })
+        }
+        composable("imagePage/{url}"){backStackEntry ->
+            val url : String = backStackEntry.arguments?.getString("url")!!
+            val modifiedUrl = url.replace("!","/")
+            ImagePlayPage(url = modifiedUrl, onBack = { applicationNavController.popBackStack() })
         }
     }
 }
