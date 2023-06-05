@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
@@ -21,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thss.lunchtime.LikeBtn
@@ -39,6 +41,7 @@ fun PostDetailPage(onBack: () -> Unit,
 {
     val context = LocalContext.current
     val postDetailData = postDetailViewModel.uiState.collectAsState()
+    val focusManager = LocalFocusManager.current
     
     
     LaunchedEffect(Unit) {
@@ -104,6 +107,12 @@ fun PostDetailPage(onBack: () -> Unit,
                         textStyle = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         ),
+                        keyboardActions = KeyboardActions {
+                            postDetailViewModel.sendComment(context)
+                            postDetailViewModel.refresh(context, postID)
+                            focusManager.clearFocus()
+                        },
+                        singleLine = true,
                         decorationBox = { innerTextField ->
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
