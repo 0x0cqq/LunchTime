@@ -323,13 +323,7 @@ fun Application(modifier: Modifier = Modifier) {
                 },
                 onOpenUserInfo = { targetUserName ->
                     scope.launch {
-                        val myUserName = userData.data.first().userName
-                        if (myUserName == targetUserName){
-                            applicationNavController.navigate("myInfoPage")
-                        }
-                        else{
-                            applicationNavController.navigate("otherInfoPage/$targetUserName")
-                        }
+                        applicationNavController.navigate("otherInfoPage/$targetUserName")
                     }
 
                 },
@@ -355,13 +349,7 @@ fun Application(modifier: Modifier = Modifier) {
                 },
                 onOpenUserInfo = { targetUserName ->
                     scope.launch {
-                        val myUserName = userData.data.first().userName
-                        if (myUserName == targetUserName){
-                            applicationNavController.navigate("myInfoPage")
-                        }
-                        else{
-                            applicationNavController.navigate("otherInfoPage/$targetUserName")
-                        }
+                        applicationNavController.navigate("otherInfoPage/$targetUserName")
                     }
                 },
                 onOpenFollows = {scope.launch {
@@ -408,13 +396,7 @@ fun Application(modifier: Modifier = Modifier) {
                 },
                 onOpenUserInfo = { targetUserName ->
                     scope.launch {
-                        val myUserName = userData.data.first().userName
-                        if (myUserName == targetUserName){
-                            applicationNavController.navigate("myInfoPage")
-                        }
-                        else{
-                            applicationNavController.navigate("otherInfoPage/$targetUserName")
-                        }
+                        applicationNavController.navigate("otherInfoPage/$targetUserName")
                     }
                 },
                 postID = postId,
@@ -523,12 +505,7 @@ fun Application(modifier: Modifier = Modifier) {
                 onOpenUserInfo = { targetUserName ->
                     scope.launch {
                         val myUserName = userData.data.first().userName
-                        if (myUserName == targetUserName){
-                            applicationNavController.navigate("myInfoPage")
-                        }
-                        else{
-                            applicationNavController.navigate("otherInfoPage/$targetUserName")
-                        }
+                        applicationNavController.navigate("otherInfoPage/$targetUserName")
                     } },
                 onOpenPost = {postId ->
                     applicationNavController.navigate("post/$postId")

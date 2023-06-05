@@ -10,9 +10,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PersonOff
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,15 +20,22 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thss.lunchtime.component.InfoComp
 import com.thss.lunchtime.component.InfoType
+import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.post.PostReviewCard
+import kotlinx.coroutines.flow.first
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
 fun OtherInfoPage(onClickChat: (userName: String) -> Unit, onClickBack: () -> Unit, onClickPost: (postId: Int) -> Unit, onClickFans : () -> Unit, onClickFollows : () -> Unit, onClickSaved: () -> Unit, otherInfoPageViewModel: OtherInfoPageViewModel = viewModel(), userName: String) {
     val uiState = otherInfoPageViewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val userData = context.userPreferencesStore
+    val infoPageUserName = remember {
+        mutableStateOf("")
+    }
 
     LaunchedEffect(Unit) {
+        infoPageUserName.value = userData.data.first().userName
         otherInfoPageViewModel.refresh(context, userName)
     }
 
@@ -47,9 +52,11 @@ fun OtherInfoPage(onClickChat: (userName: String) -> Unit, onClickBack: () -> Un
                     }
                 },
                 actions = {
-                    IconButton(onClick = {otherInfoPageViewModel.onClickBlock(context)}) {
-                        Icon(imageVector = Icons.Default.PersonOff,
-                            contentDescription = null)
+                    if (infoPageUserName.value != uiState.value.infoData.ID) {
+                        IconButton(onClick = {otherInfoPageViewModel.onClickBlock(context)}) {
+                            Icon(imageVector = Icons.Default.PersonOff,
+                                contentDescription = null)
+                        }
                     }
                 },
             )
@@ -60,18 +67,29 @@ fun OtherInfoPage(onClickChat: (userName: String) -> Unit, onClickBack: () -> Un
             .fillMaxWidth()
             .padding(paddingValues)
     ) {
+        if (infoPageUserName.value != uiState.value.infoData.ID) {
+            InfoComp(
+                msg = uiState.value.infoData,
+                type = InfoType.Others,
+                onClickFollows = onClickFollows,
+                onClickFans = onClickFans,
+                onClickSaved = onClickSaved,
+                onClickRelation = {otherInfoPageViewModel.onClickRelation(context)},
+                onClickChat = {
+                    onClickChat(uiState.value.infoData.ID)
+                }
+            )
+        } else {
+            InfoComp(
+                msg = uiState.value.infoData,
+                type = InfoType.Self,
+                onClickFans = onClickFans,
+                onClickFollows = onClickFollows,
+                onClickSaved = onClickSaved,
+                onClickChat = {}
+            )
+        }
 
-        InfoComp(
-            msg = uiState.value.infoData,
-            type = InfoType.Others,
-            onClickFollows = onClickFollows,
-            onClickFans = onClickFans,
-            onClickSaved = onClickSaved,
-            onClickRelation = {otherInfoPageViewModel.onClickRelation(context)},
-            onClickChat = {
-                onClickChat(uiState.value.infoData.ID)
-            }
-        )
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
