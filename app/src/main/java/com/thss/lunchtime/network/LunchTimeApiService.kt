@@ -16,7 +16,7 @@ import retrofit2.http.Part
 import retrofit2.http.Query
 
 private const val BASE_URL =
-    "http://82.156.30.206:8000"
+    "http://lunchtime.cqqqwq.com:8000"
 
 
 private val myJson: Json = Json { ignoreUnknownKeys = true }

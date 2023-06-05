@@ -1,30 +1,33 @@
 package com.thss.lunchtime.search
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowLeft
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuItemColors
+import androidx.compose.material3.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
 @Composable
 fun SearchTextField(onClickSearch: (keyword: String)-> Unit) {
+    val focusManager = LocalFocusManager.current
     var searchText by remember {
         mutableStateOf("")
     }
@@ -57,16 +60,19 @@ fun SearchTextField(onClickSearch: (keyword: String)-> Unit) {
                     ) {
                         innerTextField()
                     }
-                   IconButton(
+                    IconButton(
                         onClick = { onClickSearch(searchText) }
                     ) {
-                        androidx.compose.material3.Icon(
-                            Icons.Filled.Search,
+                        Icon(
+                            Icons.Default.Search,
                             "Send",
                             tint = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
                 }
+            }, keyboardActions = KeyboardActions {
+                focusManager.clearFocus()
+                onClickSearch(searchText)
             }
         )
     }
@@ -81,7 +87,7 @@ fun SearchPageTopBar(onClickSearch: (index: Int, keyword: String) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 10.dp),
+            .padding(horizontal = 10.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -91,17 +97,17 @@ fun SearchPageTopBar(onClickSearch: (index: Int, keyword: String) -> Unit) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                androidx.compose.material3.Text(
+                Text(
                     dropDownMenuItems[selectedMenuIndex],
                 )
-                androidx.compose.material3.IconButton(onClick = { expanded = true }) {
+                IconButton(onClick = { expanded = true }) {
                     if (expanded) {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             Icons.Default.ArrowLeft,
                             contentDescription = "Shrink"
                         )
                     } else {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             Icons.Default.ArrowDropDown,
                             contentDescription = "Expand More"
                         )
@@ -113,10 +119,10 @@ fun SearchPageTopBar(onClickSearch: (index: Int, keyword: String) -> Unit) {
                 onDismissRequest = { expanded = false }) {
                 dropDownMenuItems.forEachIndexed { index, name ->
                     if (name == "Divider") {
-                        androidx.compose.material3.Divider()
+                        Divider()
                     } else {
-                        androidx.compose.material3.DropdownMenuItem(
-                            text = { androidx.compose.material3.Text(name) },
+                        DropdownMenuItem(
+                            text = { Text(name) },
                             onClick = { /* TODO */ selectedMenuIndex = index; expanded = false },
                             modifier = Modifier.wrapContentHeight(),
                         )
@@ -124,7 +130,6 @@ fun SearchPageTopBar(onClickSearch: (index: Int, keyword: String) -> Unit) {
                 }
             }
         }
-
         SearchTextField( onClickSearch = { text -> onClickSearch(selectedMenuIndex, text)} )
     }
 }

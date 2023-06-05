@@ -3,5 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">lunchtime.cqqqwq.com</domain>
         <domain includeSubdomains="true">82.156.30.206</domain>
+        <domain includeSubdomains="true">43.131.235.105</domain>
     </domain-config>
 </network-security-config>

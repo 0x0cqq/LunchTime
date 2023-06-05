@@ -17,9 +17,9 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
-private const val BASE_WS_URL = "ws://82.156.30.206:8000/ws"
+private const val BASE_WS_URL = "ws://lunchtime.cqqqwq.com:8000/ws"
 private const val SCHEMA = "ws"
-private const val HOST = "82.156.30.206"
+private const val HOST = "lunchtime.cqqqwq.com"
 private const val PORT = 8000
 
 
