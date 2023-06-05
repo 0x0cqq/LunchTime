@@ -219,8 +219,13 @@ fun Application(modifier: Modifier = Modifier) {
                             ).show()
                             delay(1000)
                             if( response.status ) {
-                                // back to login
-                                applicationNavController.popBackStack()
+                                applicationNavController.navigate(
+                                    "main",
+                                    NavOptions.Builder().setPopUpTo("login", true).build()
+                                )
+                                userData.updateData { userData ->
+                                    userData.toBuilder().setUserName(state.name).setIsLogin(true).build()
+                                }
                             }
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())

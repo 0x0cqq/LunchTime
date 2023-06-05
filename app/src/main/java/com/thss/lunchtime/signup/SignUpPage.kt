@@ -317,7 +317,7 @@ fun SignUpPage(
                     enabled = viewModel.isEnabledRegisterButton.value
                 ) {
                     Text(
-                        "注册"
+                        "注册并登录"
                     )
                 }
             }
