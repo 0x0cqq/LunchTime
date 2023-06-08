@@ -1,5 +1,10 @@
 package com.thss.lunchtime
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
@@ -7,18 +12,22 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
@@ -26,6 +35,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.chat.ChatPage
 import com.thss.lunchtime.chat.ChatPageViewModel
+import com.thss.lunchtime.component.CHANNEL_ID
 import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.info.OtherInfoPage
 import com.thss.lunchtime.info.OtherInfoPageViewModel
@@ -66,12 +76,15 @@ import java.security.MessageDigest
 @RequiresApi(Build.VERSION_CODES.R)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            window.setDecorFitsSystemWindows(false)
-//        } else {
-//            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-//        }
+
         super.onCreate(savedInstanceState)
+
+        val channel = NotificationChannel(CHANNEL_ID, "lunchTime", NotificationManager.IMPORTANCE_HIGH).apply { description = "LUNCHTIME" }
+        // Register the channel with the system
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+
         setContent {
             LunchTimeTheme {
                 // A surface container using the 'background' color from the theme
@@ -90,6 +103,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Application(modifier: Modifier = Modifier) {
     val signupViewModel : SignUpViewModel = viewModel()
@@ -105,6 +119,25 @@ fun Application(modifier: Modifier = Modifier) {
     val userData = context.userPreferencesStore
 
     val json = Json { ignoreUnknownKeys = true }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+            isGranted ->
+        if (isGranted) {
+            // permission granted
+        } else {
+            // permission denied
+        }
+    }
+    LaunchedEffect(Unit) {
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
     NavHost(
         navController = applicationNavController,
         startDestination = "login",
