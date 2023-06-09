@@ -1,6 +1,7 @@
 package com.thss.lunchtime.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.thss.lunchtime.network.LunchTimeNetworkParams.BASE_URL
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -14,10 +15,6 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Query
-
-private const val BASE_URL =
-    "http://lunchtime.cqqqwq.com:8000"
-
 
 private val myJson: Json = Json { ignoreUnknownKeys = true }
 

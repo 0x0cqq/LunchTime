@@ -1,7 +1,5 @@
 package com.thss.lunchtime.mainscreen.homepage
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.thss.lunchtime.component.showNotification
 import com.thss.lunchtime.post.PostReviewCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -99,7 +96,6 @@ fun Homepage(onClickSearch: ()->Unit, onClickPostPreviewCard: (postID : Int) -> 
                 FloatingActionButton(
                     onClick = {
                         onClickNewPost()
-                        showNotification(context)
 //                              homepageViewModel.addRandomPost()
                     },
                 ) {

@@ -4,25 +4,20 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.thss.lunchtime.R
 import android.content.Context
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Composable
 
 const val CHANNEL_ID = "lunchTime"
-fun showNotification(context: Context) {
+fun showNotification(context: Context, title: String, content: String) {
 
     val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         .setSmallIcon(R.drawable.forumicon)
-        .setContentTitle("新消息通知")
-        .setContentText("XXX点赞了你的帖子")
-        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .setContentTitle(title)
+        .setContentText(content)
+        .setPriority(NotificationCompat.PRIORITY_MAX)
         .setAutoCancel(true)
 
     with(NotificationManagerCompat.from(context)) {

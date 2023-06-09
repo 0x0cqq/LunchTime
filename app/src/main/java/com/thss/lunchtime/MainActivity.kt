@@ -36,6 +36,7 @@ import androidx.navigation.compose.rememberNavController
 import com.thss.lunchtime.chat.ChatPage
 import com.thss.lunchtime.chat.ChatPageViewModel
 import com.thss.lunchtime.component.CHANNEL_ID
+import com.thss.lunchtime.component.showNotification
 import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.info.OtherInfoPage
 import com.thss.lunchtime.info.OtherInfoPageViewModel
@@ -52,6 +53,7 @@ import com.thss.lunchtime.mainscreen.infopage.MyInfoPageViewModel
 import com.thss.lunchtime.mediaplayer.ImagePlayPage
 import com.thss.lunchtime.mediaplayer.VideoPlayPage
 import com.thss.lunchtime.network.LunchTimeApi
+import com.thss.lunchtime.network.LunchTimeNotificationService
 import com.thss.lunchtime.newpost.NewPostPage
 import com.thss.lunchtime.newpost.NewPostViewModel
 import com.thss.lunchtime.post.PostDetailPage
@@ -146,6 +148,14 @@ fun Application(modifier: Modifier = Modifier) {
         composable("login") {
             LoginPage(
                 onAlreadyLogin = {
+                    scope.launch {
+                        LunchTimeNotificationService.connect(
+                            userName = userData.data.first().userName,
+                            onReceive = { notice ->
+                                showNotification(context, notice.userName, notice.content)
+                            }
+                        )
+                    }
                     applicationNavController.navigate(
                         "main",
                         NavOptions.Builder().setPopUpTo("login", true).build()
@@ -179,6 +189,12 @@ fun Application(modifier: Modifier = Modifier) {
                             ).show()
                             delay(1000)
                             if(response.status) {
+                                LunchTimeNotificationService.connect(
+                                    userName = name,
+                                    onReceive = { notice ->
+                                        showNotification(context, notice.userName, notice.content)
+                                    }
+                                )
                                 applicationNavController.navigate(
                                     "main",
                                     NavOptions.Builder().setPopUpTo("login", true).build()
@@ -448,6 +464,7 @@ fun Application(modifier: Modifier = Modifier) {
                         }
                         while (applicationNavController.popBackStack()) {}
                         applicationNavController.navigate("login")
+                        LunchTimeNotificationService.close()
                     }
                 },
                 onOpenBlockList = { scope.launch{

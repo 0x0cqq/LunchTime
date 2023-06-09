@@ -7,6 +7,15 @@ import kotlinx.serialization.Serializable
 import java.util.Date
 
 @Serializable
+data class RealtimeNotice(
+    val type: String,
+    @SerialName("user_name")
+    val userName: String,
+    val content: String,
+    val url: String? = null,
+)
+
+@Serializable
 data class Notice(
     @SerialName("user_name")
     val userName : String = "",

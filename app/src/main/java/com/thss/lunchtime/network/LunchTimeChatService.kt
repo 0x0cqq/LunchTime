@@ -1,6 +1,10 @@
 package com.thss.lunchtime.network
 
 import android.util.Log
+import com.thss.lunchtime.network.LunchTimeNetworkParams.BASE_WS_URL
+import com.thss.lunchtime.network.LunchTimeNetworkParams.HOST
+import com.thss.lunchtime.network.LunchTimeNetworkParams.PORT
+import com.thss.lunchtime.network.LunchTimeNetworkParams.SCHEMA
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
@@ -16,11 +20,6 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
-
-private const val BASE_WS_URL = "ws://lunchtime.cqqqwq.com:8000/ws"
-private const val SCHEMA = "ws"
-private const val HOST = "lunchtime.cqqqwq.com"
-private const val PORT = 8000
 
 
 class LunchTimeChatService(private val senderName: String, private val receiverName: String) {
