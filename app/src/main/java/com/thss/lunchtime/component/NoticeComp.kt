@@ -1,6 +1,7 @@
 package com.thss.lunchtime.component
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -45,6 +46,7 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
     ) {
         Row (
             horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = 8.dp)
@@ -52,6 +54,7 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
             Column (modifier = Modifier.weight(1f)) {
                 Row (
                     horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
@@ -99,7 +102,7 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp
                             )
-
+                            Spacer(modifier = Modifier.height(4.dp))
                             val text = when (msg.noticeType) {
                                 1 -> "对你发表了评论"
                                 2 -> "点赞了你的帖子"
@@ -115,30 +118,27 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                         }
                     }
 
-                    if (msg.noticeType == 3) {
-                        Text(text = SimpleDateFormat("MM-dd HH:mm").format(msg.noticeDate))
-                    } else {
-                        Text(text = SimpleDateFormat("MM-dd").format(msg.noticeDate))
+                    Row(verticalAlignment = Alignment.Top){
+                        if (msg.refData != "") {
+                            AsyncImage(
+                                model = msg.refData,
+                                contentDescription = "heading",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .aspectRatio(1F)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        if (msg.noticeType == 3) {
+                            Text(text = SimpleDateFormat("MM-dd HH:mm").format(msg.noticeDate))
+                        } else {
+                            Text(text = SimpleDateFormat("MM-dd").format(msg.noticeDate))
+                        }
                     }
                 }
             }
 
-            if (msg.refData != "") {
-                AsyncImage(
-                    model = msg.refData,
-                    contentDescription = "heading",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        // Clip image to shaped as a circle
-                        .size(60.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .padding(start = 8.dp)
-                        .aspectRatio(1F)
-                        .height(IntrinsicSize.Min),
-                    alignment = Alignment.Center
-                )
-
-            }
         }
     }
 }

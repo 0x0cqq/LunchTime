@@ -100,11 +100,11 @@ interface LunchTimeApiService {
 
     @FormUrlEncoded
     @POST("/api/attention")
-    suspend fun FollowUser(@Field("user_name") name: String, @Field("target_user_name") targetName: String): ResponseWithResult
+    suspend fun followUser(@Field("user_name") name: String, @Field("target_user_name") targetName: String): ResponseWithResult
 
     @FormUrlEncoded
     @POST("/api/hate")
-    suspend fun BlockUser(@Field("user_name") name: String, @Field("target_user_name") targetName: String): ResponseWithResult
+    suspend fun blockUser(@Field("user_name") name: String, @Field("target_user_name") targetName: String): ResponseWithResult
 
     @GET("/api/attention_list")
     suspend fun getAttentionList(@Query("user_name") name: String, @Query("type") type: Int): ResponseWithUserList

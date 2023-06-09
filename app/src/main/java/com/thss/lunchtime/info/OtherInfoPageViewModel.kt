@@ -29,7 +29,7 @@ class OtherInfoPageViewModel : ViewModel(){
             viewModelScope.launch{
                 val userData = context.userPreferencesStore
                 try{
-                    val response = LunchTimeApi.retrofitService.FollowUser(
+                    val response = LunchTimeApi.retrofitService.followUser(
                         name = userData.data.first().userName,
                         targetName = uiState.value.infoData.ID
                     )
@@ -65,7 +65,7 @@ class OtherInfoPageViewModel : ViewModel(){
         viewModelScope.launch {
             val userData = context.userPreferencesStore
             try{
-                val response = LunchTimeApi.retrofitService.BlockUser(
+                val response = LunchTimeApi.retrofitService.blockUser(
                     name = userData.data.first().userName,
                     targetName = uiState.value.infoData.ID
                 )

@@ -113,11 +113,15 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 val color = when (msg.tag) {
-                    "校园活动" -> Color.Blue
-                    "失物招领" -> Color.Red
-                    "随便聊聊" -> Color.Yellow
-                    else -> Color.Gray
+                    "校园活动" -> Color(0x66B18CF5)
+                    "失物招领" -> Color(0x66E6A23C)
+                    "随便聊聊" -> Color(0x66FF9B9B)
+                    else -> Color(0x5792B3FF)
                 }
+//                Log.d("tagColorLuminance", "color: 校园活动" + Color(0x66B18CF5).luminance().toString())
+//                Log.d("tagColorLuminance", "color: 失物招领" + Color(0x66E6A23C).luminance().toString())
+//                Log.d("tagColorLuminance", "color: 随便聊聊" + Color(0x66FF9B9B).luminance().toString())
+//                Log.d("tagColorLuminance", "color: 其他" + Color(0x5792B3FF).luminance().toString())
 
                 if(msg.tag.isNotEmpty()) {
                     // Tag
@@ -127,11 +131,11 @@ fun PostMainBody(msg: PostData, type: PostType, onClickTopBar: () -> Unit, onCli
                     ) {
                         Text(
                             text = msg.tag,
-                            color = if (color.luminance() > 0.5) {
-                                Color.Black
-                            } else {
-                                Color.White
-                            },
+//                            color = if (color.luminance() > 0.5) {
+//                                Color.Black
+//                            } else {
+//                                Color.White
+//                            },
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                         )
                     }
