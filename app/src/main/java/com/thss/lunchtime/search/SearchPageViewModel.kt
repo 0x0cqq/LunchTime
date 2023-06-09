@@ -38,7 +38,8 @@ class SearchPageViewModel: ViewModel() {
                 val response = LunchTimeApi.retrofitService.getPostListSearched(
                     name = userData.data.first().userName,
                     field = fieldText,
-                    keyword = keyword
+                    keyword = keyword,
+                    type = 0
                 )
                 if (response.status){
                     _uiState.update { state ->

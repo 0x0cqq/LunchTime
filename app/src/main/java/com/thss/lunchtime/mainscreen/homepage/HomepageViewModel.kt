@@ -104,11 +104,28 @@ class HomepageViewModel : ViewModel() {
             }
             val userData = context.userPreferencesStore
             try{
-                val response = LunchTimeApi.retrofitService.getPostList(
-                    name = userData.data.first().userName,
-                    type = uiState.value.selectedIndex,
-                    filter = uiState.value.dropMenuIndex
-                )
+
+                val response = if (uiState.value.dropMenuIndex < 3) {
+                    LunchTimeApi.retrofitService.getPostList(
+                        name = userData.data.first().userName,
+                        type = uiState.value.selectedIndex,
+                        filter = uiState.value.dropMenuIndex
+                    )
+                } else {
+
+                    LunchTimeApi.retrofitService.getPostListSearched(
+                        name = userData.data.first().userName,
+                        keyword = when(uiState.value.dropMenuIndex) {
+                            4 -> "校园活动"
+                            5 -> "失物招领"
+                            6 -> "随便聊聊"
+                            else -> ""
+                        },
+                        field = "tag",
+                        type = uiState.value.selectedIndex,
+                    )
+                }
+
                 if (response.status) { // valid response
                     _uiState.update { state ->
                         state.copy(postDataList =
