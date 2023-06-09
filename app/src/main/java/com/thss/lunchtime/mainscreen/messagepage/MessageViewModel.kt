@@ -26,6 +26,66 @@ class MessageViewModel : ViewModel() {
         }
     }
 
+    fun readNotice(context: Context, noticeData: NoticeData) {
+        var type = "comment"
+        when (noticeData.noticeType) {
+            1 -> type = "comment"
+            2 -> type = "love"
+        }
+        viewModelScope.launch {
+            val userData = context.userPreferencesStore
+            try {
+                val response = LunchTimeApi.retrofitService.readNotice(
+                    name = userData.data.first().userName,
+                    targetName = noticeData.noticerID,
+                    type = type,
+                    createTime = noticeData.noticeDate.time / 1000,
+                    postID = noticeData.postId
+                )
+                if (response.status) {
+                    _uiState.update { state ->
+                        val newNoticeDataLists = mutableListOf<List<NoticeData>>()
+                        for (i in uiState.value.noticeDataLists.indices) {
+                            if (i == uiState.value.selectedIndex) {
+                                val updateNoticeList = uiState.value.noticeDataLists[i].map {
+                                    if (it.noticeDate == noticeData.noticeDate && it.noticerID == noticeData.noticerID) {
+                                        it.copy(isRead = true)
+                                    } else {
+                                        it
+                                    }
+                                }
+                                newNoticeDataLists.add(updateNoticeList)
+                            } else {
+                                newNoticeDataLists.add(uiState.value.noticeDataLists[i])
+                            }
+                        }
+                        state.copy(noticeDataLists = newNoticeDataLists)
+                    }
+                } else {
+                    Toast.makeText(context, "读取通知失败", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: IOException) {
+                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun readChat(context: Context, noticeData: NoticeData){
+        viewModelScope.launch {
+            val userData = context.userPreferencesStore
+            try {
+                val response = LunchTimeApi.retrofitService.readChat(
+                    name = userData.data.first().userName,
+                    targetName = noticeData.noticerID,
+                )
+                if (!response.status){
+                    Toast.makeText(context, "读取消息失败", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: IOException) {
+                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     fun refresh(context: Context) {
         viewModelScope.launch{
             _uiState.update {
@@ -68,6 +128,7 @@ class MessageViewModel : ViewModel() {
                                     it.time,
                                     3,
                                     it.message,
+                                    notReadNum = it.unreadNum,
                                 )
                             }
                             val newNoticeDataLists = mutableListOf<List<NoticeData>>()

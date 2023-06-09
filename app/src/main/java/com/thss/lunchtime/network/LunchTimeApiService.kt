@@ -78,6 +78,10 @@ interface LunchTimeApiService {
     @GET("/api/notice")
     suspend fun getNotice(@Query("user_name") name: String, @Query("type") type: Int): ResponseWithNotice
 
+    @FormUrlEncoded
+    @POST("api/read_notice")
+    suspend fun readNotice(@Field("user_name") name: String, @Field("target_user_name") targetName: String, @Field("type") type: String, @Field("create_time") createTime: Long, @Field("post_id") postID: Int): Response
+
     @GET("/api/user_info")
     suspend fun getUserInfo(@Query("user_name") name: String, @Query("target_user_name") target_name: String): ResponseWithUserInfo
 
@@ -110,6 +114,9 @@ interface LunchTimeApiService {
 
     @GET("/api/chats")
     suspend fun getChatList(@Query("user_name") name: String): ResponseWithChatList
+    @FormUrlEncoded
+    @POST("api/chats")
+    suspend fun readChat(@Field("user_name") name: String, @Field("target_user_name") targetName: String): Response
 }
 
 object LunchTimeApi {

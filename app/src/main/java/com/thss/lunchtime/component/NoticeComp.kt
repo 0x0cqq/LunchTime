@@ -12,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +30,8 @@ data class NoticeData(
     val reply: String = "",
     val refData: String = "",
     val postId: Int = -1,
+    val isRead: Boolean = false,
+    val notReadNum: Int = 0,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,16 +56,41 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                         .fillMaxWidth()
                 ) {
                     Row {
-                        AsyncImage(
-                            model = msg.noticerAvatar,
-                            contentDescription = "Avatar",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                // Clip image to shaped as a circle
-                                .size(42.dp)
-                                .clip(CircleShape),
-                        )
+                        Box(){
+                            AsyncImage(
+                                model = msg.noticerAvatar,
+                                contentDescription = "Avatar",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    // Clip image to shaped as a circle
+                                    .size(42.dp)
+                                    .clip(CircleShape),
+                            )
+                            if(msg.noticeType < 3){
+                                if(!msg.isRead){
+                                    Badge(modifier = Modifier
+                                        .size(10.dp)
+                                        .offset(x = 32.dp, y = (-2).dp)
+                                    ) {}
+                                }
+                            } else {
+                                if(msg.notReadNum > 0){
+                                    Badge(modifier = Modifier
+                                        .size(15.dp)
+                                        .offset(x = 32.dp, y = (-2).dp)
+                                    ) {
+                                        val badgeNumber = msg.notReadNum.toString()
+                                        Text(
+                                            badgeNumber,
+                                            modifier = Modifier.semantics {
+                                                contentDescription = "$badgeNumber new notifications"
+                                            }
+                                        )
+                                    }
+                                }
+                            }
 
+                        }
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Column {

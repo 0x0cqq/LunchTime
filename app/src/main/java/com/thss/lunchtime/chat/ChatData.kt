@@ -7,5 +7,6 @@ data class ChatData (
     val userAvatar: Uri = Uri.EMPTY,
     val userName : String = "test_user_name",
     val message : String = "message",
-    val time : Date = Date()
+    val time : Date = Date(),
+    val unreadNum : Int = 0
 )

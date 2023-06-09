@@ -15,6 +15,8 @@ data class ChatMessage(
     val avatar: String? = null,
     val content: String,
     val timestamp: Long? = null,
+    @SerialName("unread_num")
+    val unreadNum: Int = 0,
 )
 
 @Serializable
@@ -37,5 +39,6 @@ fun ChatMessage.toChatData(): ChatData {
         userAvatar = if(this.avatar == null) Uri.EMPTY else this.avatar.toUri() ,
         message = this.content,
         time = Date(this.timestamp!! * 1000),
+        unreadNum = this.unreadNum
     )
 }

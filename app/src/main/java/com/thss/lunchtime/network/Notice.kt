@@ -20,6 +20,8 @@ data class Notice(
     val pictureURL: String = "",
     @SerialName("post_id")
     val postId: Int = -1,
+    @SerialName("is_read")
+    val isRead: Boolean = false,
 )
 
 fun Notice.toNoticeData(selectedIndex : Int) : NoticeData {
@@ -30,6 +32,7 @@ fun Notice.toNoticeData(selectedIndex : Int) : NoticeData {
         noticeType = selectedIndex + 1,
         reply = content,
         postId = postId,
-        refData = pictureURL
+        refData = pictureURL,
+        isRead = isRead
     )
 }

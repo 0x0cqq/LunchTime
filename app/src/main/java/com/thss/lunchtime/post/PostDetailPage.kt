@@ -33,6 +33,8 @@ import com.thss.lunchtime.StarBtn
 import com.thss.lunchtime.component.CommentComp
 import com.thss.lunchtime.component.PostMainBody
 import com.thss.lunchtime.component.PostType
+import kotlinx.serialization.json.Json
+import me.onebone.parvenu.ParvenuString
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -203,7 +205,9 @@ fun PostDetailPage(onBack: () -> Unit,
 }
 
 fun sharePost(context: Context, post: PostData) {
-    val res = "@" + post.postID + " 发表了帖子：\n" + "【" + post.tag + "-" + post.title + "】\n" + post.content + "\n快来LunchTime看看吧~"
+    // change post.content to json
+    val plainText = Json.decodeFromString(ParvenuString.serializer(), post.content).text
+    val res = "@" + post.publisherID + " 发表了帖子：\n" + "【" + post.tag + "-" + post.title + "】\n" + plainText + "\n快来LunchTime看看吧~"
     val intent = Intent().apply {
         action = Intent.ACTION_SEND
         putExtra(Intent.EXTRA_TEXT, res)

@@ -88,10 +88,19 @@ fun MainScreen(onClickSearch: ()->Unit,
                             }
                         },
                         icon = {
-                            if ( mainScreenViewModel.selectItem == index)
-                                Icon(item.iconSelected, contentDescription = item.name)
-                            else
-                                Icon(item.iconUnSelected, contentDescription = item.name)
+                            Box() {
+//                                if(index == 1){
+//                                    Badge (
+//                                        modifier = Modifier
+//                                            .size(12.dp)
+//                                            .offset(15.dp, (-8).dp),
+//                                    ){}
+//                                }
+                                if ( mainScreenViewModel.selectItem == index )
+                                    Icon(item.iconSelected, contentDescription = item.name)
+                                else
+                                    Icon(item.iconUnSelected, contentDescription = item.name)
+                            }
                         },
                         interactionSource = NoRippleInteractionSource(),
                         label = { Text(item.name) }

@@ -71,7 +71,10 @@ fun Messagepage(onClickChat: (oppositeUserName: String) -> Unit, onClickPostNoti
                     items(noticeDataList) { noticeData ->
                         NoticePreviewCard(
                             msg = noticeData,
-                            onClickNotice = {onClickPostNotice(noticeData.postId)}
+                            onClickNotice = {
+                                onClickPostNotice(noticeData.postId)
+                                messageViewModel.readNotice(context, noticeData)
+                            }
                         )
                         Divider(
                             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
@@ -82,7 +85,10 @@ fun Messagepage(onClickChat: (oppositeUserName: String) -> Unit, onClickPostNoti
                     items(noticeDataList) { noticeData ->
                         NoticePreviewCard(
                             msg = noticeData,
-                            onClickNotice = { onClickChat(noticeData.noticerID) }
+                            onClickNotice = {
+                                onClickChat(noticeData.noticerID)
+                                messageViewModel.readChat(context, noticeData)
+                            }
                         )
                         Divider(
                             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)

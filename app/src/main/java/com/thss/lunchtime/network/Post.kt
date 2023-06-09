@@ -58,7 +58,9 @@ data class Post (
     @SerialName("video")
     val videoURLs : List<String> = listOf(),
     @SerialName("is_video")
-    val isVideo: Boolean = false
+    val isVideo: Boolean = false,
+    @SerialName("user_status")
+    val publisherStatus: Int = 2,
 )
 
 fun Post.toPostData() : PostData {
@@ -78,6 +80,7 @@ fun Post.toPostData() : PostData {
         commentCount = commentCount,
         graphResources = pictureURLs.map{ it.toUri() },
         videoResources = videoURLs.map{ it.toUri() },
-        isVideo = isVideo
+        isVideo = isVideo,
+        publisherStatus = publisherStatus
     )
 }
