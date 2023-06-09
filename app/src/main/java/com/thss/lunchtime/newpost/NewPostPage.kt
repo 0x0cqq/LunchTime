@@ -251,49 +251,56 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
     val locationPermissionRequest = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
+        Log.d("LunchTime Location", "Enter permission")
         when {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                 // Fine location access granted.
+                Log.d("LunchTime Location", "Fine location access granted.")
                 LocationUtils.getGeoFromLocation(context) { currentLocation, addressList ->
+                    Log.d("LunchTime Location", "Get location, enter listener")
                     // get location list
                     if(currentLocation != null) {
                         val tmpDistance = FloatArray(3)
-                        val distanceList = arrayOf(0.0)
+                        var distanceList = arrayOf<Double>()
                         for (address in addressList) {
                             Location.distanceBetween(currentLocation.latitude, currentLocation.longitude,
                                 address.latitude, address.longitude,
                                 tmpDistance
                             )
-                            distanceList.plus(distanceList[0])
+                            distanceList = distanceList.plus(tmpDistance[0].toDouble())
                         }
-                        locationAddressList.value = addressList.map { address ->
-                            val featureName = if(address.featureName != null) {
-                                address.subLocality + address.featureName
-                            } else if(address.subThoroughfare != null) {
-                                address.locality + address.subLocality + address.thoroughfare + address.subThoroughfare
-                            } else if (address.subLocality != null) {
-                                address.locality + address.subLocality
-                            } else if(address.subAdminArea != null) {
-                                address.adminArea + address.subAdminArea
-                            } else if(address.countryName != null) {
-                                address.countryName
-                            } else {
-                                "${String.format("%.2f", address.latitude)}, ${String.format("%.2f", address.latitude)}"
+                        Log.d("LunchTime Location", "Get location, distance list: ${distanceList.size}")
+                        locationAddressList.value = addressList.mapIndexed { index, address ->
+                            var featureName = ""
+//                            featureName = featureName.plus(address.countryName ?: "")
+//                            featureName = featureName.plus(address.adminArea ?: "")
+//                            featureName = featureName.plus(address.subAdminArea ?: "")
+                            featureName = featureName.plus(address.locality ?: "")
+                            featureName = featureName.plus(address.subLocality ?: "")
+                            featureName = featureName.plus(address.thoroughfare ?: "")
+                            featureName = featureName.plus(address.subThoroughfare ?: "")
+                            featureName = featureName.plus(address.featureName ?: "")
+                            if (featureName == "") {
+                                featureName = "${String.format("%.2f", address.latitude)}, ${String.format("%.2f", address.latitude)}"
+
                             }
                             LocationInfo(
                                 featureName,
-                                distanceList[addressList.indexOf(address)]
+                                distanceList[index]
                             )
                         }
                         // open the dialog
                         openLocationDialog.value = true
+                    } else {
+                        Toast.makeText(context, "获取位置失败", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
             permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                 // Only approximate location access granted.
                 Toast.makeText(context, "请授予精确位置", Toast.LENGTH_SHORT).show()
-            } else -> {
+            }
+            else -> {
                 // No location access granted.
                 Toast.makeText(context, "未授予位置权限", Toast.LENGTH_SHORT).show()
             }
