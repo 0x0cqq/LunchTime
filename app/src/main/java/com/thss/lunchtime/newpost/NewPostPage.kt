@@ -1,14 +1,12 @@
 package com.thss.lunchtime.newpost
 
 import android.Manifest
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.net.Uri
-import android.widget.Toast
 import android.os.Environment
 import android.util.Log
-import android.util.Size
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,7 +38,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -53,19 +50,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.bumptech.glide.Glide
 import com.thss.lunchtime.R
 import com.thss.lunchtime.common.LocationInfo
 import com.thss.lunchtime.common.LocationUtils
 import com.thss.lunchtime.component.Grid
-import kotlinx.serialization.descriptors.PrimitiveKind
 import com.thss.lunchtime.data.userPreferencesStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -431,6 +431,7 @@ fun NewPostBottomBar(newPostViewModel: NewPostViewModel, modifier: Modifier = Mo
 fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modifier) {
     val uiState = newPostViewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
+    val scope: CoroutineScope = rememberCoroutineScope()
 
     val context = LocalContext.current
     val mostImages = 9
@@ -459,14 +460,24 @@ fun NewPostContent(newPostViewModel: NewPostViewModel, modifier: Modifier = Modi
                             )
                         )
                     } else if (contentType?.startsWith("video/") == true){
+                        // 获得缩略图
+                        Log.d("Video", "start getting thumbnail, uri: $uri")
+                        scope.launch {
+                            val thumbNail =
+                                withContext(Dispatchers.IO) {
+                                    Glide.with(context)
+                                        .asBitmap().thumbnail()
+                                        .load(uri).submit().get()
+                                }
+                            newPostViewModel.appendImages(
+                                listOf(
+                                    thumbNail.asImageBitmap()
+                                )
+                            )
+                        }
                         // 处理视频
                         val inputStream = context.contentResolver.openInputStream(uri)
                         var fileOutputStream: FileOutputStream? = null
-                        // 获得缩略图
-                        val thumbnail: Bitmap = context.contentResolver.loadThumbnail(uri, Size(640,480), null)
-                        newPostViewModel.appendImages(
-                            listOf(thumbnail.asImageBitmap())
-                        )
                         // 保存视频流
                         // 从uri得到文件
                         Log.d("Video", "start getting file from uri")
