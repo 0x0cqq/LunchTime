@@ -267,6 +267,12 @@ fun Application(modifier: Modifier = Modifier) {
                             ).show()
                             delay(1000)
                             if( response.status ) {
+                                LunchTimeNotificationService.connect(
+                                    userName = state.name,
+                                    onReceive = { notice ->
+                                        showNotification(context, notice.userName, notice.content)
+                                    }
+                                )
                                 applicationNavController.navigate(
                                     "main",
                                     NavOptions.Builder().setPopUpTo("login", true).build()

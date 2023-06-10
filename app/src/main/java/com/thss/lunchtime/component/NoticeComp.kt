@@ -58,7 +58,9 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Row {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Box(){
                             AsyncImage(
                                 model = msg.noticerAvatar,
@@ -96,7 +98,9 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                         }
                         Spacer(modifier = Modifier.width(8.dp))
 
-                        Column {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                        ) {
                             Text(
                                 text = msg.noticerID,
                                 fontWeight = FontWeight.Bold,
@@ -118,7 +122,9 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                         }
                     }
 
-                    Row(verticalAlignment = Alignment.Top){
+                    Row(
+                        verticalAlignment = Alignment.Top,
+                    ){
                         if (msg.refData != "") {
                             AsyncImage(
                                 model = msg.refData,
@@ -128,12 +134,19 @@ fun NoticePreviewCard(msg: NoticeData, onClickNotice: () -> Unit)
                                     .size(50.dp)
                                     .aspectRatio(1F)
                             )
+                            Spacer(modifier = Modifier.width(8.dp))
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
                         if (msg.noticeType == 3) {
                             Text(text = SimpleDateFormat("MM-dd HH:mm").format(msg.noticeDate))
                         } else {
-                            Text(text = SimpleDateFormat("MM-dd").format(msg.noticeDate))
+                            // 如果是今天就显示小时和分钟，否则显示日期
+                            val date = SimpleDateFormat("YYYY-MM-dd").format(msg.noticeDate)
+                            val today = SimpleDateFormat("YYYY-MM-dd").format(Date())
+                            if (date == today) {
+                                Text(text = SimpleDateFormat("HH:mm").format(msg.noticeDate))
+                            } else {
+                                Text(text = SimpleDateFormat("MM-dd").format(msg.noticeDate))
+                            }
                         }
                     }
                 }
