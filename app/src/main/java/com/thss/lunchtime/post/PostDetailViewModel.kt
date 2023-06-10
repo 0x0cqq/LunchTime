@@ -2,8 +2,11 @@ package com.thss.lunchtime.post
 
 import android.content.Context
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.thss.lunchtime.chat.ChatData
+import com.thss.lunchtime.component.CommentData
 import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.network.LunchTimeApi
 import com.thss.lunchtime.network.toCommentData
@@ -14,6 +17,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.util.Date
 
 class PostDetailViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(PostDetailData())
@@ -141,6 +145,26 @@ class PostDetailViewModel : ViewModel() {
 
                 if (response.status) { // valid response
                     Toast.makeText(context, "评论成功!", Toast.LENGTH_SHORT).show()
+                    // update comment list
+
+                    val userInfoResponse = LunchTimeApi.retrofitService.getUserInfo(
+                        userData.data.first().userName,
+                        userData.data.first().userName
+                    )
+
+                    if (userInfoResponse.status) {
+                        val newCommentData = CommentData(
+                            commentID = userData.data.first().userName,
+                            commentDate = Date(),
+                            commentAvatar = userInfoResponse.userInfo.userImage.toUri(),
+                            commentContent = uiState.value.currentCommentInput,
+                        )
+                        _uiState.update { state ->
+                            state.copy(
+                                commentDataList = state.commentDataList + newCommentData
+                            )
+                        }
+                    }
                     updateCurrentComment("")
                 } else { // invalid response
                     Toast.makeText(context, "无法发送评论, ${response.message}", Toast.LENGTH_SHORT).show()

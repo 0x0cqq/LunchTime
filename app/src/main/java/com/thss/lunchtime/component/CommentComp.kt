@@ -72,7 +72,7 @@ fun CommentComp(msg: CommentData, onClickTopBar: () -> Unit)
                             )
 
                             Text(
-                                text = SimpleDateFormat("MM-dd").format(msg.commentDate),
+                                text = SimpleDateFormat("MM-dd HH:mm").format(msg.commentDate),
                                 fontSize = 11.sp
                             )
 

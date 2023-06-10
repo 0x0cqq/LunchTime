@@ -134,7 +134,6 @@ fun PostDetailPage(onBack: () -> Unit,
                                 IconButton(
                                     onClick = {
                                         postDetailViewModel.sendComment(context)
-                                        postDetailViewModel.refresh(context, postID)
                                     }
                                 ) {
                                     Icon(
