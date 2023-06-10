@@ -59,6 +59,9 @@ android {
 dependencies {
     implementation project(":composevideoplayer")
     implementation project(":parvenu")
+    // image viewer
+    implementation "com.github.jvziyaoyao:OrigeekUI:1.0.1-alpha.6"
+    implementation 'com.github.jvziyaoyao:ImageViewer:1.0.2-alpha.3'
     // Ktor for WebSocket
     implementation "io.ktor:ktor-client-core:$ktor_version"
     implementation "io.ktor:ktor-client-okhttp:$ktor_version"
