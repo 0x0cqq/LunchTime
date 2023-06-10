@@ -27,10 +27,6 @@ fun SearchPage(onClickPostPreviewCard: (postID : Int) -> Unit, onOpenUserInfo: (
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(Unit){
-        searchPageViewModel.refresh(context)
-    }
-
     Scaffold(
         topBar = { SearchPageTopBar(
             onClickSearch = { field: Int, keyword: String ->
