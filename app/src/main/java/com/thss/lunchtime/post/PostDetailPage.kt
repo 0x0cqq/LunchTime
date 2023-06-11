@@ -21,6 +21,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +48,8 @@ fun PostDetailPage(onBack: () -> Unit,
     val context = LocalContext.current
     val postDetailData = postDetailViewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
+
+    val reverseComment = remember { mutableStateOf(false) }
     
     
     LaunchedEffect(Unit) {
@@ -182,13 +185,38 @@ fun PostDetailPage(onBack: () -> Unit,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
 
-                Icon(Icons.Rounded.Sort, contentDescription = null, Modifier.size(18.dp))
+
+                Row {
+                    Text(
+                        text = if(reverseComment.value) {
+                            "时间反向排序"
+                        } else {
+                            "时间正向排序"
+                        },
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(0.6f)
+                    )
+                    Spacer(Modifier.width(2.dp))
+                    Icon(
+                        Icons.Rounded.Sort,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp).clickable {
+                            reverseComment.value = !reverseComment.value
+                        }
+                    )
+                }
             }
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(postDetailData.value.commentDataList) { commentData ->
+                items(
+                    if(reverseComment.value) {
+                        postDetailData.value.commentDataList.reversed()
+                    } else {
+                        postDetailData.value.commentDataList
+                    }
+                ) { commentData ->
                     Column {
                         CommentComp(
                             msg = commentData,

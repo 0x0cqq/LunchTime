@@ -194,7 +194,7 @@ fun Application(modifier: Modifier = Modifier) {
                                     NavOptions.Builder().setPopUpTo("login", true).build()
                                 )
                                 userData.updateData { userData ->
-                                    userData.toBuilder().setUserName(name).setIsLogin(true).build()
+                                    userData.toBuilder().setUserName(name).setUserPassword(passwordHashed).setIsLogin(true).build()
                                 }
                                 LunchTimeNotificationService.connect(
                                     userName = name,
@@ -272,7 +272,7 @@ fun Application(modifier: Modifier = Modifier) {
                                     NavOptions.Builder().setPopUpTo("login", true).build()
                                 )
                                 userData.updateData { userData ->
-                                    userData.toBuilder().setUserName(state.name).setIsLogin(true).build()
+                                    userData.toBuilder().setUserName(state.name).setUserPassword(passwordHashed).setIsLogin(true).build()
                                 }
                                 LunchTimeNotificationService.connect(
                                     userName = state.name,
@@ -407,20 +407,23 @@ fun Application(modifier: Modifier = Modifier) {
                         applicationNavController.navigate("otherInfoPage/$targetUserName")
                     }
                 },
-                onOpenFollows = {scope.launch {
-                    val userName = userData.data.first().userName
-                    applicationNavController.navigate("followingList/$userName")
-                }
+                onOpenFollows = {
+                    scope.launch {
+                        val userName = userData.data.first().userName
+                        applicationNavController.navigate("followingList/$userName")
+                    }
                 },
-                onOpenFans = { scope.launch{
-                    val userName = userData.data.first().userName
-                    applicationNavController.navigate("fansList/$userName")
-                }
+                onOpenFans = {
+                    scope.launch {
+                        val userName = userData.data.first().userName
+                        applicationNavController.navigate("fansList/$userName")
+                    }
                 },
-                onOpenSaved = { scope.launch{
-                    val userName = userData.data.first().userName
-                    applicationNavController.navigate("starPostList/$userName")
-                }
+                onOpenSaved = {
+                    scope.launch {
+                        val userName = userData.data.first().userName
+                        applicationNavController.navigate("starPostList/$userName")
+                    }
                 },
                 onClickMedia = { url, isVideo ->
                     val modifiedUrl = url.replace("/", "!")
@@ -466,7 +469,7 @@ fun Application(modifier: Modifier = Modifier) {
                 onLogOut = {
                     scope.launch {
                         userData.updateData { userData ->
-                            userData.toBuilder().setUserName("").setIsLogin(false).build()
+                            userData.toBuilder().setUserName("").setUserPassword("").setIsLogin(false).build()
                         }
                         while (applicationNavController.popBackStack()) {}
                         applicationNavController.navigate("login")

@@ -1,6 +1,5 @@
 package com.thss.lunchtime.newpost
 
-import android.net.Uri
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.ui.graphics.ImageBitmap
@@ -62,7 +61,8 @@ class NewPostViewModel : ViewModel() {
         _uiState.update { state ->
             state.copy(
                 selectedImgUris = state.selectedImgUris.filterIndexed { i, _ -> i != index },
-                isVideo = false
+                isVideo = false,
+                selectedVideoUris = listOf()
             )
         }
     }

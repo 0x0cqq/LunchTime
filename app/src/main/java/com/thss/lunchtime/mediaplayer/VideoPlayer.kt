@@ -1,5 +1,6 @@
 package com.thss.lunchtime.mediaplayer
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
@@ -35,8 +36,11 @@ fun VideoPlayPage(url: String, onBack: () -> Unit) {
             controlsEnabled = true,
         )
     }
+    BackHandler {
+        videoPlayerController.reset()
+        onBack()
+    }
 }
-
 @Composable
 @Preview
 fun VideoPlayerPreview(){
