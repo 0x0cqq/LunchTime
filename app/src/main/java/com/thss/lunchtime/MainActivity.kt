@@ -73,6 +73,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.security.MessageDigest
 
 @RequiresApi(Build.VERSION_CODES.R)
@@ -149,20 +150,38 @@ fun Application(modifier: Modifier = Modifier) {
             LoginPage(
                 onAlreadyLogin = {
                     scope.launch {
-                        LunchTimeNotificationService.connect(
-                            userName = userData.data.first().userName,
-                            onReceive = { notice ->
-                                showNotification(context, notice.userName, notice.content)
+                        try {
+                            val userName = userData.data.first().userName
+                            val userPassword = userData.data.first().userPassword
+
+                            val response = LunchTimeApi.retrofitService.login(
+                                name = userName,
+                                password = userPassword
+                            )
+                            if (response.status) {
+                                applicationNavController.navigate(
+                                    "main",
+                                    NavOptions.Builder().setPopUpTo("login", true).build()
+                                )
+                                Toast.makeText(context, "欢迎回来, $userName", Toast.LENGTH_SHORT)
+                                    .show()
+                                LunchTimeNotificationService.connect(
+                                    userName = userData.data.first().userName,
+                                    onReceive = { notice ->
+                                        showNotification(context, notice.userName, notice.content)
+                                    }
+                                )
+                            } else {
+                                userData.updateData { userData ->
+                                    userData.toBuilder().setUserName("").setUserPassword("")
+                                        .setIsLogin(false).build()
+                                }
+                                Toast.makeText(context, "请重新登录, ${response.message}", Toast.LENGTH_SHORT).show()
                             }
-                        )
-                    }
-                    applicationNavController.navigate(
-                        "main",
-                        NavOptions.Builder().setPopUpTo("login", true).build()
-                    )
-                    scope.launch {
-                        val userName = userData.data.first().userName
-                        Toast.makeText(context, "欢迎回来, $userName" , Toast.LENGTH_SHORT).show()
+                        } catch (e : Exception) {
+                            Log.e("LunchTime Network", e.toString())
+                            Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 },
                 onClickLogin = { name, password ->
@@ -202,6 +221,8 @@ fun Application(modifier: Modifier = Modifier) {
                                         showNotification(context, notice.userName, notice.content)
                                     }
                                 )
+                            } else {
+                                Toast.makeText(context, "请重试，${response.message}", Toast.LENGTH_SHORT).show()
                             }
                         } catch ( e : Exception) {
                             Log.e("LunchTime", e.toString())

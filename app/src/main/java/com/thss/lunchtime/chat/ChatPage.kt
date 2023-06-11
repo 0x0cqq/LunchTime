@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -104,18 +105,36 @@ fun ChatPage(oppoSiteUserName: String, onBack: () -> Unit, chatPageViewModel: Ch
             }
         },
     ) { paddingValues ->
+        // 这里 data 是按照时间逆序排序，前面的是新的
+        // 开了 reverse layout 之后，下面的是新的
         LazyColumn(
             modifier = Modifier
             .fillMaxWidth()
             .padding(paddingValues),
             reverseLayout = true
         ) {
-            items(uiState.value.messageList) { message ->
-                if (message.userName == uiState.value.oppositeUserName) {
-                    // Opposite chat bubble
-                    ChatBubbleOpposite(message)
-                } else {
-                    ChatBubbleMine(message)
+            itemsIndexed(uiState.value.messageList) { index, message ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // index + 1 的是上面的那条
+                    if (index + 1 < uiState.value.messageList.size) {
+                        val nextMessage = uiState.value.messageList[index + 1]
+                        if(SimpleDateFormat("MM-dd", Locale.CHINESE).format(message.time)
+                            != SimpleDateFormat("MM-dd", Locale.CHINESE).format(nextMessage.time)) {
+                            Text(SimpleDateFormat("MM-dd", Locale.CHINESE).format(message.time))
+                        }
+                    }
+                    if(index + 1 == uiState.value.messageList.size) {
+                        Text(SimpleDateFormat("MM-dd", Locale.CHINESE).format(message.time))
+                    }
+                    if (message.userName == uiState.value.oppositeUserName) {
+                        // Opposite chat bubble
+                        ChatBubbleOpposite(message)
+                    } else {
+                        ChatBubbleMine(message)
+                    }
+
                 }
             }
         }
@@ -151,7 +170,7 @@ fun ChatMessageBody(message: ChatData) {
                 horizontalArrangement = Arrangement.End
             ) {
                 Text(
-                    text = SimpleDateFormat("HH:mm", Locale.CHINESE).format(message.time),
+                    text = SimpleDateFormat("HH:mm:ss", Locale.CHINESE).format(message.time),
                     fontSize = 12.sp
                 )
             }
