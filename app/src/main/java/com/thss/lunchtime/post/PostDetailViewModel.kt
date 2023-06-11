@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.thss.lunchtime.chat.ChatData
 import com.thss.lunchtime.component.CommentData
 import com.thss.lunchtime.data.userPreferencesStore
 import com.thss.lunchtime.network.LunchTimeApi
@@ -49,9 +48,10 @@ class PostDetailViewModel : ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
-            }
-            _uiState.update {
-                it.copy(isRefreshing = false)
+            } finally {
+                _uiState.update {
+                    it.copy(isRefreshing = false, loaded = true)
+                }
             }
         }
     }

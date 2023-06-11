@@ -163,6 +163,9 @@ class OtherInfoPageViewModel : ViewModel(){
     fun refresh(context: Context, targetUserName: String){
         val userData = context.userPreferencesStore
         viewModelScope.launch {
+            _uiState.update { state ->
+                state.copy(isLoaded = false)
+            }
             try{
                 val myUserName = userData.data.first().userName
                 val response = LunchTimeApi.retrofitService.getUserInfo(
@@ -202,6 +205,10 @@ class OtherInfoPageViewModel : ViewModel(){
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            } finally {
+                _uiState.update { state ->
+                    state.copy(isLoaded = true)
+                }
             }
         }
     }

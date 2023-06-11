@@ -61,6 +61,12 @@ class MyInfoPageViewModel: ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            } finally {
+                _uiState.update { state ->
+                    state.copy(
+                        isLoaded = true
+                    )
+                }
             }
         }
     }

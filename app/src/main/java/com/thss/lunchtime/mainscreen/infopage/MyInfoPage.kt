@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,15 +51,21 @@ fun MyInfoPage(onOpenInfoEdit: () -> Unit, onOpenFollowingList : () -> Unit, onO
             .fillMaxWidth()
             .padding(paddingValues)
     ) {
+        if(uiState.value.isLoaded) {
+            InfoComp(
+                msg = uiState.value.infoData,
+                type = InfoType.Self,
+                onClickFans = onOpenFansList,
+                onClickFollows = onOpenFollowingList,
+                onClickSaved = onOpenSavedList,
+                onClickChat = {}
+            )
+        } else {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                CircularProgressIndicator(modifier = Modifier.padding(15.dp))
+            }
+        }
 
-        InfoComp(
-            msg = uiState.value.infoData,
-            type = InfoType.Self,
-            onClickFans = onOpenFansList,
-            onClickFollows = onOpenFollowingList,
-            onClickSaved = onOpenSavedList,
-            onClickChat = {}
-        )
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -72,19 +77,25 @@ fun MyInfoPage(onOpenInfoEdit: () -> Unit, onOpenFollowingList : () -> Unit, onO
             Text(text = "我的动态", fontSize = 16.sp)
         }
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(uiState.value.postList) { postData ->
-                PostReviewCard(
-                    onClickLike = {myInfoPageViewModel.onClickLike(context, postData.postID)},
-                    onClickStar = {myInfoPageViewModel.onClickStar(context, postData.postID)},
-                    onClickTopBar = {},
-                    msg = postData,
-                    modifier = Modifier.clickable { onClickPost(postData.postID) })
+        if(uiState.value.isLoaded) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(uiState.value.postList) { postData ->
+                    PostReviewCard(
+                        onClickLike = { myInfoPageViewModel.onClickLike(context, postData.postID) },
+                        onClickStar = { myInfoPageViewModel.onClickStar(context, postData.postID) },
+                        onClickTopBar = {},
+                        msg = postData,
+                        modifier = Modifier.clickable { onClickPost(postData.postID) })
+                }
+            }
+        } else {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                CircularProgressIndicator(modifier = Modifier.padding(15.dp))
             }
         }
-    } 
+        }
     }
 }
 

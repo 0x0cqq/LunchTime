@@ -52,7 +52,7 @@ fun PostDetailPage(onBack: () -> Unit,
     val reverseComment = remember { mutableStateOf(false) }
     
     
-    LaunchedEffect(Unit) {
+    LaunchedEffect(postID) {
         postDetailViewModel.refresh(context, postID)
     }
     Scaffold(
@@ -163,12 +163,18 @@ fun PostDetailPage(onBack: () -> Unit,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                PostMainBody(
-                    msg = postDetailData.value.postData,
-                    type = PostType(Detailed = true),
-                    onClickTopBar = { onOpenUserInfo(postDetailData.value.postData.publisherID) },
-                    onClickMedia = onOpenMedia,
-                )
+                if(postDetailData.value.loaded) {
+                    PostMainBody(
+                        msg = postDetailData.value.postData,
+                        type = PostType(Detailed = true),
+                        onClickTopBar = { onOpenUserInfo(postDetailData.value.postData.publisherID) },
+                        onClickMedia = onOpenMedia,
+                    )
+                } else {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                        CircularProgressIndicator(modifier = Modifier.padding(15.dp))
+                    }
+                }
             }
 
             Row(
@@ -206,25 +212,30 @@ fun PostDetailPage(onBack: () -> Unit,
                     )
                 }
             }
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(
-                    if(reverseComment.value) {
-                        postDetailData.value.commentDataList.reversed()
-                    } else {
-                        postDetailData.value.commentDataList
+            if(postDetailData.value.loaded) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(
+                        if(reverseComment.value) {
+                            postDetailData.value.commentDataList.reversed()
+                        } else {
+                            postDetailData.value.commentDataList
+                        }
+                    ) { commentData ->
+                        Column {
+                            CommentComp(
+                                msg = commentData,
+                                onClickTopBar = { onOpenUserInfo(commentData.commentID) })
+                            Divider(
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                            )
+                        }
                     }
-                ) { commentData ->
-                    Column {
-                        CommentComp(
-                            msg = commentData,
-                            onClickTopBar = { onOpenUserInfo(commentData.commentID) })
-                        Divider(
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                        )
-                    }
+                }
+            } else {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                    CircularProgressIndicator(modifier = Modifier.padding(15.dp))
                 }
             }
         }
